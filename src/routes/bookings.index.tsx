@@ -19,7 +19,7 @@ export const Route = createFileRoute("/bookings/")({
 });
 
 function BookingList() {
-  const [query, setQuery] = useState(""); const [tab, setTab] = useState("All"); const [region, setRegion] = useState("All regions"); const [mover, setMover] = useState("All movers"); const [sort, setSort] = useState<"time" | "money">("time"); const { bookings, createBooking } = useOperations();
+  const [query, setQuery] = useState(""); const [tab, setTab] = useState("All"); const [region, setRegion] = useState("All regions"); const [mover, setMover] = useState("All movers"); const [sort, setSort] = useState<"time" | "money">("time"); const { bookings, conversations, createBooking } = useOperations();
   const tabStatus: Record<string, string[]> = { All: [], Intake: ["draft"], Quoting: ["dispatched", "quotes_received", "quote_accepted"], "Awaiting payment": ["payment_pending"], Booked: ["booked"], "In transit": ["in_transit"], Completed: ["completed"], Cancelled: ["cancelled"] };
   const allowedStatuses = tabStatus[tab] ?? [];
   const movers = Array.from(new Set(bookings.map((booking) => booking.mover).filter(Boolean))) as string[];
@@ -89,7 +89,7 @@ function BookingList() {
                   </span>
                 </td>
                 <td className="px-5 py-4">
-                  <div className="flex gap-1"><Button asChild size="sm" variant="outline"><Link to="/bookings/$ref/assign" params={{ ref: booking.ref }} search={{}}>{booking.mover ? "Reassign" : "Assign"}</Link></Button><Button asChild size="icon" variant="ghost" aria-label={`Message ${booking.customer}`}><Link to="/inbox/$sessionId" params={{ sessionId: booking.customerId === "sian-morgan" ? "s3" : booking.customerId === "elin-roberts" ? "s1" : "s1" }}><MessageCircle /></Link></Button></div>
+                  <div className="flex gap-1"><Button asChild size="sm" variant="outline"><Link to="/bookings/$ref/assign" params={{ ref: booking.ref }} search={{}}>{booking.mover ? "Reassign" : "Assign"}</Link></Button>{conversations.find((conversation) => conversation.contactId === booking.customerId) ? <Button asChild size="icon" variant="ghost" aria-label={`Message ${booking.customer}`}><Link to="/inbox/$sessionId" params={{ sessionId: conversations.find((conversation) => conversation.contactId === booking.customerId)?.id ?? "" }}><MessageCircle /></Link></Button> : <Button size="icon" variant="ghost" aria-label={`No conversation for ${booking.customer}`} disabled><MessageCircle /></Button>}</div>
                 </td>
               </tr>
             ))}{!filtered.length && <tr><td className="px-5 py-12 text-center text-sm text-muted-foreground" colSpan={7}>No bookings match this view.</td></tr>}
