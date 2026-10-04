@@ -13,3 +13,4 @@
 - Keep mock operational fixtures in `src/features/core/mock-data.ts`; this allows visual workflows to work before the external API is connected.
 - Keep all interface colours in `src/styles.css` semantic tokens so the restrained operational palette remains consistent across themes.
 - Treat operational actions that change assignment, money, or outbound messaging as dedicated routes when specified; preserve the full flow state in the URL where practical.
+- Keep the current product entirely mock-backed through a shared mutable operations store, so every visible workflow can be demonstrated without claiming external service delivery.
