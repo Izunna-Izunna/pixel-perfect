@@ -12,7 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AttentionRouteImport } from './routes/attention'
 import { Route as BookingsRouteImport } from './routes/bookings'
+import { Route as CustomersRouteImport } from './routes/customers'
 import { Route as InboxRouteImport } from './routes/inbox'
+import { Route as MoversRouteImport } from './routes/movers'
+import { Route as PaymentsRouteImport } from './routes/payments'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,9 +32,24 @@ const BookingsRoute = BookingsRouteImport.update({
   path: '/bookings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CustomersRoute = CustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InboxRoute = InboxRouteImport.update({
   id: '/inbox',
   path: '/inbox',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MoversRoute = MoversRouteImport.update({
+  id: '/movers',
+  path: '/movers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentsRoute = PaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -39,34 +57,68 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/attention': typeof AttentionRoute
   '/bookings': typeof BookingsRoute
+  '/customers': typeof CustomersRoute
   '/inbox': typeof InboxRoute
+  '/movers': typeof MoversRoute
+  '/payments': typeof PaymentsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/attention': typeof AttentionRoute
   '/bookings': typeof BookingsRoute
+  '/customers': typeof CustomersRoute
   '/inbox': typeof InboxRoute
+  '/movers': typeof MoversRoute
+  '/payments': typeof PaymentsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/attention': typeof AttentionRoute
   '/bookings': typeof BookingsRoute
+  '/customers': typeof CustomersRoute
   '/inbox': typeof InboxRoute
+  '/movers': typeof MoversRoute
+  '/payments': typeof PaymentsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/attention' | '/bookings' | '/inbox'
+  fullPaths:
+    | '/'
+    | '/attention'
+    | '/bookings'
+    | '/customers'
+    | '/inbox'
+    | '/movers'
+    | '/payments'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/attention' | '/bookings' | '/inbox'
-  id: '__root__' | '/' | '/attention' | '/bookings' | '/inbox'
+  to:
+    | '/'
+    | '/attention'
+    | '/bookings'
+    | '/customers'
+    | '/inbox'
+    | '/movers'
+    | '/payments'
+  id:
+    | '__root__'
+    | '/'
+    | '/attention'
+    | '/bookings'
+    | '/customers'
+    | '/inbox'
+    | '/movers'
+    | '/payments'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AttentionRoute: typeof AttentionRoute
   BookingsRoute: typeof BookingsRoute
+  CustomersRoute: typeof CustomersRoute
   InboxRoute: typeof InboxRoute
+  MoversRoute: typeof MoversRoute
+  PaymentsRoute: typeof PaymentsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -92,11 +144,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/customers': {
+      id: '/customers'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof CustomersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inbox': {
       id: '/inbox'
       path: '/inbox'
       fullPath: '/inbox'
       preLoaderRoute: typeof InboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/movers': {
+      id: '/movers'
+      path: '/movers'
+      fullPath: '/movers'
+      preLoaderRoute: typeof MoversRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payments': {
+      id: '/payments'
+      path: '/payments'
+      fullPath: '/payments'
+      preLoaderRoute: typeof PaymentsRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -106,7 +179,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AttentionRoute: AttentionRoute,
   BookingsRoute: BookingsRoute,
+  CustomersRoute: CustomersRoute,
   InboxRoute: InboxRoute,
+  MoversRoute: MoversRoute,
+  PaymentsRoute: PaymentsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
