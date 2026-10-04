@@ -7,3 +7,4 @@
 - [ ] Deliver the dedicated assign, refund, template, notification and full-page operational flows from the addendum.
 - [ ] Build the approved WhatsApp template picker and backend-ready delivery path from the chat-console plan.
 - [ ] Maintain COMPLETION_GATE.md and COMPONENT_CHECKLIST.md as every required route and control is implemented and verified.
+- [ ] Implement the approved operational feature expansion: derived overview intelligence, booking controls, customer history controls, inbox action palette, and operational settings.
