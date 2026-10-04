@@ -32,8 +32,9 @@ function Overview() {
   const visibleBookings = useMemo(() => range === "today" ? bookings.filter((booking) => booking.moveAt.startsWith("2026-10-04")) : range === "week" ? bookings.slice(0, 4) : bookings, [bookings, range]);
   const rangeLabel = range === "today" ? "Today" : range === "week" ? "7 days" : "30 days";
   const attentionAction = (item: (typeof attention)[number]) => {
-    if (item.action === "Redispatch") return <Button asChild size="sm" variant="link" className="h-auto p-0"><Link to="/bookings/$ref/assign" params={{ ref: "CARY-8284" }}>Assign mover</Link></Button>;
-    if (item.action === "Review") return <Button asChild size="sm" variant="link" className="h-auto p-0"><Link to="/movers/$id" params={{ id: "megan-price" }}>Review documents</Link></Button>;
+    if (item.action === "Redispatch" && item.bookingRef) return <Button asChild size="sm" variant="link" className="h-auto p-0"><Link to="/bookings/$ref/assign" params={{ ref: item.bookingRef }}>Assign mover</Link></Button>;
+    if (item.action === "Review" && item.moverId) return <Button asChild size="sm" variant="link" className="h-auto p-0"><Link to="/movers/$id" params={{ id: item.moverId }}>Review documents</Link></Button>;
+    if (item.action === "Send link" && item.bookingRef) return <Button asChild size="sm" variant="link" className="h-auto p-0"><Link to="/bookings/$ref" params={{ ref: item.bookingRef }}>Open payment</Link></Button>;
     return <Button size="sm" variant="link" className="h-auto p-0" onClick={() => resolveAttention(item.id)}>{item.action}</Button>;
   };
 
