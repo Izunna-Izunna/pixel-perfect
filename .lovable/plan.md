@@ -1,15 +1,23 @@
-# Mover availability from chat
+# Inbox workflow and responsiveness
 
 ## Goal
-Make the chat’s **Assign mover** action let an operator choose a mover, then show a compact availability result before they continue to the existing assignment workspace.
+Make the inbox a reliable operations workspace across desktop and mobile, and give chat operators a clear mover-availability check before dispatching.
 
-## Changes
-- Replace the current generic assignment dialog with a picker listing the current movers, their verification state, and vehicle summary.
-- After selection, show a small confirmation dialog with a clear **Available** or **Not available** result, plus the relevant operational reason when known.
-- Keep the existing full assignment workspace as the final action, preselected for the chosen mover where supported.
-- Use the existing mock mover candidate availability data; do not imply live dispatch availability or contact any mover.
+## Mover assignment
+- Replace the generic chat assignment prompt with a mover picker that lists verified mover records.
+- Selecting a mover opens a compact result dialog showing whether they are free for the linked move, including any known issue or availability reason.
+- Keep the existing dispatch workspace as the explicit final confirmation step, with the selected mover carried into that flow where the route supports it.
+- Use the existing internal availability fixtures only; do not represent this as live mover location or acceptance.
+
+## Inbox rework
+- Audit the desktop three-column workspace and mobile list-to-full-screen-thread flow for clipping, fixed-interface overlap, and unusable controls.
+- Make every visible inbox control perform its stated action: filters, conversation selection, takeover, attachments, send, quick replies, templates, Scout tools, right-panel close/open actions, and assignment.
+- Improve dense layouts with stable widths, truncation, accessible controls, and compact empty states without changing Cary’s visual direction.
+
+## Validation
+- Check the inbox at desktop and phone widths, including opening a thread, selecting a mover, seeing both availability states, and exercising each visible control.
+- Resolve any current build or runtime errors before completion.
 
 ## Technical details
-- Update the inbox page state and dialogs only.
-- Match mover records to the existing candidate availability fixture by mover ID.
-- Preserve the existing desktop workspace and mobile full-screen chat behavior.
+- Update the inbox page and its existing chat integration; preserve the full-page mobile chat route.
+- Reuse the shared operations store and existing mover candidate availability fixture so all interactions remain internally consistent.
