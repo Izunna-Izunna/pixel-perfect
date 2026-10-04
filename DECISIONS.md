@@ -13,4 +13,6 @@
 
 ## QA log
 - Initial foundation: desktop-first grid with responsive sidebar-to-mobile navigation behaviour and touch-ready controls.
+- Completion pass: reviewed the overview and inbox at 1440px and the direct conversation route at 390px; no console errors or horizontal overflow were observed.
+- Completion pass: removed the lavender/gradient treatment, rebuilt the map as a restrained greyscale surface, and made the desktop Inbox a fixed three-pane console with direct chat routes.
 - Performance and accessibility measurements are pending a complete feature pass.

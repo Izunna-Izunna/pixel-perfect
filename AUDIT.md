@@ -15,5 +15,5 @@
 | Quotes, reminders, broadcasts | `/quotes/new`, `/reminders`, `/broadcasts/*` | Missing | Routes and workflows absent. | Build operational tools and mock mutations. |
 | System, audit and settings | `/system`, `/audit`, `/settings/*` | Missing | Routes and governance controls absent. | Build role-aware system, audit and settings screens. |
 | Global states and safety | `/_states`, `/notifications`, `/search` | Missing | No 404, access, offline, notifications, search or shared state catalogue. | Add state catalogue, global panels and error routes. |
-| Design system | Global | Partial | Lavender and gradients remain; type and surface rules conflict with the completion brief. | Replace with neutral token system and shared status/visual primitives. |
+| Design system | Global | Partial | Neutral tokens and shared status primitives are now rebuilt; remaining screens still need migration and token enforcement. | Finish migration, add static token lint and visual regression coverage. |
 | Interaction quality | Global | Broken | Many controls have no mutation, navigation, or feedback. | Implement stateful mock API, audit entries and automated click-through checks. |
