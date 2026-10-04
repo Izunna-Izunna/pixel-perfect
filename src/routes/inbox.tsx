@@ -1,5 +1,5 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
-import { Bot, FileText, ReceiptText, Search, Sparkles, Zap } from "lucide-react";
+import { Bot, ChevronDown, FileText, ReceiptText, Search, Sparkles, Zap } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Workspace } from "@/features/core/workspace";
@@ -9,7 +9,9 @@ import { StatusBadge } from "@/features/core/status-badge";
 import { useOperations } from "@/features/core/operations-store";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { scoutTools } from "@/features/inbox/operations-catalog";
+import { approvedTemplates, renderTemplate, scoutTools } from "@/features/inbox/operations-catalog";
+import { bookings, movers } from "@/features/core/mock-data";
+import { formatLondon } from "@/lib/time";
 
 export const Route = createFileRoute("/inbox")({
   head: () => ({
@@ -24,13 +26,17 @@ export const Route = createFileRoute("/inbox")({
 function InboxLayout() { return <Outlet />; }
 
 export function InboxPage() {
-  const { conversations, markRead, executeScoutTool, toolExecutions } = useOperations();
+  const { conversations, markRead, executeScoutTool, toolExecutions, sendTemplate } = useOperations();
   const [filter, setFilter] = useState<"all" | "needs" | "taken" | "customer" | "mover">("all"); const [query, setQuery] = useState(""); const [assignOpen, setAssignOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [contextPanel, setContextPanel] = useState<"details" | "quickReplies" | "scoutTools">("details");
+  const [contextPanel, setContextPanel] = useState<"details" | "quickReplies" | "scoutTools" | "templates">("details");
   const [quickReplyRequest, setQuickReplyRequest] = useState<{ id: number; body: string } | null>(null);
   const [toolId, setToolId] = useState<string | null>(null);
   const [toolValues, setToolValues] = useState<Record<string, string>>({});
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+  const [templateQuery, setTemplateQuery] = useState("");
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+  const [templateParameters, setTemplateParameters] = useState<Record<string, string>>({});
   const selected = conversations.find((conversation) => conversation.id === selectedId) ?? conversations[0];
   const filtered = conversations.filter((conversation) => {
     const matches = `${conversation.name} ${conversation.role} ${conversation.preview}`.toLowerCase().includes(query.toLowerCase());
@@ -40,7 +46,16 @@ export function InboxPage() {
     return conversation.role.toLowerCase() === filter;
   });
   const selectedTool = scoutTools.find((tool) => tool.id === toolId);
+  const selectedBooking = bookings.find((item) => item.customerId === selected.contactId || item.moverId === selected.contactId);
+  const selectedMover = selected.role === "Mover" ? movers.find((item) => item.id === selected.contactId) : undefined;
+  const matchingTemplates = approvedTemplates.filter((template) => template.target === selected.role || template.target === "Admin Ops").filter((template) => template.name.toLowerCase().includes(templateQuery.toLowerCase()));
+  const selectedTemplate = approvedTemplates.find((template) => template.id === selectedTemplateId) ?? matchingTemplates[0];
+  const templateValues = { ...templateDefaults(selected, selectedBooking, selectedMover), ...templateParameters };
+  const renderedTemplate = selectedTemplate ? renderTemplate(selectedTemplate, templateValues) : "";
+  const templateReady = Boolean(selectedTemplate?.parameters.every((parameter) => templateValues[parameter.key]?.trim()));
+  const toolGroups = scoutTools.reduce<Record<string, typeof scoutTools>>((groups, tool) => { const group = tool.category ?? "Operations"; (groups[group] ??= []).push(tool); return groups; }, {});
   function openTool(id: string) { setToolId(id); setToolValues({}); }
+  function selectTemplate(id: string) { setSelectedTemplateId(id); setTemplateParameters({}); }
   function executeTool() {
     if (!selectedTool || !selected) return;
     const complete = selectedTool.fields.every((field) => toolValues[field]?.trim());
@@ -95,8 +110,9 @@ export function InboxPage() {
         
         <aside className="hidden border-l border-border p-5 lg:block">
           {contextPanel === "details" && <><p className="micro-label">Conversation context</p><h2 className="mt-2 text-base font-semibold">{selected.name}</h2><p className="mt-1 text-xs text-muted-foreground">+44 7•• ••• 1234</p><div className="mt-6 border-t border-border pt-5"><p className="micro-label">Active booking</p><Link to="/bookings" className="mt-2 block border border-border p-3 hover:bg-muted"><p className="font-mono text-xs font-semibold">CARY-8291</p><p className="mt-1 text-xs text-muted-foreground">CF10 1AA → CF24 4PB</p><p className="mt-2 text-xs font-medium text-live-foreground">In transit</p></Link></div></>}
-          {contextPanel === "quickReplies" && <><div className="flex items-center justify-between gap-2"><div><p className="micro-label">Quick replies</p><h2 className="mt-2 text-base font-semibold">Reply shortcuts</h2></div><Button variant="ghost" size="sm" onClick={() => setContextPanel("details")}>Close</Button></div><p className="mt-2 text-xs text-muted-foreground">Choose a reply to add it to the composer.</p><div className="mt-5 grid gap-2">{["Hi there! I'm jumping in from the Cary operations team to help directly.", "Your mover has confirmed and is currently en route to your pickup location.", "Could you please upload a quick photo of the items and the doorway or stairs?"].map((reply, index) => <Button key={reply} variant="outline" className="h-auto justify-start whitespace-normal px-3 py-3 text-left text-xs" onClick={() => setQuickReplyRequest({ id: Date.now() + index, body: reply })}><Zap size={14} />{reply}</Button>)}</div></>}
-          {contextPanel === "scoutTools" && <><div className="flex items-center justify-between gap-2"><div><p className="micro-label">Scout tools</p><h2 className="mt-2 text-base font-semibold">Operations actions</h2></div><Button variant="ghost" size="sm" onClick={() => setContextPanel("details")}>Close</Button></div><p className="mt-2 text-xs text-muted-foreground">Each action records a precise in-app operational event.</p><div className="mt-5 grid gap-2"><Button variant="outline" size="sm" className="justify-start" onClick={() => setAssignOpen(true)}><Sparkles />Assign mover</Button><Button asChild variant="outline" size="sm" className="justify-start"><Link to="/quotes/new" search={{ booking: "CARY-8291" }}><ReceiptText />Create quote</Link></Button>{scoutTools.map((tool) => <Button key={tool.id} variant="ghost" size="sm" className="justify-start text-left" onClick={() => openTool(tool.id)}><Bot size={14} />{tool.name}</Button>)}</div><div className="mt-5 border-t border-border pt-4"><p className="micro-label">Recent tool activity</p>{toolExecutions.filter((item) => item.conversationId === selected.id).slice(0, 3).map((item) => <p className="mt-2 text-xs" key={item.id}>{item.toolName}<span className="block text-muted-foreground">{item.outcome}</span></p>)}{!toolExecutions.some((item) => item.conversationId === selected.id) && <p className="mt-2 text-xs text-muted-foreground">No tools recorded for this conversation.</p>}</div></>}
+          {contextPanel === "quickReplies" && <SidePanelHeading label="Quick replies" title="Reply shortcuts" onClose={() => setContextPanel("details")}><p className="mt-2 text-xs text-muted-foreground">Choose a reply to add it to the composer.</p><div className="mt-5 grid gap-2">{["Hi there! I'm jumping in from the Cary operations team to help directly.", "Your mover has confirmed and is currently en route to your pickup location.", "Could you please upload a quick photo of the items and the doorway or stairs?"].map((reply, index) => <Button key={reply} variant="outline" className="h-auto justify-start whitespace-normal px-3 py-3 text-left text-xs" onClick={() => setQuickReplyRequest({ id: Date.now() + index, body: reply })}><Zap size={14} />{reply}</Button>)}</div></SidePanelHeading>}
+          {contextPanel === "templates" && <SidePanelHeading label="Approved templates" title="WhatsApp message library" onClose={() => setContextPanel("details")}><p className="mt-2 text-xs text-muted-foreground">Use a template when the 24-hour window is closed.</p><Input className="mt-4 h-9" value={templateQuery} onChange={(event) => setTemplateQuery(event.target.value)} placeholder="Search templates" /><div className="mt-3 grid gap-1">{matchingTemplates.map((template) => <Button key={template.id} variant={template.id === selectedTemplate?.id ? "secondary" : "ghost"} className="justify-start" onClick={() => selectTemplate(template.id)}>{template.name}</Button>)}</div>{selectedTemplate && <div className="mt-5 border border-border bg-muted/40 p-3"><p className="text-sm font-semibold">{selectedTemplate.name}</p><p className="mt-1 text-xs text-muted-foreground">{selectedTemplate.category} · {selectedTemplate.target}</p><div className="mt-3 grid gap-2">{selectedTemplate.parameters.map((parameter) => <label className="text-xs font-medium" key={parameter.key}>{`{{${parameter.key}}}`} · {parameter.label}<Input className="mt-1 h-8" value={templateValues[parameter.key] ?? ""} onChange={(event) => setTemplateParameters((current) => ({ ...current, [parameter.key]: event.target.value }))} /></label>)}</div><div className="mt-3 border border-border bg-card p-3"><p className="micro-label">Preview</p><p className="mt-2 whitespace-pre-wrap text-xs leading-5">{renderedTemplate}</p></div><Button className="mt-3 w-full" disabled={!templateReady} onClick={() => { sendTemplate(selected.id, selectedTemplate.name, renderedTemplate); setContextPanel("details"); }}>Send approved template</Button></div>}</SidePanelHeading>}
+          {contextPanel === "scoutTools" && <SidePanelHeading label="Scout tools" title="Operations actions" onClose={() => setContextPanel("details")}><p className="mt-2 text-xs text-muted-foreground">Open only the group you need, then record the operational result.</p><div className="mt-5 grid gap-2"><Button variant="outline" size="sm" className="justify-start" onClick={() => setAssignOpen(true)}><Sparkles />Assign mover</Button><Button asChild variant="outline" size="sm" className="justify-start"><Link to="/quotes/new" search={{ booking: selectedBooking?.ref ?? "" }}><ReceiptText />Create quote</Link></Button>{Object.entries(toolGroups).map(([group, tools]) => <div className="border border-border" key={group}><Button variant="ghost" className="w-full justify-between" onClick={() => setExpandedGroups((groups) => ({ ...groups, [group]: !groups[group] }))}>{group}<ChevronDown className={`size-4 transition-transform ${expandedGroups[group] ? "rotate-180" : ""}`} /></Button>{expandedGroups[group] && <div className="border-t border-border p-1">{tools.map((tool) => <Button key={tool.id} variant="ghost" size="sm" className="w-full justify-start text-left" onClick={() => openTool(tool.id)}><Bot size={14} />{tool.name}</Button>)}</div>}</div>)}</div><div className="mt-5 border-t border-border pt-4"><p className="micro-label">Recent tool activity</p>{toolExecutions.filter((item) => item.conversationId === selected.id).slice(0, 3).map((item) => <p className="mt-2 text-xs" key={item.id}>{item.toolName}<span className="block text-muted-foreground">{item.outcome}</span></p>)}{!toolExecutions.some((item) => item.conversationId === selected.id) && <p className="mt-2 text-xs text-muted-foreground">No tools recorded for this conversation.</p>}</div></SidePanelHeading>}
         </aside>
       </div>
       <Dialog open={assignOpen} onOpenChange={setAssignOpen}><DialogContent><DialogHeader><DialogTitle>Assign a mover</DialogTitle><DialogDescription>Open the dispatch workspace to compare verified candidates, payout and customer update before confirming.</DialogDescription></DialogHeader><DialogFooter><Button variant="outline" onClick={() => setAssignOpen(false)}>Cancel</Button><Button asChild><Link to="/bookings/$ref/assign" params={{ ref: "CARY-8291" }}>Open assignment</Link></Button></DialogFooter></DialogContent></Dialog>
@@ -104,6 +120,10 @@ export function InboxPage() {
     </Workspace>
   );
 }
+
+function SidePanelHeading({ label, title, onClose, children }: { label: string; title: string; onClose: () => void; children: React.ReactNode }) { return <div className="animate-in slide-in-from-right-2 duration-200"><div className="flex items-center justify-between gap-2"><div><p className="micro-label">{label}</p><h2 className="mt-2 text-base font-semibold">{title}</h2></div><Button variant="ghost" size="sm" onClick={onClose}>Close</Button></div>{children}</div>; }
+
+function templateDefaults(conversation: ReturnType<typeof useOperations>["conversations"][number], booking: typeof bookings[number] | undefined, mover: typeof movers[number] | undefined): Record<string, string> { const [pickup = "", dropoff = ""] = booking?.route.split(" → ") ?? []; const customer = booking?.customer ?? (conversation.role === "Customer" ? conversation.name : ""); return { "1": customer.split(" ")[0] ?? "", "2": pickup, "3": dropoff, "4": mover?.businessName ?? "Verified Cary mover", "5": "", "6": booking ? formatLondon(booking.moveAt) : "", "7": booking?.items ?? "", "8": "Driver + 1 helper", "9": "Customer phone available to operators", "10": booking?.ref ?? "", "11": conversation.role === "Mover" ? (mover?.businessName ?? conversation.name) : "" }; }
 
 function ConversationRow({
   conversation,
