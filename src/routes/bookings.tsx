@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { Plus, Search } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Workspace } from "@/features/core/workspace";
 import { bookings } from "@/features/core/mock-data";
@@ -20,8 +19,6 @@ export const Route = createFileRoute("/bookings")({
 });
 
 function BookingList() {
-  const mockAction = (name: string) => toast.success(`${name} feature coming soon!`);
-
   return (
     <Workspace title="Bookings">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
@@ -29,13 +26,13 @@ function BookingList() {
           <p className="micro-label">Records</p>
           <h2 className="mt-1 text-2xl font-semibold">Bookings <span className="font-mono text-base text-muted-foreground">{bookings.length}</span></h2>
         </div>
-        <Button onClick={() => mockAction("Create booking")}><Plus />Create booking</Button>
+        <Button disabled title="Creating a booking needs the connected back office"><Plus />Create booking</Button>
       </div>
       
       <div className="mt-6 flex flex-wrap gap-2">
-        <Button size="sm" onClick={() => toast.info("Filter: All")}>All</Button>
+        <Button size="sm">All</Button>
         {["Intake", "Quoting", "Awaiting payment", "Booked", "In transit"].map((tab) => (
-          <Button key={tab} variant="outline" size="sm" onClick={() => toast.info(`Filter: ${tab}`)}>{tab}</Button>
+          <Button key={tab} variant="outline" size="sm">{tab}</Button>
         ))}
       </div>
       
