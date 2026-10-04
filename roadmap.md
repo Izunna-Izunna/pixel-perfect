@@ -12,3 +12,4 @@
 - [x] Consolidate inbox templates, quick replies, and Scout tools into expandable right-panel sections.
 - [ ] Rework the inbox layout and responsive behavior; audit and repair every visible inbox control.
 - [ ] Add an in-chat mover picker with availability confirmation before assignment.
+- [ ] Continue the inbox workflow verification and repair pass.
