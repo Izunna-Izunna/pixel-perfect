@@ -23,6 +23,7 @@ import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as BookingsRefRouteImport } from './routes/bookings.$ref'
 import { Route as CustomersIndexRouteImport } from './routes/customers.index'
 import { Route as CustomersIdRouteImport } from './routes/customers.$id'
+import { Route as InboxIndexRouteImport } from './routes/inbox.index'
 import { Route as InboxSessionIdRouteImport } from './routes/inbox.$sessionId'
 import { Route as MoversIndexRouteImport } from './routes/movers.index'
 import { Route as MoversIdRouteImport } from './routes/movers.$id'
@@ -100,6 +101,11 @@ const CustomersIdRoute = CustomersIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => CustomersRoute,
 } as any)
+const InboxIndexRoute = InboxIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => InboxRoute,
+} as any)
 const InboxSessionIdRoute = InboxSessionIdRouteImport.update({
   id: '/$sessionId',
   path: '/$sessionId',
@@ -149,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/settings/account': typeof SettingsAccountRoute
   '/bookings/': typeof BookingsIndexRoute
   '/customers/': typeof CustomersIndexRoute
+  '/inbox/': typeof InboxIndexRoute
   '/movers/': typeof MoversIndexRoute
   '/bookings/$ref/assign': typeof BookingsRefAssignRoute
   '/payments/$id/refund': typeof PaymentsIdRefundRoute
@@ -156,7 +163,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/attention': typeof AttentionRoute
-  '/inbox': typeof InboxRouteWithChildren
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRouteWithChildren
@@ -168,6 +174,7 @@ export interface FileRoutesByTo {
   '/settings/account': typeof SettingsAccountRoute
   '/bookings': typeof BookingsIndexRoute
   '/customers': typeof CustomersIndexRoute
+  '/inbox': typeof InboxIndexRoute
   '/movers': typeof MoversIndexRoute
   '/bookings/$ref/assign': typeof BookingsRefAssignRoute
   '/payments/$id/refund': typeof PaymentsIdRefundRoute
@@ -191,6 +198,7 @@ export interface FileRoutesById {
   '/settings/account': typeof SettingsAccountRoute
   '/bookings/': typeof BookingsIndexRoute
   '/customers/': typeof CustomersIndexRoute
+  '/inbox/': typeof InboxIndexRoute
   '/movers/': typeof MoversIndexRoute
   '/bookings/$ref/assign': typeof BookingsRefAssignRoute
   '/payments/$id/refund': typeof PaymentsIdRefundRoute
@@ -215,6 +223,7 @@ export interface FileRouteTypes {
     | '/settings/account'
     | '/bookings/'
     | '/customers/'
+    | '/inbox/'
     | '/movers/'
     | '/bookings/$ref/assign'
     | '/payments/$id/refund'
@@ -222,7 +231,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/attention'
-    | '/inbox'
     | '/login'
     | '/notifications'
     | '/payments'
@@ -234,6 +242,7 @@ export interface FileRouteTypes {
     | '/settings/account'
     | '/bookings'
     | '/customers'
+    | '/inbox'
     | '/movers'
     | '/bookings/$ref/assign'
     | '/payments/$id/refund'
@@ -256,6 +265,7 @@ export interface FileRouteTypes {
     | '/settings/account'
     | '/bookings/'
     | '/customers/'
+    | '/inbox/'
     | '/movers/'
     | '/bookings/$ref/assign'
     | '/payments/$id/refund'
@@ -375,6 +385,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CustomersIdRouteImport
       parentRoute: typeof CustomersRoute
     }
+    '/inbox/': {
+      id: '/inbox/'
+      path: '/'
+      fullPath: '/inbox/'
+      preLoaderRoute: typeof InboxIndexRouteImport
+      parentRoute: typeof InboxRoute
+    }
     '/inbox/$sessionId': {
       id: '/inbox/$sessionId'
       path: '/$sessionId'
@@ -462,10 +479,12 @@ const CustomersRouteWithChildren = CustomersRoute._addFileChildren(
 
 interface InboxRouteChildren {
   InboxSessionIdRoute: typeof InboxSessionIdRoute
+  InboxIndexRoute: typeof InboxIndexRoute
 }
 
 const InboxRouteChildren: InboxRouteChildren = {
   InboxSessionIdRoute: InboxSessionIdRoute,
+  InboxIndexRoute: InboxIndexRoute,
 }
 
 const InboxRouteWithChildren = InboxRoute._addFileChildren(InboxRouteChildren)
