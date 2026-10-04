@@ -27,7 +27,7 @@ function AttentionPage() {
   const { view } = Route.useSearch();
   const dueReminders = reminders.filter((item) => item.status === "scheduled");
   const urgentItems = attention.filter((item) => item.tone === "danger" || item.tone === "warning");
-  const queue = view === "reminders" ? attention.length ? [] : [] : view === "urgent" ? urgentItems : attention;
+  const queue = view === "urgent" ? urgentItems : attention;
 
   return (
     <Workspace title="Needs attention">
