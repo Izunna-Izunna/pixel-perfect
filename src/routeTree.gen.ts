@@ -27,7 +27,6 @@ import { Route as InboxIndexRouteImport } from './routes/inbox.index'
 import { Route as InboxSessionIdRouteImport } from './routes/inbox.$sessionId'
 import { Route as MoversIndexRouteImport } from './routes/movers.index'
 import { Route as MoversIdRouteImport } from './routes/movers.$id'
-import { Route as PaymentsRefundRouteImport } from './routes/payments..refund'
 import { Route as SettingsAccountRouteImport } from './routes/settings.account'
 import { Route as BookingsRefAssignRouteImport } from './routes/bookings.$ref.assign'
 import { Route as PaymentsIdRefundRouteImport } from './routes/payments.$id.refund'
@@ -122,11 +121,6 @@ const MoversIdRoute = MoversIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => MoversRoute,
 } as any)
-const PaymentsRefundRoute = PaymentsRefundRouteImport.update({
-  id: '/refund',
-  path: '/refund',
-  getParentRoute: () => PaymentsRoute,
-} as any)
 const SettingsAccountRoute = SettingsAccountRouteImport.update({
   id: '/settings/account',
   path: '/settings/account',
@@ -158,7 +152,6 @@ export interface FileRoutesByFullPath {
   '/customers/$id': typeof CustomersIdRoute
   '/inbox/$sessionId': typeof InboxSessionIdRoute
   '/movers/$id': typeof MoversIdRoute
-  '/payments/refund': typeof PaymentsRefundRoute
   '/settings/account': typeof SettingsAccountRoute
   '/bookings/': typeof BookingsIndexRoute
   '/customers/': typeof CustomersIndexRoute
@@ -178,7 +171,6 @@ export interface FileRoutesByTo {
   '/customers/$id': typeof CustomersIdRoute
   '/inbox/$sessionId': typeof InboxSessionIdRoute
   '/movers/$id': typeof MoversIdRoute
-  '/payments/refund': typeof PaymentsRefundRoute
   '/settings/account': typeof SettingsAccountRoute
   '/bookings': typeof BookingsIndexRoute
   '/customers': typeof CustomersIndexRoute
@@ -203,7 +195,6 @@ export interface FileRoutesById {
   '/customers/$id': typeof CustomersIdRoute
   '/inbox/$sessionId': typeof InboxSessionIdRoute
   '/movers/$id': typeof MoversIdRoute
-  '/payments/refund': typeof PaymentsRefundRoute
   '/settings/account': typeof SettingsAccountRoute
   '/bookings/': typeof BookingsIndexRoute
   '/customers/': typeof CustomersIndexRoute
@@ -229,7 +220,6 @@ export interface FileRouteTypes {
     | '/customers/$id'
     | '/inbox/$sessionId'
     | '/movers/$id'
-    | '/payments/refund'
     | '/settings/account'
     | '/bookings/'
     | '/customers/'
@@ -249,7 +239,6 @@ export interface FileRouteTypes {
     | '/customers/$id'
     | '/inbox/$sessionId'
     | '/movers/$id'
-    | '/payments/refund'
     | '/settings/account'
     | '/bookings'
     | '/customers'
@@ -273,7 +262,6 @@ export interface FileRouteTypes {
     | '/customers/$id'
     | '/inbox/$sessionId'
     | '/movers/$id'
-    | '/payments/refund'
     | '/settings/account'
     | '/bookings/'
     | '/customers/'
@@ -425,13 +413,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MoversIdRouteImport
       parentRoute: typeof MoversRoute
     }
-    '/payments/refund': {
-      id: '/payments/refund'
-      path: '/refund'
-      fullPath: '/payments/refund'
-      preLoaderRoute: typeof PaymentsRefundRouteImport
-      parentRoute: typeof PaymentsRoute
-    }
     '/settings/account': {
       id: '/settings/account'
       path: '/settings/account'
@@ -522,12 +503,10 @@ const MoversRouteWithChildren =
   MoversRoute._addFileChildren(MoversRouteChildren)
 
 interface PaymentsRouteChildren {
-  PaymentsRefundRoute: typeof PaymentsRefundRoute
   PaymentsIdRefundRoute: typeof PaymentsIdRefundRoute
 }
 
 const PaymentsRouteChildren: PaymentsRouteChildren = {
-  PaymentsRefundRoute: PaymentsRefundRoute,
   PaymentsIdRefundRoute: PaymentsIdRefundRoute,
 }
 
