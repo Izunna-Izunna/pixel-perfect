@@ -6,7 +6,8 @@
 - The initial role is an operator in mock mode; high-risk controls remain deliberately unavailable in the foundation.
 
 ## Design rationale
-- The workspace uses a calm, high-density instrument-panel layout: a warm mist canvas, quiet white surfaces, Cary green reserved for verified and live states, and amber/red only for real attention.
+- The workspace uses a calm, high-density instrument-panel layout: a neutral canvas and flat surfaces, with green limited to live and positive outcomes, amber for waiting states, and red for failures or risk.
+- The refreshed palette removes display-serif, lavender and all decorative gradients, keeping visual hierarchy in typography, spacing and hairlines rather than ornamental colour.
 - The overview prioritises the next action above reporting: Needs Attention stays adjacent to live operations and today’s schedule.
 - The map is a styled regional operations surface rather than a generic map control until production coordinates are available.
 
