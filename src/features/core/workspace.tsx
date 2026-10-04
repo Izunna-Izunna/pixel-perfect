@@ -15,7 +15,7 @@ const groups = [
 
 export function CaryMark({ compact = false }: { compact?: boolean }) { return <div className="flex items-center gap-2"><span className="relative grid size-8 place-items-center rounded-md bg-live text-primary-foreground"><span className="size-2 rounded-sm border-2 border-primary-foreground" /><span className="absolute size-4 border border-primary-foreground/70" /></span>{!compact && <span className="text-base font-semibold tracking-normal">cary</span>}</div>; }
 
-export function Workspace({ title, children }: { title: string; children: ReactNode }) {
+export function Workspace({ title, children, immersive = false }: { title: string; children: ReactNode; immersive?: boolean }) {
   const location = useLocation(); const navigate = useNavigate(); const { conversations, notifications } = useOperations(); const [menuOpen, setMenuOpen] = useState(false); const [paletteOpen, setPaletteOpen] = useState(false); const [paletteQuery, setPaletteQuery] = useState(""); const [dark, setDark] = useState(false); const [clock, setClock] = useState(londonClock());
   const [collapsed, setCollapsed] = useState(false);
   useEffect(() => { const timer = window.setInterval(() => setClock(londonClock()), 1000); return () => window.clearInterval(timer); }, []);
@@ -69,7 +69,7 @@ export function Workspace({ title, children }: { title: string; children: ReactN
       )}
     </aside>
     <main className={`transition-all duration-300 ${collapsed ? "md:pl-20" : "md:pl-60"}`}>
-      <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-border bg-background px-4 md:px-7">
+      {!immersive && <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-border bg-background px-4 md:px-7">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open menu" onClick={() => setMenuOpen(true)}><Menu /></Button>
           <h1 className="text-base font-semibold">{title}</h1>
@@ -92,15 +92,15 @@ export function Workspace({ title, children }: { title: string; children: ReactN
             <ChevronDown size={14} />
           </Link>
         </div>
-      </header>
-      <div className="mx-auto max-w-[1600px] p-4 pb-24 md:p-7 md:pb-7">{children}</div>
+      </header>}
+      <div className={immersive ? "h-[100svh] md:h-screen" : "mx-auto max-w-[1600px] p-4 pb-24 md:p-7 md:pb-7"}>{children}</div>
     </main>
-    <nav className="fixed inset-x-0 bottom-0 z-30 flex h-16 items-center justify-around border-t border-border bg-card px-2 md:hidden">
+    {!immersive && <nav className="fixed inset-x-0 bottom-0 z-30 flex h-16 items-center justify-around border-t border-border bg-card px-2 md:hidden">
       <Link to="/" className="grid place-items-center gap-1 text-[10px] text-muted-foreground"><Gauge size={18} />Overview</Link>
       <Link to="/inbox" className="grid place-items-center gap-1 text-[10px] text-muted-foreground"><Inbox size={18} />Inbox</Link>
       <Link to="/attention" className="grid place-items-center gap-1 text-[10px] text-muted-foreground"><ListTodo size={18} />Attention</Link>
       <button onClick={() => setMenuOpen(true)} className="grid place-items-center gap-1 text-[10px] text-muted-foreground"><MoreHorizontal size={18} />More</button>
-    </nav>
+    </nav>}
     {menuOpen && (
       <div className="fixed inset-0 z-50 bg-background p-5 md:hidden">
         <div className="flex items-center justify-between"><CaryMark /><Button variant="ghost" size="icon" onClick={() => setMenuOpen(false)} aria-label="Close menu"><X /></Button></div>
