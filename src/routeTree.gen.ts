@@ -10,33 +10,141 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AttentionRouteImport } from './routes/attention'
+import { Route as BookingsRouteImport } from './routes/bookings'
+import { Route as CustomersRouteImport } from './routes/customers'
+import { Route as InboxRouteImport } from './routes/inbox'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as MoversRouteImport } from './routes/movers'
+import { Route as PaymentsRouteImport } from './routes/payments'
+import { Route as StatesRouteImport } from './routes/states'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AttentionRoute = AttentionRouteImport.update({
+  id: '/attention',
+  path: '/attention',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingsRoute = BookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomersRoute = CustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InboxRoute = InboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MoversRoute = MoversRouteImport.update({
+  id: '/movers',
+  path: '/movers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentsRoute = PaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StatesRoute = StatesRouteImport.update({
+  id: '/states',
+  path: '/states',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/attention': typeof AttentionRoute
+  '/bookings': typeof BookingsRoute
+  '/customers': typeof CustomersRoute
+  '/inbox': typeof InboxRoute
+  '/login': typeof LoginRoute
+  '/movers': typeof MoversRoute
+  '/payments': typeof PaymentsRoute
+  '/states': typeof StatesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/attention': typeof AttentionRoute
+  '/bookings': typeof BookingsRoute
+  '/customers': typeof CustomersRoute
+  '/inbox': typeof InboxRoute
+  '/login': typeof LoginRoute
+  '/movers': typeof MoversRoute
+  '/payments': typeof PaymentsRoute
+  '/states': typeof StatesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/attention': typeof AttentionRoute
+  '/bookings': typeof BookingsRoute
+  '/customers': typeof CustomersRoute
+  '/inbox': typeof InboxRoute
+  '/login': typeof LoginRoute
+  '/movers': typeof MoversRoute
+  '/payments': typeof PaymentsRoute
+  '/states': typeof StatesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/attention'
+    | '/bookings'
+    | '/customers'
+    | '/inbox'
+    | '/login'
+    | '/movers'
+    | '/payments'
+    | '/states'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/attention'
+    | '/bookings'
+    | '/customers'
+    | '/inbox'
+    | '/login'
+    | '/movers'
+    | '/payments'
+    | '/states'
+  id:
+    | '__root__'
+    | '/'
+    | '/attention'
+    | '/bookings'
+    | '/customers'
+    | '/inbox'
+    | '/login'
+    | '/movers'
+    | '/payments'
+    | '/states'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AttentionRoute: typeof AttentionRoute
+  BookingsRoute: typeof BookingsRoute
+  CustomersRoute: typeof CustomersRoute
+  InboxRoute: typeof InboxRoute
+  LoginRoute: typeof LoginRoute
+  MoversRoute: typeof MoversRoute
+  PaymentsRoute: typeof PaymentsRoute
+  StatesRoute: typeof StatesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +156,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/attention': {
+      id: '/attention'
+      path: '/attention'
+      fullPath: '/attention'
+      preLoaderRoute: typeof AttentionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bookings': {
+      id: '/bookings'
+      path: '/bookings'
+      fullPath: '/bookings'
+      preLoaderRoute: typeof BookingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/customers': {
+      id: '/customers'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof CustomersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inbox': {
+      id: '/inbox'
+      path: '/inbox'
+      fullPath: '/inbox'
+      preLoaderRoute: typeof InboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/movers': {
+      id: '/movers'
+      path: '/movers'
+      fullPath: '/movers'
+      preLoaderRoute: typeof MoversRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payments': {
+      id: '/payments'
+      path: '/payments'
+      fullPath: '/payments'
+      preLoaderRoute: typeof PaymentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/states': {
+      id: '/states'
+      path: '/states'
+      fullPath: '/states'
+      preLoaderRoute: typeof StatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AttentionRoute: AttentionRoute,
+  BookingsRoute: BookingsRoute,
+  CustomersRoute: CustomersRoute,
+  InboxRoute: InboxRoute,
+  LoginRoute: LoginRoute,
+  MoversRoute: MoversRoute,
+  PaymentsRoute: PaymentsRoute,
+  StatesRoute: StatesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
