@@ -35,9 +35,10 @@ function RefundPage() {
   const ready = word === "REFUND" && note.trim().length > 0 && refund > 0;
   const stopRefund = () => { if (timer.current) window.clearTimeout(timer.current); timer.current = null; setHolding(false); };
   const startRefund = () => {
+    console.info("refund start", ready);
     if (!ready) return;
     setHolding(true);
-    timer.current = window.setTimeout(() => { refundPayment(booking.ref, refund, note); setHolding(false); setResult(true); }, 800);
+    timer.current = window.setTimeout(() => { console.info("refund complete"); refundPayment(booking.ref, refund, note); setHolding(false); setResult(true); }, 800);
   };
 
   if (result) return <Workspace title="Refund recorded"><div className="mx-auto max-w-xl py-8"><div className="border border-border bg-card p-6"><span className="grid size-10 place-items-center rounded-full bg-live-tint text-live-foreground"><CheckCircle2 /></span><p className="micro-label mt-5">Mock refund recorded</p><h2 className="mt-1 text-2xl font-semibold">{formatMoney(refund)} is recorded against {booking.customer}.</h2><p className="mt-2 text-sm text-muted-foreground">This workspace has updated the booking, payment ledger, attention queue and notification feed. No live payment provider was contacted.</p><div className="mt-6 flex gap-2"><Button asChild><Link to="/payments">Return to payments</Link></Button><Button asChild variant="outline"><Link to="/bookings/$ref" params={{ ref: booking.ref }}>Open booking</Link></Button></div></div></div></Workspace>;
