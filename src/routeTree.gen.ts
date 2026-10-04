@@ -18,9 +18,12 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as MoversRouteImport } from './routes/movers'
 import { Route as PaymentsRouteImport } from './routes/payments'
 import { Route as StatesRouteImport } from './routes/states'
+import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as BookingsRefRouteImport } from './routes/bookings.$ref'
+import { Route as CustomersIndexRouteImport } from './routes/customers.index'
 import { Route as CustomersIdRouteImport } from './routes/customers.$id'
 import { Route as InboxSessionIdRouteImport } from './routes/inbox.$sessionId'
+import { Route as MoversIndexRouteImport } from './routes/movers.index'
 import { Route as MoversIdRouteImport } from './routes/movers.$id'
 import { Route as BookingsRefAssignRouteImport } from './routes/bookings.$ref.assign'
 import { Route as PaymentsIdRefundRouteImport } from './routes/payments.$id.refund'
@@ -70,10 +73,20 @@ const StatesRoute = StatesRouteImport.update({
   path: '/states',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookingsIndexRoute = BookingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BookingsRoute,
+} as any)
 const BookingsRefRoute = BookingsRefRouteImport.update({
   id: '/$ref',
   path: '/$ref',
   getParentRoute: () => BookingsRoute,
+} as any)
+const CustomersIndexRoute = CustomersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CustomersRoute,
 } as any)
 const CustomersIdRoute = CustomersIdRouteImport.update({
   id: '/$id',
@@ -84,6 +97,11 @@ const InboxSessionIdRoute = InboxSessionIdRouteImport.update({
   id: '/$sessionId',
   path: '/$sessionId',
   getParentRoute: () => InboxRoute,
+} as any)
+const MoversIndexRoute = MoversIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MoversRoute,
 } as any)
 const MoversIdRoute = MoversIdRouteImport.update({
   id: '/$id',
@@ -115,23 +133,26 @@ export interface FileRoutesByFullPath {
   '/customers/$id': typeof CustomersIdRoute
   '/inbox/$sessionId': typeof InboxSessionIdRoute
   '/movers/$id': typeof MoversIdRoute
+  '/bookings/': typeof BookingsIndexRoute
+  '/customers/': typeof CustomersIndexRoute
+  '/movers/': typeof MoversIndexRoute
   '/bookings/$ref/assign': typeof BookingsRefAssignRoute
   '/payments/$id/refund': typeof PaymentsIdRefundRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/attention': typeof AttentionRoute
-  '/bookings': typeof BookingsRouteWithChildren
-  '/customers': typeof CustomersRouteWithChildren
   '/inbox': typeof InboxRouteWithChildren
   '/login': typeof LoginRoute
-  '/movers': typeof MoversRouteWithChildren
   '/payments': typeof PaymentsRouteWithChildren
   '/states': typeof StatesRoute
   '/bookings/$ref': typeof BookingsRefRouteWithChildren
   '/customers/$id': typeof CustomersIdRoute
   '/inbox/$sessionId': typeof InboxSessionIdRoute
   '/movers/$id': typeof MoversIdRoute
+  '/bookings': typeof BookingsIndexRoute
+  '/customers': typeof CustomersIndexRoute
+  '/movers': typeof MoversIndexRoute
   '/bookings/$ref/assign': typeof BookingsRefAssignRoute
   '/payments/$id/refund': typeof PaymentsIdRefundRoute
 }
@@ -150,6 +171,9 @@ export interface FileRoutesById {
   '/customers/$id': typeof CustomersIdRoute
   '/inbox/$sessionId': typeof InboxSessionIdRoute
   '/movers/$id': typeof MoversIdRoute
+  '/bookings/': typeof BookingsIndexRoute
+  '/customers/': typeof CustomersIndexRoute
+  '/movers/': typeof MoversIndexRoute
   '/bookings/$ref/assign': typeof BookingsRefAssignRoute
   '/payments/$id/refund': typeof PaymentsIdRefundRoute
 }
@@ -169,23 +193,26 @@ export interface FileRouteTypes {
     | '/customers/$id'
     | '/inbox/$sessionId'
     | '/movers/$id'
+    | '/bookings/'
+    | '/customers/'
+    | '/movers/'
     | '/bookings/$ref/assign'
     | '/payments/$id/refund'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/attention'
-    | '/bookings'
-    | '/customers'
     | '/inbox'
     | '/login'
-    | '/movers'
     | '/payments'
     | '/states'
     | '/bookings/$ref'
     | '/customers/$id'
     | '/inbox/$sessionId'
     | '/movers/$id'
+    | '/bookings'
+    | '/customers'
+    | '/movers'
     | '/bookings/$ref/assign'
     | '/payments/$id/refund'
   id:
@@ -203,6 +230,9 @@ export interface FileRouteTypes {
     | '/customers/$id'
     | '/inbox/$sessionId'
     | '/movers/$id'
+    | '/bookings/'
+    | '/customers/'
+    | '/movers/'
     | '/bookings/$ref/assign'
     | '/payments/$id/refund'
   fileRoutesById: FileRoutesById
@@ -284,12 +314,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StatesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bookings/': {
+      id: '/bookings/'
+      path: '/'
+      fullPath: '/bookings/'
+      preLoaderRoute: typeof BookingsIndexRouteImport
+      parentRoute: typeof BookingsRoute
+    }
     '/bookings/$ref': {
       id: '/bookings/$ref'
       path: '/$ref'
       fullPath: '/bookings/$ref'
       preLoaderRoute: typeof BookingsRefRouteImport
       parentRoute: typeof BookingsRoute
+    }
+    '/customers/': {
+      id: '/customers/'
+      path: '/'
+      fullPath: '/customers/'
+      preLoaderRoute: typeof CustomersIndexRouteImport
+      parentRoute: typeof CustomersRoute
     }
     '/customers/$id': {
       id: '/customers/$id'
@@ -304,6 +348,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/inbox/$sessionId'
       preLoaderRoute: typeof InboxSessionIdRouteImport
       parentRoute: typeof InboxRoute
+    }
+    '/movers/': {
+      id: '/movers/'
+      path: '/'
+      fullPath: '/movers/'
+      preLoaderRoute: typeof MoversIndexRouteImport
+      parentRoute: typeof MoversRoute
     }
     '/movers/$id': {
       id: '/movers/$id'
@@ -343,10 +394,12 @@ const BookingsRefRouteWithChildren = BookingsRefRoute._addFileChildren(
 
 interface BookingsRouteChildren {
   BookingsRefRoute: typeof BookingsRefRouteWithChildren
+  BookingsIndexRoute: typeof BookingsIndexRoute
 }
 
 const BookingsRouteChildren: BookingsRouteChildren = {
   BookingsRefRoute: BookingsRefRouteWithChildren,
+  BookingsIndexRoute: BookingsIndexRoute,
 }
 
 const BookingsRouteWithChildren = BookingsRoute._addFileChildren(
@@ -355,10 +408,12 @@ const BookingsRouteWithChildren = BookingsRoute._addFileChildren(
 
 interface CustomersRouteChildren {
   CustomersIdRoute: typeof CustomersIdRoute
+  CustomersIndexRoute: typeof CustomersIndexRoute
 }
 
 const CustomersRouteChildren: CustomersRouteChildren = {
   CustomersIdRoute: CustomersIdRoute,
+  CustomersIndexRoute: CustomersIndexRoute,
 }
 
 const CustomersRouteWithChildren = CustomersRoute._addFileChildren(
@@ -377,10 +432,12 @@ const InboxRouteWithChildren = InboxRoute._addFileChildren(InboxRouteChildren)
 
 interface MoversRouteChildren {
   MoversIdRoute: typeof MoversIdRoute
+  MoversIndexRoute: typeof MoversIndexRoute
 }
 
 const MoversRouteChildren: MoversRouteChildren = {
   MoversIdRoute: MoversIdRoute,
+  MoversIndexRoute: MoversIndexRoute,
 }
 
 const MoversRouteWithChildren =

@@ -78,7 +78,7 @@ export function Workspace({ title, children }: { title: string; children: ReactN
           </button>
           <span className="hidden px-2 font-mono text-xs text-muted-foreground lg:block">{clock}</span>
           <Button variant="ghost" size="icon" aria-label="Toggle theme" onClick={() => setDark(!dark)}>{dark ? <Sun /> : <Moon />}</Button>
-          <Button variant="ghost" size="icon" aria-label="Notifications" onClick={() => mockAction("Notifications")}><Bell /></Button>
+          <Button asChild variant="ghost" size="icon" aria-label="Notifications"><Link to="/attention"><Bell /></Link></Button>
           <button onClick={() => mockAction("Profile")} className="ml-1 flex items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-muted">
             <span className="grid size-7 place-items-center rounded-full bg-muted text-xs font-bold text-muted-foreground">AO</span>
             <span className="hidden sm:block">
@@ -132,8 +132,8 @@ export function Workspace({ title, children }: { title: string; children: ReactN
                 <span className="flex-1"><span className="block font-mono text-sm font-semibold">{booking.ref}</span><span className="block text-xs text-muted-foreground">{booking.customer} · {booking.route}</span></span>
               </button>
             ))}
-            {conversations.slice(0, 2).map((conversation) => (
-              <button key={conversation.id} className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left hover:bg-muted" onClick={() => openResult("/inbox")}>
+             {conversations.slice(0, 2).map((conversation) => (
+               <button key={conversation.id} className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left hover:bg-muted" onClick={() => openResult(`/inbox/${conversation.id}`)}>
                 <span className="grid size-8 place-items-center rounded-md bg-muted text-muted-foreground"><Bot size={16} /></span>
                 <span><span className="block text-sm font-medium">Message {conversation.name}</span><span className="block text-xs text-muted-foreground">{conversation.role}</span></span>
               </button>
