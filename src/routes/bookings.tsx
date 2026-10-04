@@ -61,7 +61,7 @@ function BookingList() {
             {bookings.map((booking) => (
               <tr key={booking.ref} className="hover:bg-muted">
                 <td className="px-5 py-4">
-                  <Link to="/bookings/$ref/assign" params={{ ref: booking.ref }} className="font-mono text-xs font-semibold text-primary hover:underline">
+                  <Link to="/bookings/$ref" params={{ ref: booking.ref }} className="font-mono text-xs font-semibold text-primary hover:underline">
                     {booking.ref}
                   </Link>
                   <p className="mt-1 text-xs text-muted-foreground">{booking.customer}</p>
