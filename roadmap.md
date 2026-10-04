@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Publish a consolidated plan of every unbuilt, incomplete, and non-functional dashboard feature.
 - [ ] Execute dashboard completion plan: repair shared states/metadata, complete inbox, operational workspaces, access/performance, and QA evidence.
 - [ ] Produce the mandatory route and interaction audit in AUDIT.md.
 - [ ] Rebuild records, work, money, operations, and system routes to satisfy the completion brief.
