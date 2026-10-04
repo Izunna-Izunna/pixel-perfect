@@ -7,7 +7,8 @@ export type ToolExecution = { id: string; conversationId: string; toolId: string
 type Notification = { id: string; title: string; detail: string; href: string; read: boolean; createdAt: string };
 export type AuditEvent = { id: string; title: string; detail: string; createdAt: string; href?: string };
 export type Reminder = { id: string; bookingRef: string; audience: "customer" | "mover"; scheduledFor: string; status: "scheduled" | "sent" | "cancelled"; label: string };
-export type Ticket = { id: string; bookingRef: string; customer: string; title: string; status: "open" | "investigating" | "resolved"; priority: "high" | "normal"; detail: string };
+export type TicketNote = { id: string; author: string; body: string; createdAt: string };
+export type Ticket = { id: string; bookingRef: string; customer: string; title: string; status: "open" | "investigating" | "resolved"; priority: "high" | "normal"; category: "payment" | "completion" | "dispute" | "other"; detail: string; owner: string | null; createdAt: string; notes: TicketNote[] };
 export type TeamMember = { id: string; name: string; email: string; role: "admin" | "operator" | "viewer"; status: "active" | "invited" };
 type OperationsStore = {
   bookings: Booking[];
@@ -42,6 +43,10 @@ type OperationsStore = {
   sendReminder: (id: string) => void;
   toggleScoutPaused: () => void;
   resolveTicket: (id: string) => void;
+  setTicketStatus: (id: string, status: Ticket["status"]) => void;
+  assignTicket: (id: string, owner: string | null) => void;
+  addTicketNote: (id: string, body: string) => void;
+  createTicket: (ticket: Pick<Ticket, "bookingRef" | "customer" | "title" | "priority" | "category" | "detail">) => void;
   markNotificationRead: (id: string) => void;
   markAllNotificationsRead: () => void;
   resetCustomerChat: (customerId: string) => void;
@@ -69,8 +74,9 @@ const initialReminders: Reminder[] = [
   { id: "r3", bookingRef: "CARY-8271", audience: "customer", scheduledFor: "2026-10-05T12:00:00Z", status: "scheduled", label: "Payment follow-up" },
 ];
 const initialTickets: Ticket[] = [
-  { id: "TKT-104", bookingRef: "CARY-8279", customer: "Rhodri Hughes", title: "Completion confirmation missing", status: "open", priority: "high", detail: "Move time has passed. Confirm completion before releasing the mover payout." },
-  { id: "TKT-105", bookingRef: "CARY-8271", customer: "Bethan Lewis", title: "Payment link follow-up", status: "investigating", priority: "normal", detail: "Customer asked for a new mock payment link after the earlier link expired." },
+  { id: "TKT-104", bookingRef: "CARY-8279", customer: "Rhodri Hughes", title: "Completion confirmation missing", status: "open", priority: "high", category: "completion", detail: "Move time has passed. Confirm completion before releasing the mover payout.", owner: null, createdAt: "2026-10-04T11:27:00Z", notes: [] },
+  { id: "TKT-105", bookingRef: "CARY-8271", customer: "Bethan Lewis", title: "Payment link follow-up", status: "investigating", priority: "normal", category: "payment", detail: "Customer asked for a new mock payment link after the earlier link expired.", owner: "Owen Davies", createdAt: "2026-10-04T12:10:00Z", notes: [{ id: "note-105", author: "Owen Davies", body: "Checking the existing payment record before preparing a replacement.", createdAt: "2026-10-04T12:24:00Z" }] },
+  { id: "TKT-103", bookingRef: "CARY-8291", customer: "Elin Roberts", title: "Access note clarified", status: "resolved", priority: "normal", category: "other", detail: "Building access instructions were confirmed with the customer before the mover arrived.", owner: "Amelia Morgan", createdAt: "2026-10-04T09:05:00Z", notes: [{ id: "note-103", author: "Amelia Morgan", body: "Customer confirmed the concierge can hold the entrance open.", createdAt: "2026-10-04T09:16:00Z" }] },
 ];
 const initialTeam: TeamMember[] = [
   { id: "team-amelia", name: "Amelia Morgan", email: "amelia@cary.test", role: "admin", status: "active" },
@@ -157,7 +163,11 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
   const sendPaymentLink = useCallback((bookingRef: string) => { setNotifications((items) => [{ id: `n-payment-${Date.now()}`, title: "Mock payment link recorded", detail: `${bookingRef} payment-link follow-up recorded without contacting a payment provider.`, href: `/bookings/${bookingRef}`, read: false, createdAt: now }, ...items]); recordAudit("Mock payment link recorded", bookingRef, `/bookings/${bookingRef}`); }, [recordAudit]);
   const sendReminder = useCallback((id: string) => { setReminders((items) => items.map((item) => item.id === id ? { ...item, status: "sent" } : item)); const reminder = reminders.find((item) => item.id === id); if (reminder) recordAudit("Mock reminder sent", `${reminder.label} for ${reminder.bookingRef}.`, `/bookings/${reminder.bookingRef}`); }, [recordAudit, reminders]);
   const toggleScoutPaused = useCallback(() => { setScoutPaused((paused) => !paused); recordAudit("Global Scout status changed", scoutPaused ? "Scout resumed in mock mode." : "Scout paused in mock mode."); }, [recordAudit, scoutPaused]);
-  const resolveTicket = useCallback((id: string) => { setTickets((items) => items.map((ticket) => ticket.id === id ? { ...ticket, status: "resolved" } : ticket)); recordAudit("Ticket resolved", id, "/escalations"); }, [recordAudit]);
+  const setTicketStatus = useCallback((id: string, status: Ticket["status"]) => { setTickets((items) => items.map((ticket) => ticket.id === id ? { ...ticket, status } : ticket)); recordAudit(`Ticket ${status}`, id, "/escalations"); }, [recordAudit]);
+  const resolveTicket = useCallback((id: string) => setTicketStatus(id, "resolved"), [setTicketStatus]);
+  const assignTicket = useCallback((id: string, owner: string | null) => { setTickets((items) => items.map((ticket) => ticket.id === id ? { ...ticket, owner } : ticket)); recordAudit("Ticket owner changed", `${id} ${owner ? `assigned to ${owner}` : "unassigned"}.`, "/escalations"); }, [recordAudit]);
+  const addTicketNote = useCallback((id: string, body: string) => { const trimmed = body.trim(); if (!trimmed) return; const note: TicketNote = { id: `ticket-note-${Date.now()}`, author: "Amelia Owen", body: trimmed, createdAt: now }; setTickets((items) => items.map((ticket) => ticket.id === id ? { ...ticket, notes: [...ticket.notes, note] } : ticket)); recordAudit("Ticket note added", id, "/escalations"); }, [recordAudit]);
+  const createTicket = useCallback((ticket: Pick<Ticket, "bookingRef" | "customer" | "title" | "priority" | "category" | "detail">) => { const record: Ticket = { ...ticket, id: `TKT-${100 + tickets.length + 4}`, status: "open", owner: null, createdAt: now, notes: [] }; setTickets((items) => [record, ...items]); recordAudit("Ticket created", `${record.id} for ${record.bookingRef}.`, "/escalations"); }, [recordAudit, tickets.length]);
   const markNotificationRead = useCallback((id: string) => setNotifications((items) => items.map((item) => item.id === id ? { ...item, read: true } : item)), []);
   const markAllNotificationsRead = useCallback(() => setNotifications((items) => items.map((item) => ({ ...item, read: true }))), []);
   const resetCustomerChat = useCallback((customerId: string) => {
@@ -196,7 +206,7 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
     setToolExecutions((items) => [record, ...items]);
     recordAudit(`Scout tool: ${record.toolName}`, `${record.inputSummary} · ${record.outcome}`, `/inbox/${record.conversationId}`);
   }, [recordAudit]);
-  const value = useMemo(() => ({ bookings, conversations, attention, customers, movers, messages, notifications, audit, reminders, tickets, team, quotes, toolExecutions, scoutPaused, sendMessage, sendTemplate, setTakeover, markRead, resolveAttention, assignMover, releasePayout, refundPayment, createBooking, addMover, addCustomerNote, setMoverDocumentStatus, completeBooking, redispatchBooking, sendPaymentLink, sendReminder, toggleScoutPaused, resolveTicket, markNotificationRead, markAllNotificationsRead, resetCustomerChat, resetAllChatHistory, inviteTeamMember, recordQuote, preparePayment, executeScoutTool }), [bookings, conversations, attention, customers, movers, messages, notifications, audit, reminders, tickets, team, quotes, toolExecutions, scoutPaused, sendMessage, sendTemplate, setTakeover, markRead, resolveAttention, assignMover, releasePayout, refundPayment, createBooking, addMover, addCustomerNote, setMoverDocumentStatus, completeBooking, redispatchBooking, sendPaymentLink, sendReminder, toggleScoutPaused, resolveTicket, markNotificationRead, markAllNotificationsRead, resetCustomerChat, resetAllChatHistory, inviteTeamMember, recordQuote, preparePayment, executeScoutTool]);
+  const value = useMemo(() => ({ bookings, conversations, attention, customers, movers, messages, notifications, audit, reminders, tickets, team, quotes, toolExecutions, scoutPaused, sendMessage, sendTemplate, setTakeover, markRead, resolveAttention, assignMover, releasePayout, refundPayment, createBooking, addMover, addCustomerNote, setMoverDocumentStatus, completeBooking, redispatchBooking, sendPaymentLink, sendReminder, toggleScoutPaused, resolveTicket, setTicketStatus, assignTicket, addTicketNote, createTicket, markNotificationRead, markAllNotificationsRead, resetCustomerChat, resetAllChatHistory, inviteTeamMember, recordQuote, preparePayment, executeScoutTool }), [bookings, conversations, attention, customers, movers, messages, notifications, audit, reminders, tickets, team, quotes, toolExecutions, scoutPaused, sendMessage, sendTemplate, setTakeover, markRead, resolveAttention, assignMover, releasePayout, refundPayment, createBooking, addMover, addCustomerNote, setMoverDocumentStatus, completeBooking, redispatchBooking, sendPaymentLink, sendReminder, toggleScoutPaused, resolveTicket, setTicketStatus, assignTicket, addTicketNote, createTicket, markNotificationRead, markAllNotificationsRead, resetCustomerChat, resetAllChatHistory, inviteTeamMember, recordQuote, preparePayment, executeScoutTool]);
   return <OperationsContext.Provider value={value}>{children}</OperationsContext.Provider>;
 }
 export function useOperations() { const context = useContext(OperationsContext); if (!context) throw new Error("OperationsProvider is required"); return context; }
