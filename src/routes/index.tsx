@@ -5,7 +5,6 @@ import { activity, attentionItems, bookings } from "@/features/core/mock-data";
 import { formatLondon, relativeLondon } from "@/lib/time";
 import { formatMoney } from "@/lib/format";
 import { ChartCard, Sparkline, BarList } from "@/features/core/chart-kit";
-import { StatusBadge } from "@/features/core/status-badge";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [{ title: "Overview — Cary Mission Control" }, { name: "description", content: "Live operations dashboard for Cary removals across Cardiff and South Wales." }, { property: "og:title", content: "Overview — Cary Mission Control" }, { property: "og:description", content: "Live operations dashboard for Cary removals across Cardiff and South Wales." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }), component: Overview,
