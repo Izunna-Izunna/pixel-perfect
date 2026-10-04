@@ -12,3 +12,4 @@
 - Keep operational time rendering in `src/lib/time.ts` using Europe/London; this preserves DST-safe display rules across the app.
 - Keep mock operational fixtures in `src/features/core/mock-data.ts`; this allows visual workflows to work before the external API is connected.
 - Keep all interface colours in `src/styles.css` semantic tokens so the restrained operational palette remains consistent across themes.
+- Treat operational actions that change assignment, money, or outbound messaging as dedicated routes when specified; preserve the full flow state in the URL where practical.
