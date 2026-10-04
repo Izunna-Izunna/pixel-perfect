@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { Bell, ChevronDown, Command, Gauge, Inbox, ListTodo, MapPin, Menu, MoreHorizontal, Moon, PanelLeft, PanelLeftClose, Search, Settings, Sun, Users, WalletCards, X } from "lucide-react";
+import { Bell, Bot, ChevronDown, Command, Gauge, Inbox, ListTodo, MapPin, Menu, MoreHorizontal, Moon, PanelLeft, PanelLeftClose, Search, Settings, ShieldCheck, Sun, Users, WalletCards, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { bookings, conversations } from "./mock-data";

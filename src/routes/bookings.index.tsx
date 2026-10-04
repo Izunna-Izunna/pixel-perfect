@@ -21,7 +21,8 @@ export const Route = createFileRoute("/bookings/")({
 function BookingList() {
   const [query, setQuery] = useState(""); const [tab, setTab] = useState("All");
   const tabStatus: Record<string, string[]> = { All: [], Intake: ["draft"], Quoting: ["dispatched", "quotes_received", "quote_accepted"], "Awaiting payment": ["payment_pending"], Booked: ["booked"], "In transit": ["in_transit"] };
-  const filtered = bookings.filter((booking) => `${booking.ref} ${booking.customer} ${booking.route}`.toLowerCase().includes(query.toLowerCase()) && (!tabStatus[tab].length || tabStatus[tab].includes(booking.status)));
+  const allowedStatuses = tabStatus[tab] ?? [];
+  const filtered = bookings.filter((booking) => `${booking.ref} ${booking.customer} ${booking.route}`.toLowerCase().includes(query.toLowerCase()) && (!allowedStatuses.length || allowedStatuses.includes(booking.status)));
   return (
     <Workspace title="Bookings">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
@@ -34,8 +35,8 @@ function BookingList() {
       
       <div className="mt-6 flex flex-wrap gap-2">
         <Button size="sm" variant={tab === "All" ? "default" : "outline"} onClick={() => setTab("All")}>All</Button>
-        {["Intake", "Quoting", "Awaiting payment", "Booked", "In transit"].map((tab) => (
-          <Button key={tab} variant={tab === tab ? "outline" : "default"} size="sm" onClick={() => setTab(tab)}>{tab}</Button>
+        {["Intake", "Quoting", "Awaiting payment", "Booked", "In transit"].map((item) => (
+          <Button key={item} variant={tab === item ? "default" : "outline"} size="sm" onClick={() => setTab(item)}>{item}</Button>
         ))}
       </div>
       

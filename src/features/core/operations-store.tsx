@@ -39,7 +39,8 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
     const trimmed = body.trim();
     if (!trimmed && !mediaName) return;
     const id = `${sessionId}-${Date.now()}`;
-    setMessages((current) => ({ ...current, [sessionId]: [...(current[sessionId] ?? []), { id, sender: "operator", body: trimmed || `Attached ${mediaName}`, createdAt: now, delivery: "sent", mediaName }] }));
+    const newMessage: ChatMessage = mediaName ? { id, sender: "operator", body: trimmed || `Attached ${mediaName}`, createdAt: now, delivery: "sent", mediaName } : { id, sender: "operator", body: trimmed, createdAt: now, delivery: "sent" };
+    setMessages((current) => ({ ...current, [sessionId]: [...(current[sessionId] ?? []), newMessage] }));
     setConversations((items) => items.map((item) => item.id === sessionId ? { ...item, preview: trimmed || `Attachment: ${mediaName ?? "file"}`, at: "Now", unread: false } : item));
   }, []);
   const sendTemplate = useCallback((sessionId: string) => {
