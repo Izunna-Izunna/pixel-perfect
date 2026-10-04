@@ -161,7 +161,7 @@ function Overview() {
                 <p className="text-sm font-semibold">Needs attention</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">Four items waiting for you</p>
               </div>
-              <Link to="/attention" className="text-xs font-semibold text-primary hover:underline">View all</Link>
+              <Link to="/attention" search={{ view: "all" }} className="text-xs font-semibold text-primary hover:underline">View all</Link>
             </div>
             <div className="divide-y divide-border">
               {attention.slice(0, 3).map((item) => (

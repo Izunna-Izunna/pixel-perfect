@@ -28,3 +28,7 @@
 - The mover assignment control now follows a two-step safety path: operators choose a verified mover, see their recorded availability, then continue to dispatch rather than assigning directly from chat.
 - Desktop keeps the selected conversation in the existing three-pane workspace; phone layouts open the dedicated full-screen conversation route, with its composer and context controls visible.
 - The inbox message surface now uses the installed chat primitives, while retaining Cary’s existing visual language and mock-backed operation state.
+
+## Attention queue pass
+- Needs Attention is the single operational queue: scheduled reminders are presented in a shareable queue view, while `/reminders` redirects there to preserve existing links.
+- Recording a reminder send updates mock operational state only; it does not claim a message was delivered externally.

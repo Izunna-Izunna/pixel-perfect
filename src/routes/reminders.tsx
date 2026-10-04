@@ -1,8 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check, Clock3, Send } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useOperations } from "@/features/core/operations-store";
-import { Workspace } from "@/features/core/workspace";
-import { formatLondon } from "@/lib/time";
-export const Route = createFileRoute("/reminders")({ head: () => ({ meta: [{ title: "Reminders — Cary Mission Control" }, { name: "description", content: "Mock scheduled operational reminders." }, { property: "og:title", content: "Reminders — Cary Mission Control" }, { property: "og:description", content: "Mock scheduled operational reminders." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }), component: Reminders });
-function Reminders() { const { reminders, sendReminder } = useOperations(); return <Workspace title="Reminders"><div className="mx-auto max-w-4xl"><p className="micro-label">Scheduled work · mock only</p><h2 className="mt-2 text-3xl font-semibold">Keep every move on track.</h2><div className="panel mt-6 overflow-hidden"><table className="w-full text-left text-sm"><thead className="border-b border-border bg-muted/50 text-xs text-muted-foreground"><tr><th className="p-4">Reminder</th><th className="p-4">Booking</th><th className="p-4">Scheduled</th><th className="p-4">Action</th></tr></thead><tbody>{reminders.map((reminder) => <tr key={reminder.id} className="border-b border-border last:border-0"><td className="p-4"><p className="font-semibold">{reminder.label}</p><p className="mt-1 text-xs text-muted-foreground">To {reminder.audience}</p></td><td className="p-4"><Link to="/bookings/$ref" params={{ ref: reminder.bookingRef }} className="font-mono text-primary">{reminder.bookingRef}</Link></td><td className="p-4 text-xs">{formatLondon(reminder.scheduledFor)}</td><td className="p-4">{reminder.status === "sent" ? <span className="flex items-center gap-1 text-xs text-live-foreground"><Check size={14} />Recorded</span> : <Button size="sm" onClick={() => sendReminder(reminder.id)}><Send size={14} />Record send</Button>}</td></tr>)}</tbody></table></div><p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground"><Clock3 size={14} />All sends are recorded in mock state; no external message queue is connected.</p></div></Workspace>; }
+import { createFileRoute, redirect } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/reminders")({
+  beforeLoad: () => { throw redirect({ to: "/attention", search: { view: "reminders" } }); },
+});
