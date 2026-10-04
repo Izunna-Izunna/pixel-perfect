@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button";
 import { approvedTemplates, renderTemplate, scoutTools } from "@/features/inbox/operations-catalog";
 import { bookings, movers } from "@/features/core/mock-data";
+import { formatLondon } from "@/lib/time";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/inbox")({
