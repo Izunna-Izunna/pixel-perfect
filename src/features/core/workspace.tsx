@@ -1,13 +1,13 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { Bell, Bot, ChevronDown, Command, FileClock, Gauge, HeartPulse, Inbox, ListTodo, MapPin, Menu, MoreHorizontal, Moon, PanelLeft, PanelLeftClose, Search, Settings, ShieldCheck, Sun, Ticket, Users, WalletCards, X } from "lucide-react";
+import { Bell, Bot, ChevronDown, Command, Gauge, HeartPulse, Inbox, ListTodo, MapPin, Menu, MoreHorizontal, Moon, PanelLeft, PanelLeftClose, Search, Settings, ShieldCheck, Sun, Ticket, Users, WalletCards, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { londonClock } from "@/lib/time";
 import { useOperations } from "./operations-store";
 
 const groups = [
-  { title: "Work", items: [{ label: "Overview", to: "/", icon: Gauge }, { label: "Inbox", to: "/inbox", icon: Inbox, count: 3 }, { label: "Needs attention", to: "/attention", icon: ListTodo, count: 4 }, { label: "Reminders", to: "/reminders", icon: FileClock }, { label: "Tickets", to: "/escalations", icon: Ticket }] },
+  { title: "Work", items: [{ label: "Overview", to: "/", icon: Gauge }, { label: "Inbox", to: "/inbox", icon: Inbox, count: 3 }, { label: "Needs attention", to: "/attention", icon: ListTodo, count: 4 }, { label: "Tickets", to: "/escalations", icon: Ticket }] },
   { title: "Records", items: [{ label: "Bookings", to: "/bookings", icon: MapPin }, { label: "Movers", to: "/movers", icon: Users }, { label: "Customers", to: "/customers", icon: Users }] },
   { title: "Money", items: [{ label: "Payments", to: "/payments", icon: WalletCards }, { label: "System", to: "/system", icon: HeartPulse }, { label: "Settings", to: "/settings/operations", icon: Settings }] },
 ];
