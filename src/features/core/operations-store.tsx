@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 import { attentionItems as seedAttention, bookings as seedBookings, conversations as seedConversations, type AttentionItem, type Booking, type Conversation } from "./mock-data";
 
-export type ChatMessage = { id: string; sender: "customer" | "mover" | "scout" | "operator"; body: string; createdAt: string; delivery: "sent" | "delivered" | "read"; mediaName?: string };
+export type ChatMessage = { id: string; sender: "customer" | "mover" | "scout" | "operator"; body: string; createdAt: string; delivery: "sent" | "delivered" | "read"; mediaName?: string; templateName?: string };
 type Notification = { id: string; title: string; detail: string; href: string; read: boolean; createdAt: string };
 type OperationsStore = {
   bookings: Booking[];
@@ -10,7 +10,7 @@ type OperationsStore = {
   messages: Record<string, ChatMessage[]>;
   notifications: Notification[];
   sendMessage: (sessionId: string, body: string, mediaName?: string) => void;
-  sendTemplate: (sessionId: string) => void;
+  sendTemplate: (sessionId: string, templateName: string, body: string) => void;
   setTakeover: (sessionId: string, isPaused: boolean, note: string) => void;
   markRead: (sessionId: string) => void;
   resolveAttention: (id: string) => void;
@@ -48,11 +48,13 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
     setMessages((current) => ({ ...current, [sessionId]: [...(current[sessionId] ?? []), newMessage] }));
     setConversations((items) => items.map((item) => item.id === sessionId ? { ...item, preview: trimmed || `Attachment: ${mediaName ?? "file"}`, at: "Now", unread: false } : item));
   }, []);
-  const sendTemplate = useCallback((sessionId: string) => {
-    const conversation = conversations.find((item) => item.id === sessionId);
-    if (!conversation) return;
-    sendMessage(sessionId, `Hello ${conversation.name.split(" ")[0]}, we are checking availability for your move.`);
-  }, [conversations, sendMessage]);
+  const sendTemplate = useCallback((sessionId: string, templateName: string, body: string) => {
+    const trimmed = body.trim();
+    if (!trimmed) return;
+    const id = `${sessionId}-template-${Date.now()}`;
+    setMessages((current) => ({ ...current, [sessionId]: [...(current[sessionId] ?? []), { id, sender: "operator", body: trimmed, createdAt: now, delivery: "sent", templateName }] }));
+    setConversations((items) => items.map((item) => item.id === sessionId ? { ...item, preview: `Template: ${templateName}`, at: "Now", unread: false } : item));
+  }, []);
   const setTakeover = useCallback((sessionId: string, isPaused: boolean, note: string) => {
     setConversations((items) => items.map((item) => item.id === sessionId ? { ...item, takeover: isPaused } : item));
     setMessages((current) => ({ ...current, [sessionId]: [...(current[sessionId] ?? []), { id: `${sessionId}-takeover-${Date.now()}`, sender: "operator", body: isPaused ? `Scout paused. Handover note: ${note}` : "Scout resumed automatic replies.", createdAt: now, delivery: "read" }] }));
