@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Activity, ChevronRight, CircleAlert, Clock3, MapPin, MoreHorizontal } from "lucide-react";
-import { toast } from "sonner";
+import { Activity, ChevronRight, CircleAlert, Clock3, MapPin } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Workspace } from "@/features/core/workspace";
-import { activity, attentionItems, bookings } from "@/features/core/mock-data";
+import { activity } from "@/features/core/mock-data";
+import { useOperations } from "@/features/core/operations-store";
 import { formatLondon, relativeLondon } from "@/lib/time";
 import { formatMoney } from "@/lib/format";
 import { ChartCard, Sparkline, BarList } from "@/features/core/chart-kit";
@@ -25,23 +27,27 @@ const kpis = [
 ];
 
 function Overview() {
-  const mockAction = (name: string) => toast.success(`${name} feature coming soon!`);
+  const [range, setRange] = useState<"today" | "week" | "month">("today");
+  const { attention, bookings, resolveAttention } = useOperations();
+  const visibleBookings = useMemo(() => range === "today" ? bookings.filter((booking) => booking.moveAt.startsWith("2026-10-04")) : range === "week" ? bookings.slice(0, 4) : bookings, [bookings, range]);
+  const rangeLabel = range === "today" ? "Today" : range === "week" ? "7 days" : "30 days";
+  const attentionAction = (item: (typeof attention)[number]) => {
+    if (item.action === "Redispatch") return <Button asChild size="sm" variant="link" className="h-auto p-0"><Link to="/bookings/$ref/assign" params={{ ref: "CARY-8284" }}>Assign mover</Link></Button>;
+    if (item.action === "Review") return <Button asChild size="sm" variant="link" className="h-auto p-0"><Link to="/movers/$id" params={{ id: "megan-price" }}>Review documents</Link></Button>;
+    return <Button size="sm" variant="link" className="h-auto p-0" onClick={() => resolveAttention(item.id)}>{item.action}</Button>;
+  };
 
   return (
     <Workspace title="Overview">
       <section className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="micro-label">Sunday, 4 October</p>
+          <p className="micro-label">Sunday, 4 October · {rangeLabel}</p>
           <h2 className="mt-1 text-4xl font-semibold leading-none sm:text-5xl">Good afternoon, Amelia.</h2>
           <p className="mt-3 text-sm text-muted-foreground">
             8 moves today. <span className="font-medium text-foreground">1 needs your attention.</span>
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => mockAction("Today")} className="rounded-md border border-foreground bg-foreground px-3 py-2 text-sm font-medium text-primary-foreground">Today</button>
-          <button onClick={() => mockAction("7 days")} className="rounded-md border border-border bg-card px-3 py-2 text-sm text-muted-foreground">7 days</button>
-          <button onClick={() => mockAction("30 days")} className="rounded-md border border-border bg-card px-3 py-2 text-sm text-muted-foreground">30 days</button>
-        </div>
+        <div className="flex items-center gap-2">{(["today", "week", "month"] as const).map((period) => <Button key={period} size="sm" variant={range === period ? "default" : "outline"} onClick={() => setRange(period)}>{period === "today" ? "Today" : period === "week" ? "7 days" : "30 days"}</Button>)}</div>
       </section>
 
       <section className="mb-5 overflow-hidden rounded-lg border border-primary/20 bg-live-tint">
@@ -89,7 +95,7 @@ function Overview() {
                 <p className="text-sm font-semibold">Live operations</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">Today’s routes across Cardiff & South Wales</p>
               </div>
-              <button onClick={() => mockAction("Next 24h")} className="rounded-md border border-border px-2.5 py-1.5 text-xs font-medium">Next 24h</button>
+              <Button size="sm" variant={range === "today" ? "default" : "outline"} onClick={() => setRange("today")}>Next 24h</Button>
             </div>
             <div className="relative min-h-80 overflow-hidden bg-muted p-5">
               <div className="absolute inset-5 border border-border" />
@@ -121,8 +127,8 @@ function Overview() {
               <Link to="/bookings" className="text-xs font-semibold text-primary hover:underline">View bookings</Link>
             </div>
             <div className="divide-y divide-border">
-              {bookings.slice(0, 4).map((booking) => (
-                <Link key={booking.ref} to="/bookings" className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-muted">
+              {visibleBookings.slice(0, 4).map((booking) => (
+                <Link key={booking.ref} to="/bookings/$ref" params={{ ref: booking.ref }} preload="intent" className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-muted">
                   <span className={booking.status === "in_transit" ? "grid size-8 place-items-center rounded-full bg-live-tint text-live-foreground" : "grid size-8 place-items-center rounded-full bg-muted text-muted-foreground"}>
                     <MapPin size={15} />
                   </span>
@@ -152,7 +158,7 @@ function Overview() {
               <Link to="/attention" className="text-xs font-semibold text-primary hover:underline">View all</Link>
             </div>
             <div className="divide-y divide-border">
-              {attentionItems.slice(0, 3).map((item) => (
+              {attention.slice(0, 3).map((item) => (
                 <div className="p-4" key={item.id}>
                   <div className="flex gap-3">
                     <span className={item.tone === "danger" ? "mt-0.5 text-danger" : item.tone === "warning" ? "mt-0.5 text-warning" : "mt-0.5 text-muted-foreground"}>
@@ -163,7 +169,7 @@ function Overview() {
                       <p className="mt-1 text-xs leading-5 text-muted-foreground">{item.detail}</p>
                       <div className="mt-3 flex items-center justify-between">
                         <span className="text-xs text-muted-foreground"><Clock3 className="mr-1 inline size-3" />{item.waiting}</span>
-                        <button onClick={() => mockAction(item.action)} className="text-xs font-semibold text-primary hover:underline">{item.action}</button>
+                        {attentionAction(item)}
                       </div>
                     </div>
                   </div>
@@ -177,7 +183,7 @@ function Overview() {
                 <p className="text-sm font-semibold">Recent activity</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">A calm log of today’s work</p>
               </div>
-              <MoreHorizontal size={18} className="text-muted-foreground cursor-pointer" onClick={() => mockAction("Activity options")} />
+              <Link to="/notifications" className="text-xs font-semibold text-primary hover:underline">View updates</Link>
             </div>
             <ol className="mt-5 space-y-4">
               {activity.map((item, index) => (
