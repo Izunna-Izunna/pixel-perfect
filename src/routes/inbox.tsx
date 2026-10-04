@@ -1,5 +1,5 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
-import { Search } from "lucide-react";
+import { CalendarClock, FileText, ReceiptText, Search, Sparkles } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Workspace } from "@/features/core/workspace";
@@ -24,12 +24,15 @@ function InboxLayout() { return <Outlet />; }
 
 export function InboxPage() {
   const { conversations, markRead } = useOperations();
-  const [filter, setFilter] = useState<"all" | "needs" | "taken">("all"); const [query, setQuery] = useState(""); const [assignOpen, setAssignOpen] = useState(false);
+  const [filter, setFilter] = useState<"all" | "needs" | "taken" | "customer" | "mover">("all"); const [query, setQuery] = useState(""); const [assignOpen, setAssignOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = conversations.find((conversation) => conversation.id === selectedId) ?? conversations[0];
   const filtered = conversations.filter((conversation) => {
     const matches = `${conversation.name} ${conversation.role} ${conversation.preview}`.toLowerCase().includes(query.toLowerCase());
-    return matches && (filter === "all" || filter === "taken" ? filter !== "taken" || conversation.takeover : conversation.unread || conversation.window === "closed");
+    if (!matches || filter === "all") return matches;
+    if (filter === "taken") return conversation.takeover;
+    if (filter === "needs") return conversation.unread || conversation.window === "closed";
+    return conversation.role.toLowerCase() === filter;
   });
 
   if (!selected) return (
@@ -55,7 +58,7 @@ export function InboxPage() {
           <div className="flex border-b border-border px-2">
             <button onClick={() => setFilter("all")} className={`${filter === "all" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs`}>All</button>
             <button onClick={() => setFilter("needs")} className={`${filter === "needs" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs`}>Needs action</button>
-            <button onClick={() => setFilter("taken")} className={`${filter === "taken" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs`}>Taken over</button>
+            <button onClick={() => setFilter("taken")} className={`${filter === "taken" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs`}>Taken over</button><button onClick={() => setFilter("customer")} className={`${filter === "customer" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs`}>Customers</button><button onClick={() => setFilter("mover")} className={`${filter === "mover" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs`}>Movers</button>
           </div>
           <div className="divide-y divide-border">
             {filtered.map((conversation) => (
@@ -69,7 +72,7 @@ export function InboxPage() {
                 }}
               />
             ))}{!filtered.length && <p className="p-5 text-sm text-muted-foreground">No conversations match this view.</p>}
-          </div>
+          </div><div className="mt-6 border-t border-border pt-5"><p className="micro-label">Scout action palette</p><p className="mt-2 text-xs text-muted-foreground">Operational shortcuts for this thread.</p><div className="mt-3 grid gap-2"><Button variant="outline" size="sm" className="justify-start" onClick={() => setAssignOpen(true)}><Sparkles />Assign mover</Button><Button asChild variant="outline" size="sm" className="justify-start"><Link to="/quotes/new"><ReceiptText />Create quote</Link></Button><Button asChild variant="outline" size="sm" className="justify-start"><Link to="/reminders"><CalendarClock />Schedule reminder</Link></Button><Button asChild variant="outline" size="sm" className="justify-start"><Link to="/bookings"><FileText />Open booking board</Link></Button></div></div>
         </aside>
         
         <div className="hidden lg:flex">

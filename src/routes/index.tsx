@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Activity, ChevronRight, CircleAlert, Clock3, MapPin } from "lucide-react";
+import { Activity, ChevronRight, CircleAlert, Clock3, MapPin, MessageCircle, RefreshCw, UserPlus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Workspace } from "@/features/core/workspace";
-import { activity } from "@/features/core/mock-data";
 import { useOperations } from "@/features/core/operations-store";
 import { formatLondon, relativeLondon } from "@/lib/time";
 import { formatMoney } from "@/lib/format";
@@ -19,18 +18,22 @@ export const Route = createFileRoute("/")({
   component: Overview,
 });
 
-const kpis = [
-  { label: "GMV", value: "£4,862.00", change: "+12.8%", detail: "vs previous 7 days", tone: "good" },
-  { label: "Moves today", value: "8", change: "2 in transit", detail: "3 still to start", tone: "neutral" },
-  { label: "Scout at work", value: "14", change: "6 active chats", detail: "18 messages in last hour", tone: "live" },
-  { label: "Open escalations", value: "2", change: "1 new", detail: "Oldest open for 42m", tone: "alert" },
-];
-
 function Overview() {
-  const [range, setRange] = useState<"today" | "week" | "month">("today");
-  const { attention, bookings, resolveAttention } = useOperations();
+  const [range, setRange] = useState<"today" | "week" | "month">("today"); const [chartMode, setChartMode] = useState<"trips" | "volume">("trips");
+  const { attention, bookings, conversations, audit, resolveAttention } = useOperations();
   const visibleBookings = useMemo(() => range === "today" ? bookings.filter((booking) => booking.moveAt.startsWith("2026-10-04")) : range === "week" ? bookings.slice(0, 4) : bookings, [bookings, range]);
   const rangeLabel = range === "today" ? "Today" : range === "week" ? "7 days" : "30 days";
+  const activeBookings = bookings.filter((booking) => ["booked", "in_transit", "dispatched", "quotes_received"].includes(booking.status));
+  const completedToday = bookings.filter((booking) => booking.status === "completed" && booking.moveAt.startsWith("2026-10-04")).length;
+  const grossVolume = bookings.reduce((sum, booking) => sum + booking.total, 0);
+  const feeRevenue = bookings.filter((booking) => booking.total > 0).length * 7;
+  const kpis = [
+    { label: "Active bookings", value: String(activeBookings.length), change: `${bookings.filter((booking) => booking.status === "in_transit").length} in transit`, detail: "Moves currently moving", tone: "live" },
+    { label: "Completed today", value: String(completedToday), change: `${bookings.filter((booking) => booking.status === "booked").length} still booked`, detail: "London-day completion count", tone: "good" },
+    { label: "Customer volume", value: formatMoney(grossVolume), change: `${bookings.length} total moves`, detail: "Customer totals, Cary fee included", tone: "neutral" },
+    { label: "Cary fee revenue", value: formatMoney(feeRevenue), change: "£7 per paid move", detail: "Current booking ledger", tone: "good" },
+  ];
+  const tripRows = useMemo(() => [{ label: "Today", value: bookings.filter((booking) => booking.moveAt.startsWith("2026-10-04")).length, display: String(bookings.filter((booking) => booking.moveAt.startsWith("2026-10-04")).length) }, { label: "Next 3 days", value: bookings.filter((booking) => booking.moveAt >= "2026-10-05" && booking.moveAt < "2026-10-08").length, display: String(bookings.filter((booking) => booking.moveAt >= "2026-10-05" && booking.moveAt < "2026-10-08").length) }, { label: "Completed", value: bookings.filter((booking) => booking.status === "completed").length, display: String(bookings.filter((booking) => booking.status === "completed").length) }], [bookings]);
   const attentionAction = (item: (typeof attention)[number]) => {
     if (item.action === "Redispatch" && item.bookingRef) return <Button asChild size="sm" variant="link" className="h-auto p-0"><Link to="/bookings/$ref/assign" params={{ ref: item.bookingRef }}>Assign mover</Link></Button>;
     if (item.action === "Review" && item.moverId) return <Button asChild size="sm" variant="link" className="h-auto p-0"><Link to="/movers/$id" params={{ id: item.moverId }}>Review documents</Link></Button>;
@@ -44,9 +47,7 @@ function Overview() {
         <div>
           <p className="micro-label">Sunday, 4 October · {rangeLabel}</p>
           <h2 className="mt-1 text-4xl font-semibold leading-none sm:text-5xl">Good afternoon, Amelia.</h2>
-          <p className="mt-3 text-sm text-muted-foreground">
-            8 moves today. <span className="font-medium text-foreground">1 needs your attention.</span>
-          </p>
+          <p className="mt-3 text-sm text-muted-foreground">{visibleBookings.length} moves in view. <span className="font-medium text-foreground">{attention.length} need your attention.</span></p>
         </div>
         <div className="flex items-center gap-2">{(["today", "week", "month"] as const).map((period) => <Button key={period} size="sm" variant={range === period ? "default" : "outline"} onClick={() => setRange(period)}>{period === "today" ? "Today" : period === "week" ? "7 days" : "30 days"}</Button>)}</div>
       </section>
@@ -148,6 +149,10 @@ function Overview() {
               ))}
             </div>
           </div>
+          <div className="panel overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4"><div><p className="text-sm font-semibold">Trip volume & customer volume</p><p className="mt-0.5 text-xs text-muted-foreground">Derived from the current booking ledger</p></div><div className="flex gap-1"><Button size="sm" variant={chartMode === "trips" ? "default" : "outline"} onClick={() => setChartMode("trips")}>Trips</Button><Button size="sm" variant={chartMode === "volume" ? "default" : "outline"} onClick={() => setChartMode("volume")}>Volume</Button></div></div>
+            <div className="p-5"><BarList rows={chartMode === "trips" ? tripRows : [{ label: "Active moves", value: activeBookings.reduce((sum, booking) => sum + booking.total, 0), display: formatMoney(activeBookings.reduce((sum, booking) => sum + booking.total, 0)) }, { label: "All customer volume", value: grossVolume, display: formatMoney(grossVolume) }, { label: "Cary fee revenue", value: feeRevenue, display: formatMoney(feeRevenue) }]} /></div>
+          </div>
         </div>
         <aside className="space-y-6">
           <div className="panel">
@@ -187,7 +192,7 @@ function Overview() {
               <Link to="/notifications" className="text-xs font-semibold text-primary hover:underline">View updates</Link>
             </div>
             <ol className="mt-5 space-y-4">
-              {activity.map((item, index) => (
+              {[...audit.map((item) => item.title), "Payment received for CARY-8291", "Dai Evans marked as on the way", "Scout collected access details from James Patel", "Megan Price uploaded an insurance certificate"].slice(0, 4).map((item, index) => (
                 <li key={item} className="flex gap-3">
                   <span className={index === 0 ? "mt-1 size-2 rounded-full bg-live" : "mt-1 size-2 rounded-full bg-border"} />
                   <p className="text-xs leading-5 text-muted-foreground">{item}<span className="ml-1.5 text-foreground">· {index * 9 + 6}m</span></p>
@@ -201,6 +206,7 @@ function Overview() {
           </div>
         </aside>
       </section>
+      <section className="panel mt-6 overflow-x-auto"><div className="flex items-center justify-between border-b border-border px-5 py-4"><div><p className="text-sm font-semibold">Live trip board</p><p className="mt-0.5 text-xs text-muted-foreground">Active and upcoming moves</p></div><Link to="/bookings" className="text-xs font-semibold text-primary hover:underline">Open booking board</Link></div><table className="min-w-[780px] w-full text-left text-sm"><thead className="border-b border-border bg-muted/50 text-xs text-muted-foreground"><tr><th className="px-5 py-3 font-medium">Ref</th><th className="px-5 py-3 font-medium">Customer</th><th className="px-5 py-3 font-medium">Mover</th><th className="px-5 py-3 font-medium">Status</th><th className="px-5 py-3 font-medium">Route</th><th className="px-5 py-3 font-medium">Fee</th><th className="px-5 py-3 font-medium">Actions</th></tr></thead><tbody className="divide-y divide-border">{bookings.filter((booking) => ["booked", "in_transit", "payment_pending", "quotes_received"].includes(booking.status)).slice(0, 5).map((booking) => <tr key={booking.ref} className="hover:bg-muted"><td className="px-5 py-4"><Link className="font-mono text-xs font-semibold text-primary hover:underline" to="/bookings/$ref" params={{ ref: booking.ref }}>{booking.ref}</Link></td><td className="px-5 py-4 text-xs">{booking.customer}</td><td className="px-5 py-4 text-xs">{booking.mover ?? "Searching movers"}</td><td className="px-5 py-4 text-xs capitalize">{booking.status.replace("_", " ")}</td><td className="px-5 py-4 text-xs">{booking.route}</td><td className="px-5 py-4 font-mono text-xs">{booking.total ? formatMoney(7) : "—"}</td><td className="px-5 py-4"><div className="flex gap-1"><Button asChild size="sm" variant="outline"><Link to="/bookings/$ref/assign" params={{ ref: booking.ref }}><UserPlus />Assign</Link></Button><Button asChild size="icon" variant="ghost" aria-label={`Message ${booking.customer}`}><Link to="/inbox/$sessionId" params={{ sessionId: booking.customerId === "elin-roberts" ? "s1" : booking.customerId === "sian-morgan" ? "s3" : "s1" }}><MessageCircle /></Link></Button><Button asChild size="icon" variant="ghost" aria-label={`Redispatch ${booking.ref}`}><Link to="/bookings/$ref/assign" params={{ ref: booking.ref }}><RefreshCw /></Link></Button></div></td></tr>)}</tbody></table></section>
       
       <section className="mt-6 grid gap-6 xl:grid-cols-2">
         <ChartCard title="Bookings per day" subtitle="Number of bookings created in the current period">

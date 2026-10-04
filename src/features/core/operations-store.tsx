@@ -6,6 +6,7 @@ type Notification = { id: string; title: string; detail: string; href: string; r
 export type AuditEvent = { id: string; title: string; detail: string; createdAt: string; href?: string };
 export type Reminder = { id: string; bookingRef: string; audience: "customer" | "mover"; scheduledFor: string; status: "scheduled" | "sent" | "cancelled"; label: string };
 export type Ticket = { id: string; bookingRef: string; customer: string; title: string; status: "open" | "investigating" | "resolved"; priority: "high" | "normal"; detail: string };
+export type TeamMember = { id: string; name: string; email: string; role: "admin" | "operator" | "viewer"; status: "active" | "invited" };
 type OperationsStore = {
   bookings: Booking[];
   conversations: Conversation[];
@@ -17,6 +18,7 @@ type OperationsStore = {
   audit: AuditEvent[];
   reminders: Reminder[];
   tickets: Ticket[];
+  team: TeamMember[];
   scoutPaused: boolean;
   sendMessage: (sessionId: string, body: string, mediaName?: string) => void;
   sendTemplate: (sessionId: string, templateName: string, body: string) => void;
@@ -38,6 +40,9 @@ type OperationsStore = {
   resolveTicket: (id: string) => void;
   markNotificationRead: (id: string) => void;
   markAllNotificationsRead: () => void;
+  resetCustomerChat: (customerId: string) => void;
+  resetAllChatHistory: () => void;
+  inviteTeamMember: (email: string, role: TeamMember["role"]) => void;
 };
 
 const OperationsContext = createContext<OperationsStore | null>(null);
@@ -60,6 +65,11 @@ const initialTickets: Ticket[] = [
   { id: "TKT-104", bookingRef: "CARY-8279", customer: "Rhodri Hughes", title: "Completion confirmation missing", status: "open", priority: "high", detail: "Move time has passed. Confirm completion before releasing the mover payout." },
   { id: "TKT-105", bookingRef: "CARY-8271", customer: "Bethan Lewis", title: "Payment link follow-up", status: "investigating", priority: "normal", detail: "Customer asked for a new mock payment link after the earlier link expired." },
 ];
+const initialTeam: TeamMember[] = [
+  { id: "team-amelia", name: "Amelia Morgan", email: "amelia@cary.test", role: "admin", status: "active" },
+  { id: "team-owen", name: "Owen Davies", email: "owen@cary.test", role: "operator", status: "active" },
+  { id: "team-ivy", name: "Ivy Jones", email: "ivy@cary.test", role: "viewer", status: "active" },
+];
 
 export function OperationsProvider({ children }: { children: ReactNode }) {
   const [bookings, setBookings] = useState(seedBookings);
@@ -72,6 +82,7 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
   const [audit, setAudit] = useState<AuditEvent[]>([]);
   const [reminders, setReminders] = useState(initialReminders);
   const [tickets, setTickets] = useState(initialTickets);
+  const [team, setTeam] = useState(initialTeam);
   const [scoutPaused, setScoutPaused] = useState(false);
   const recordAudit = useCallback((title: string, detail: string, href?: string) => setAudit((items) => [{ id: `audit-${Date.now()}`, title, detail, ...(href ? { href } : {}), createdAt: now }, ...items]), []);
   const markRead = useCallback((sessionId: string) => setConversations((items) => items.map((item) => item.id === sessionId ? { ...item, unread: false } : item)), []);
@@ -140,7 +151,26 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
   const resolveTicket = useCallback((id: string) => { setTickets((items) => items.map((ticket) => ticket.id === id ? { ...ticket, status: "resolved" } : ticket)); recordAudit("Ticket resolved", id, "/escalations"); }, [recordAudit]);
   const markNotificationRead = useCallback((id: string) => setNotifications((items) => items.map((item) => item.id === id ? { ...item, read: true } : item)), []);
   const markAllNotificationsRead = useCallback(() => setNotifications((items) => items.map((item) => ({ ...item, read: true }))), []);
-  const value = useMemo(() => ({ bookings, conversations, attention, customers, movers, messages, notifications, audit, reminders, tickets, scoutPaused, sendMessage, sendTemplate, setTakeover, markRead, resolveAttention, assignMover, releasePayout, refundPayment, createBooking, addMover, addCustomerNote, setMoverDocumentStatus, completeBooking, redispatchBooking, sendPaymentLink, sendReminder, toggleScoutPaused, resolveTicket, markNotificationRead, markAllNotificationsRead }), [bookings, conversations, attention, customers, movers, messages, notifications, audit, reminders, tickets, scoutPaused, sendMessage, sendTemplate, setTakeover, markRead, resolveAttention, assignMover, releasePayout, refundPayment, createBooking, addMover, addCustomerNote, setMoverDocumentStatus, completeBooking, redispatchBooking, sendPaymentLink, sendReminder, toggleScoutPaused, resolveTicket, markNotificationRead, markAllNotificationsRead]);
+  const resetCustomerChat = useCallback((customerId: string) => {
+    const session = conversations.find((item) => item.contactId === customerId);
+    if (!session) return;
+    setMessages((items) => ({ ...items, [session.id]: [] }));
+    setConversations((items) => items.map((item) => item.id === session.id ? { ...item, preview: "Conversation cleared by an operator", unread: false, at: "Now" } : item));
+    recordAudit("Customer chat history cleared", customerId, `/customers/${customerId}`);
+  }, [conversations, recordAudit]);
+  const resetAllChatHistory = useCallback(() => {
+    setMessages(Object.fromEntries(conversations.map((conversation) => [conversation.id, []])));
+    setConversations((items) => items.map((item) => ({ ...item, preview: "Conversation cleared by an administrator", unread: false, at: "Now" })));
+    recordAudit("All chat histories cleared", "Administrator reset all conversation histories.", "/settings/operations");
+  }, [conversations, recordAudit]);
+  const inviteTeamMember = useCallback((email: string, role: TeamMember["role"]) => {
+    const safeEmail = email.trim().toLowerCase();
+    if (!safeEmail || team.some((member) => member.email === safeEmail)) return;
+    const id = `team-${Date.now()}`;
+    setTeam((items) => [...items, { id, name: safeEmail.split("@")[0] || "New teammate", email: safeEmail, role, status: "invited" }]);
+    recordAudit("Team invite created", `${safeEmail} invited as ${role}.`, "/settings/operations");
+  }, [recordAudit, team]);
+  const value = useMemo(() => ({ bookings, conversations, attention, customers, movers, messages, notifications, audit, reminders, tickets, team, scoutPaused, sendMessage, sendTemplate, setTakeover, markRead, resolveAttention, assignMover, releasePayout, refundPayment, createBooking, addMover, addCustomerNote, setMoverDocumentStatus, completeBooking, redispatchBooking, sendPaymentLink, sendReminder, toggleScoutPaused, resolveTicket, markNotificationRead, markAllNotificationsRead, resetCustomerChat, resetAllChatHistory, inviteTeamMember }), [bookings, conversations, attention, customers, movers, messages, notifications, audit, reminders, tickets, team, scoutPaused, sendMessage, sendTemplate, setTakeover, markRead, resolveAttention, assignMover, releasePayout, refundPayment, createBooking, addMover, addCustomerNote, setMoverDocumentStatus, completeBooking, redispatchBooking, sendPaymentLink, sendReminder, toggleScoutPaused, resolveTicket, markNotificationRead, markAllNotificationsRead, resetCustomerChat, resetAllChatHistory, inviteTeamMember]);
   return <OperationsContext.Provider value={value}>{children}</OperationsContext.Provider>;
 }
 export function useOperations() { const context = useContext(OperationsContext); if (!context) throw new Error("OperationsProvider is required"); return context; }
