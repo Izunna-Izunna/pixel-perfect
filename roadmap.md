@@ -9,4 +9,6 @@
 - [ ] Maintain COMPLETION_GATE.md and COMPONENT_CHECKLIST.md as every required route and control is implemented and verified.
 - [x] Implemented derived overview intelligence, booking controls, customer history controls, inbox action palette, and operational settings.
 - [x] Incorporated the Cary Operations & Scout Engine blueprint into the template, quote, dispatch and Scout-tool workflows.
-- [ ] Consolidate inbox templates, quick replies, and Scout tools into expandable right-panel sections.
+- [x] Consolidate inbox templates, quick replies, and Scout tools into expandable right-panel sections.
+- [ ] Rework the inbox layout and responsive behavior; audit and repair every visible inbox control.
+- [ ] Add an in-chat mover picker with availability confirmation before assignment.
