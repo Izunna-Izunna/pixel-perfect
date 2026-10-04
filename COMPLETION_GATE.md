@@ -11,16 +11,16 @@ Status legend: Not started · In progress · Done · Done (UI complete, backend 
 - [ ] /escalations — Not started
 - [ ] /escalations/:ticketId — Not started
 - [ ] /bookings — In progress
-- [ ] /bookings/:ref — Not started
+- [x] /bookings/:ref — Done (UI complete, mock data)
 - [ ] /bookings/new — Not started
 - [ ] /bookings/:ref/assign — In progress
 - [ ] /bookings/:ref/reschedule — Not started
 - [ ] /bookings/:ref/cancel — Not started
 - [ ] /movers — In progress
 - [ ] /movers/new — Not started
-- [ ] /movers/:id — Not started
+- [x] /movers/:id — Done (UI complete, mock data)
 - [ ] /customers — In progress
-- [ ] /customers/:id — Not started
+- [x] /customers/:id — Done (UI complete, mock data)
 - [ ] /payments — In progress
 - [ ] /payments/:id/refund — In progress
 - [ ] /quotes/new — Not started
@@ -51,7 +51,7 @@ Status legend: Not started · In progress · Done · Done (UI complete, backend 
 
 ## Dialogs and sheets
 - [ ] Standard confirmation
-- [ ] Money confirmation (typed word + hold)
+- [x] Money confirmation (typed word + hold) — Refund and payout release
 - [ ] Takeover / resume Scout
 - [ ] Phone reveal / idle timeout / session expired / kill switch
 - [ ] Privacy and customer actions
@@ -66,7 +66,7 @@ Status legend: Not started · In progress · Done · Done (UI complete, backend 
 - [ ] Validated text, phone, postcode, money and London date/time inputs
 - [ ] Selectors, comboboxes, chips, vehicle list, uploads and steppers
 - [ ] Toasts, banners, states, offline, progress, tooltips and popovers
-- [ ] Badge, avatar, tabs, pagination and mobile action bar
+- [x] Badge, avatar, tabs, pagination and mobile action bar — Record profiles
 - [ ] Data table, stats, activity, notes, key-value, chart kit, map and move timeline
 
 ## Evidence required

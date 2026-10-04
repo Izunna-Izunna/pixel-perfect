@@ -4,6 +4,7 @@
 - The current build defaults to mock data until `VITE_API_MODE=live` is connected to the documented admin API.
 - The app treats all operational timestamps as UTC inputs and formats them through `Europe/London`.
 - The initial role is an operator in mock mode; high-risk controls remain deliberately unavailable in the foundation.
+- Customer, mover, booking, chat, refund and payout-release flows now use local mock state. They demonstrate the intended protected confirmations, but Stripe settlement and audit persistence require the live API.
 
 ## Design rationale
 - The workspace uses a calm, high-density instrument-panel layout: a neutral canvas and flat surfaces, with green limited to live and positive outcomes, amber for waiting states, and red for failures or risk.
@@ -15,4 +16,5 @@
 - Initial foundation: desktop-first grid with responsive sidebar-to-mobile navigation behaviour and touch-ready controls.
 - Completion pass: reviewed the overview and inbox at 1440px and the direct conversation route at 390px; no console errors or horizontal overflow were observed.
 - Completion pass: removed the lavender/gradient treatment, rebuilt the map as a restrained greyscale surface, and made the desktop Inbox a fixed three-pane console with direct chat routes.
+- Records pass: rebuilt customer, mover and booking profiles around the shared fixtures; the mobile conversation route is a full-height, back-navigable chat surface rather than a list-only card.
 - Performance and accessibility measurements are pending a complete feature pass.
