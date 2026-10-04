@@ -50,7 +50,7 @@ export function InboxPage() {
   const selectedMover = selected?.role === "Mover" ? movers.find((item) => item.id === selected.contactId) : undefined;
   const matchingTemplates = approvedTemplates.filter((template) => template.target === selected?.role || template.target === "Admin Ops").filter((template) => template.name.toLowerCase().includes(templateQuery.toLowerCase()));
   const selectedTemplate = approvedTemplates.find((template) => template.id === selectedTemplateId) ?? matchingTemplates[0];
-  const templateValues = { ...templateDefaults(selected ?? conversations[0], selectedBooking, selectedMover), ...templateParameters };
+  const templateValues = { ...templateDefaults(selected ?? { id: "", contactId: "", name: "", role: "Customer", preview: "", at: "", unread: false, takeover: false, window: "open" }, selectedBooking, selectedMover), ...templateParameters };
   const renderedTemplate = selectedTemplate ? renderTemplate(selectedTemplate, templateValues) : "";
   const templateReady = Boolean(selectedTemplate?.parameters.every((parameter) => templateValues[parameter.key]?.trim()));
   const toolGroups = scoutTools.reduce<Record<string, Array<(typeof scoutTools)[number]>>>((groups, tool) => { const group = tool.group; (groups[group] ??= []).push(tool); return groups; }, {});
