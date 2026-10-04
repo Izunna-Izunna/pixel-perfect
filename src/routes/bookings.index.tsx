@@ -2,11 +2,11 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Workspace } from "@/features/core/workspace";
-import { bookings } from "@/features/core/mock-data";
 import { formatLondon } from "@/lib/time";
 import { formatMoney } from "@/lib/format";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { useOperations } from "@/features/core/operations-store";
 
 export const Route = createFileRoute("/bookings/")({
   head: () => ({
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/bookings/")({
 });
 
 function BookingList() {
-  const [query, setQuery] = useState(""); const [tab, setTab] = useState("All");
+  const [query, setQuery] = useState(""); const [tab, setTab] = useState("All"); const { bookings, createBooking } = useOperations();
   const tabStatus: Record<string, string[]> = { All: [], Intake: ["draft"], Quoting: ["dispatched", "quotes_received", "quote_accepted"], "Awaiting payment": ["payment_pending"], Booked: ["booked"], "In transit": ["in_transit"] };
   const allowedStatuses = tabStatus[tab] ?? [];
   const filtered = bookings.filter((booking) => `${booking.ref} ${booking.customer} ${booking.route}`.toLowerCase().includes(query.toLowerCase()) && (!allowedStatuses.length || allowedStatuses.includes(booking.status)));
@@ -30,7 +30,7 @@ function BookingList() {
           <p className="micro-label">Records</p>
           <h2 className="mt-1 text-2xl font-semibold">Bookings <span className="font-mono text-base text-muted-foreground">{bookings.length}</span></h2>
         </div>
-        <Button variant="outline" title="Booking creation is awaiting the connected operations service" disabled><Plus />Create booking</Button>
+        <Button variant="outline" onClick={createBooking}><Plus />Create mock booking</Button>
       </div>
       
       <div className="mt-6 flex flex-wrap gap-2">

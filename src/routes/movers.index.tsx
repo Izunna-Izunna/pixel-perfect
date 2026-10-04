@@ -1,9 +1,9 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowUpRight, MessageCircle, ShieldCheck, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { conversations, movers } from "@/features/core/mock-data";
 import { StatusBadge } from "@/features/core/status-badge";
 import { Workspace } from "@/features/core/workspace";
+import { useOperations } from "@/features/core/operations-store";
 
 export const Route = createFileRoute("/movers/")({
   head: () => ({ meta: [{ title: "Movers — Cary Mission Control" }, { name: "description", content: "Verified mover records for Cary operations." }, { property: "og:title", content: "Movers — Cary Mission Control" }, { property: "og:description", content: "Verified mover records for Cary operations." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
@@ -11,6 +11,7 @@ export const Route = createFileRoute("/movers/")({
 });
 
 function MoversPage() {
+  const { conversations, movers, addMover } = useOperations();
   return (
     <Workspace title="Movers">
       <div className="flex items-end justify-between gap-4">
@@ -18,7 +19,7 @@ function MoversPage() {
           <p className="micro-label">Records</p>
           <h2 className="mt-1 text-2xl font-semibold">Movers <span className="font-mono text-base text-muted-foreground">{movers.length}</span></h2>
         </div>
-        <Button disabled title="Adding a mover needs the connected back office">Add mover</Button>
+        <Button onClick={addMover}>Add mock mover</Button>
       </div>
 
       <div className="panel mt-6 overflow-hidden">
