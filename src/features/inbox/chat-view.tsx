@@ -44,6 +44,6 @@ export function ChatView({ conversation, fullScreen = false, onAssignMover, onCo
 
 function templateDefaults(conversation: Conversation, booking: typeof bookings[number] | undefined, mover: typeof movers[number] | undefined): Record<string, string> {
   const parts = booking?.route.split(" → ") ?? []; const pickup = parts[0] ?? ""; const dropoff = parts[1] ?? ""; const moveTime = booking ? formatLondon(booking.moveAt) : ""; const customer = booking?.customer ?? (conversation.role === "Customer" ? conversation.name : ""); const customerPhone = "Customer phone available to operators";
-  return { "1": conversation.role === "Mover" ? (mover?.businessName ?? conversation.name) : customer.split(" ")[0] ?? "", "2": booking?.ref ?? "", "3": pickup, "4": dropoff, "5": moveTime, "6": booking?.items ?? "", "7": "Driver + 1 helper", "8": "Access details confirmed in booking", "9": "", };
+  return { "1": customer.split(" ")[0] ?? "", "2": pickup, "3": dropoff, "4": mover?.businessName ?? "Verified Cary mover", "5": "", "6": moveTime, "7": booking?.items ?? "", "8": "Driver + 1 helper", "9": customerPhone, "10": booking?.ref ?? "", "11": conversation.role === "Mover" ? (mover?.businessName ?? conversation.name) : "", };
 }
 function formatMessageTime(timestamp: string) { return new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" }).format(new Date(timestamp)); }
