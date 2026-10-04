@@ -34,7 +34,11 @@ export function ChatView({ conversation, fullScreen = false }: { conversation: C
   const takeover = conversation.takeover;
   const selectedTemplate = templates.find((template) => template.id === selectedTemplateId) ?? templates[0] ?? { id: "unavailable", name: "Unavailable", role: "Internal", fields: [], body: "No template is available." };
   const matchingTemplates = templates.filter((template) => template.name.toLowerCase().includes(templateQuery.toLowerCase()) && (template.role === conversation.role || template.role === "Internal"));
-  const templateBody = selectedTemplate.body.replace("{{name}}", conversation.name.split(" ")[0]).replace("{{booking}}", booking?.ref ?? "CARY-XXXX").replace("{{pickup}}", booking?.route.split(" → ")[0] ?? "pickup").replace("{{dropoff}}", booking?.route.split(" → ")[1] ?? "drop-off").replace("{{moveTime}}", booking ? formatLondon(booking.moveAt) : "the agreed time").replace("{{payout}}", booking?.total ? `£${(booking.total - 7).toFixed(2)}` : "the agreed amount").replace("{{quote}}", booking?.total ? `£${booking.total.toFixed(2)}` : "the quoted price").replace("{{mover}}", booking?.mover ?? "your chosen mover").replace("{{urgency}}", "operator").replace("{{description}}", "Please review the conversation.");
+  const firstName = conversation.name.split(" ")[0] ?? conversation.name;
+  const routeParts = booking?.route.split(" → ") ?? [];
+  const pickup = routeParts[0] ?? "pickup";
+  const dropoff = routeParts[1] ?? "drop-off";
+  const templateBody = selectedTemplate.body.replace("{{name}}", firstName).replace("{{booking}}", booking?.ref ?? "CARY-XXXX").replace("{{pickup}}", pickup).replace("{{dropoff}}", dropoff).replace("{{moveTime}}", booking ? formatLondon(booking.moveAt) : "the agreed time").replace("{{payout}}", booking?.total ? `£${(booking.total - 7).toFixed(2)}` : "the agreed amount").replace("{{quote}}", booking?.total ? `£${booking.total.toFixed(2)}` : "the quoted price").replace("{{mover}}", booking?.mover ?? "your chosen mover").replace("{{urgency}}", "operator").replace("{{description}}", "Please review the conversation.");
 
   useEffect(() => { markRead(conversation.id); endRef.current?.scrollIntoView({ block: "end" }); inputRef.current?.focus(); }, [conversation.id, markRead, thread.length]);
   function send(event?: FormEvent<HTMLFormElement>) { event?.preventDefault(); if (closed) { setTemplatePicker(true); return; } sendMessage(conversation.id, message, attachment || undefined); setMessage(""); setAttachment(""); inputRef.current?.focus(); }
