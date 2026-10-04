@@ -25,7 +25,8 @@ function InboxLayout() { return <Outlet />; }
 export function InboxPage() {
   const { conversations, markRead } = useOperations();
   const [filter, setFilter] = useState<"all" | "needs" | "taken">("all"); const [query, setQuery] = useState(""); const [assignOpen, setAssignOpen] = useState(false);
-  const selected = conversations[0];
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const selected = conversations.find((conversation) => conversation.id === selectedId) ?? conversations[0];
   const filtered = conversations.filter((conversation) => {
     const matches = `${conversation.name} ${conversation.role} ${conversation.preview}`.toLowerCase().includes(query.toLowerCase());
     return matches && (filter === "all" || filter === "taken" ? filter !== "taken" || conversation.takeover : conversation.unread || conversation.window === "closed");
@@ -58,28 +59,15 @@ export function InboxPage() {
           </div>
           <div className="divide-y divide-border">
             {filtered.map((conversation) => (
-              <Link 
-                to="/inbox/$sessionId" 
-                params={{ sessionId: conversation.id }} 
-                className={`flex w-full gap-3 p-4 text-left ${selected.id === conversation.id ? "bg-accent" : "hover:bg-muted"}`} 
-                key={conversation.id} onClick={() => markRead(conversation.id)}
-              >
-                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-muted text-xs font-bold text-muted-foreground">
-                  {conversation.name.split(" ").map((name) => name[0]).join("")}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="flex items-center justify-between gap-2">
-                    <span className="truncate text-sm font-semibold">{conversation.name}</span>
-                    <span className="text-[10px] text-muted-foreground">{conversation.at}</span>
-                  </span>
-                  <span className="mt-0.5 flex items-center gap-1">
-                    <span className="text-[10px] text-muted-foreground">{conversation.role}</span>
-                    {conversation.takeover && <StatusBadge status="operator" label="Operator" />}
-                  </span>
-                  <span className="mt-1 block truncate text-xs text-muted-foreground">{conversation.preview}</span>
-                </span>
-                {conversation.unread && <span className="mt-2 size-2 rounded-full bg-danger" />}
-              </Link>
+              <ConversationRow
+                conversation={conversation}
+                selected={selected.id === conversation.id}
+                key={conversation.id}
+                onSelect={() => {
+                  setSelectedId(conversation.id);
+                  markRead(conversation.id);
+                }}
+              />
             ))}{!filtered.length && <p className="p-5 text-sm text-muted-foreground">No conversations match this view.</p>}
           </div>
         </aside>
@@ -105,4 +93,38 @@ export function InboxPage() {
       <Dialog open={assignOpen} onOpenChange={setAssignOpen}><DialogContent><DialogHeader><DialogTitle>Assign a mover</DialogTitle><DialogDescription>Open the dispatch workspace to compare verified candidates, payout and customer update before confirming.</DialogDescription></DialogHeader><DialogFooter><Button variant="outline" onClick={() => setAssignOpen(false)}>Cancel</Button><Button asChild><Link to="/bookings/$ref/assign" params={{ ref: "CARY-8291" }}>Open assignment</Link></Button></DialogFooter></DialogContent></Dialog>
     </Workspace>
   );
+}
+
+function ConversationRow({
+  conversation,
+  selected,
+  onSelect,
+}: {
+  conversation: ReturnType<typeof useOperations>["conversations"][number];
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const rowClass = `w-full gap-3 p-4 text-left ${selected ? "bg-accent" : "hover:bg-muted"}`;
+  const content = <>
+    <span className="grid size-9 shrink-0 place-items-center rounded-full bg-muted text-xs font-bold text-muted-foreground">
+      {conversation.name.split(" ").map((name) => name[0]).join("")}
+    </span>
+    <span className="min-w-0 flex-1">
+      <span className="flex items-center justify-between gap-2">
+        <span className="truncate text-sm font-semibold">{conversation.name}</span>
+        <span className="text-[10px] text-muted-foreground">{conversation.at}</span>
+      </span>
+      <span className="mt-0.5 flex items-center gap-1">
+        <span className="text-[10px] text-muted-foreground">{conversation.role}</span>
+        {conversation.takeover && <StatusBadge status="operator" label="Operator" />}
+      </span>
+      <span className="mt-1 block truncate text-xs text-muted-foreground">{conversation.preview}</span>
+    </span>
+    {conversation.unread && <span className="mt-2 size-2 rounded-full bg-danger" />}
+  </>;
+
+  return <>
+    <button type="button" className={`hidden lg:flex ${rowClass}`} onClick={onSelect}>{content}</button>
+    <Link to="/inbox/$sessionId" params={{ sessionId: conversation.id }} className={`flex lg:hidden ${rowClass}`} onClick={onSelect}>{content}</Link>
+  </>;
 }
