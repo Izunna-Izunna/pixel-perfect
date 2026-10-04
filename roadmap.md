@@ -15,3 +15,4 @@
 - [x] Reworked the inbox layout and responsive behavior; repaired and verified the visible inbox controls.
 - [x] Added an in-chat mover picker with availability confirmation before assignment.
 - [x] Completed the current inbox workflow verification and repair pass.
+- [x] Rebuilt Needs Attention as the single action queue and consolidated reminders into its shareable views.

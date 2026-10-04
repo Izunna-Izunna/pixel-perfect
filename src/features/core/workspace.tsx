@@ -99,7 +99,7 @@ export function Workspace({ title, children, immersive = false }: { title: strin
     {!immersive && <nav className="fixed inset-x-0 bottom-0 z-30 flex h-16 items-center justify-around border-t border-border bg-card px-2 md:hidden">
       <Link to="/" className="grid place-items-center gap-1 text-[10px] text-muted-foreground"><Gauge size={18} />Overview</Link>
       <Link to="/inbox" className="grid place-items-center gap-1 text-[10px] text-muted-foreground"><Inbox size={18} />Inbox</Link>
-      <Link to="/attention" className="grid place-items-center gap-1 text-[10px] text-muted-foreground"><ListTodo size={18} />Attention</Link>
+      <Link to="/attention" search={{ view: "all" }} className="grid place-items-center gap-1 text-[10px] text-muted-foreground"><ListTodo size={18} />Attention</Link>
       <button onClick={() => setMenuOpen(true)} className="grid place-items-center gap-1 text-[10px] text-muted-foreground"><MoreHorizontal size={18} />More</button>
     </nav>}
     {menuOpen && (
