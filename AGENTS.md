@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep operational time rendering in `src/lib/time.ts` using Europe/London; this preserves DST-safe display rules across the app.
+- Keep mock operational fixtures in `src/features/core/mock-data.ts`; this allows visual workflows to work before the external API is connected.
