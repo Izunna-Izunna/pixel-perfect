@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { ChatView } from "@/features/inbox/chat-view";
 import { StatusBadge } from "@/features/core/status-badge";
 import { useOperations } from "@/features/core/operations-store";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/inbox")({
   head: () => ({
@@ -22,7 +24,7 @@ function InboxLayout() { return <Outlet />; }
 
 export function InboxPage() {
   const { conversations, markRead } = useOperations();
-  const [filter, setFilter] = useState<"all" | "needs" | "taken">("all"); const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<"all" | "needs" | "taken">("all"); const [query, setQuery] = useState(""); const [assignOpen, setAssignOpen] = useState(false);
   const selected = conversations[0];
   const filtered = conversations.filter((conversation) => {
     const matches = `${conversation.name} ${conversation.role} ${conversation.preview}`.toLowerCase().includes(query.toLowerCase());
@@ -83,7 +85,7 @@ export function InboxPage() {
         </aside>
         
         <div className="hidden lg:flex">
-          <ChatView conversation={selected} />
+          <ChatView conversation={selected} onAssignMover={() => setAssignOpen(true)} />
         </div>
         
         <aside className="hidden border-l border-border p-5 lg:block">
@@ -100,6 +102,7 @@ export function InboxPage() {
           </div>
         </aside>
       </div>
+      <Dialog open={assignOpen} onOpenChange={setAssignOpen}><DialogContent><DialogHeader><DialogTitle>Assign a mover</DialogTitle><DialogDescription>Open the dispatch workspace to compare verified candidates, payout and customer update before confirming.</DialogDescription></DialogHeader><DialogFooter><Button variant="outline" onClick={() => setAssignOpen(false)}>Cancel</Button><Button asChild><Link to="/bookings/$ref/assign" params={{ ref: "CARY-8291" }}>Open assignment</Link></Button></DialogFooter></DialogContent></Dialog>
     </Workspace>
   );
 }
