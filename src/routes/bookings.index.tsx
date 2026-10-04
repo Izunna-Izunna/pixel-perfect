@@ -64,7 +64,7 @@ function BookingList() {
             {filtered.map((booking) => (
               <tr key={booking.ref} className="hover:bg-muted">
                 <td className="px-5 py-4">
-                  <Link to="/bookings/$ref" params={{ ref: booking.ref }} className="font-mono text-xs font-semibold text-primary hover:underline">
+                  <Link to="/bookings/$ref" params={{ ref: booking.ref }} search={{}} className="font-mono text-xs font-semibold text-primary hover:underline">
                     {booking.ref}
                   </Link>
                   <p className="mt-1 text-xs text-muted-foreground">{booking.customer}</p>
@@ -89,7 +89,7 @@ function BookingList() {
                   </span>
                 </td>
                 <td className="px-5 py-4">
-                  <div className="flex gap-1"><Button asChild size="sm" variant="outline"><Link to="/bookings/$ref/assign" params={{ ref: booking.ref }}>{booking.mover ? "Reassign" : "Assign"}</Link></Button><Button asChild size="icon" variant="ghost" aria-label={`Message ${booking.customer}`}><Link to="/inbox/$sessionId" params={{ sessionId: booking.customerId === "sian-morgan" ? "s3" : booking.customerId === "elin-roberts" ? "s1" : "s1" }}><MessageCircle /></Link></Button></div>
+                  <div className="flex gap-1"><Button asChild size="sm" variant="outline"><Link to="/bookings/$ref/assign" params={{ ref: booking.ref }} search={{}}>{booking.mover ? "Reassign" : "Assign"}</Link></Button><Button asChild size="icon" variant="ghost" aria-label={`Message ${booking.customer}`}><Link to="/inbox/$sessionId" params={{ sessionId: booking.customerId === "sian-morgan" ? "s3" : booking.customerId === "elin-roberts" ? "s1" : "s1" }}><MessageCircle /></Link></Button></div>
                 </td>
               </tr>
             ))}{!filtered.length && <tr><td className="px-5 py-12 text-center text-sm text-muted-foreground" colSpan={7}>No bookings match this view.</td></tr>}

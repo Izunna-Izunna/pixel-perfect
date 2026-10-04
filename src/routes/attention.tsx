@@ -41,9 +41,9 @@ function AttentionPage() {
                 <span className="whitespace-nowrap text-xs text-muted-foreground"><Clock3 className="mr-1 inline size-3" />{item.waiting}</span>
                 {item.action === "Redispatch" && item.bookingRef ? (
                   <Button asChild>
-                    <Link to="/bookings/$ref/assign" params={{ ref: item.bookingRef }}>Assign mover</Link>
+                    <Link to="/bookings/$ref/assign" params={{ ref: item.bookingRef }} search={{}}>Assign mover</Link>
                   </Button>
-                ) : item.action === "Review" && item.moverId ? <Button asChild><Link to="/movers/$id" params={{ id: item.moverId }}>Review documents</Link></Button> : item.action === "Send link" && item.bookingRef ? <Button asChild><Link to="/bookings/$ref" params={{ ref: item.bookingRef }}>Open payment</Link></Button> : (
+                ) : item.action === "Review" && item.moverId ? <Button asChild><Link to="/movers/$id" params={{ id: item.moverId }}>Review documents</Link></Button> : item.action === "Send link" && item.bookingRef ? <Button asChild><Link to="/bookings/$ref" params={{ ref: item.bookingRef }} search={{}}>Open payment</Link></Button> : (
                   <Button onClick={() => resolveAttention(item.id)}>{item.action}</Button>
                 )}
               </div>
