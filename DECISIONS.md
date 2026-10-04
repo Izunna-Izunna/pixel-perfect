@@ -18,3 +18,8 @@
 - Completion pass: removed the lavender/gradient treatment, rebuilt the map as a restrained greyscale surface, and made the desktop Inbox a fixed three-pane console with direct chat routes.
 - Records pass: rebuilt customer, mover and booking profiles around the shared fixtures; the mobile conversation route is a full-height, back-navigable chat surface rather than a list-only card.
 - Performance and accessibility measurements are pending a complete feature pass.
+
+## Operations blueprint pass
+- Inbox templates now use the supplied approved-template identities, exact numbered parameter format, target audience and message copy; an operator must complete every required parameter before recording an outbound template event.
+- Manual quotes use an immutable £7 platform fee and itemise the mover payout separately from the customer price.
+- Scout tools remain local operational records until the external execution contract, delivery states and permissions are available; the UI does not claim WhatsApp, Stripe or automated execution occurred.
