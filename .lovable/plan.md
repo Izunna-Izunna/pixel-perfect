@@ -1,42 +1,43 @@
-# Cary operational UI refresh
+# Cary operational feature expansion
 
 ## Direction
 
-Use the uploaded screens as a reference for a compact, table-first Cary Admin workspace: a flatter left navigation, a quiet top bar, denser operational tables, small status pills, and practical per-row actions. Keep the existing Cary visual tokens, responsive mobile shell, record-detail routes, and mock-only behaviour. This is an inspired interface update, not a pixel copy.
+Keep Cary’s current cockpit design, navigation, data density, record-detail routes, mobile shell, and mock-only behaviour. Use the uploaded former dashboard only as a feature inventory: add the operational capabilities it contains that Cary does not yet offer, while expressing them in Cary’s established visual system rather than replacing it with the old design.
 
-## 1. Shared application frame
+## 1. Shared capabilities without a shell redesign
 
-- Rework the desktop workspace frame into the reference’s simpler operational structure: Cary Admin / Cardiff Operations identity, flat navigation, a persistent search trigger, notification control, compact operator menu, quick booking entry point, and operator card/sign-out at the bottom of the rail.
-- Map the reference categories to existing working Cary routes without removing the current workflows: Overview, Live Inbox & Scout, Bookings, Movers, Customers, Tickets, Payments, and Settings/System.
-- Keep compact mobile navigation and make each header survive narrow widths without clipped controls.
+- Preserve the current workspace frame, navigation hierarchy, command palette, theme support, and responsive shell.
+- Add only missing cross-product capabilities indicated by the former dashboard: a quick booking entry point, clearer operational filters, contextual action access, explicit system/template readiness, and richer team-level controls.
+- Keep compact mobile navigation and make every new control usable at narrow widths without altering the desktop interaction model.
 
-## 2. Overview as an operational snapshot
+## 2. Overview: add missing operational intelligence
 
-- Replace the current hero-led overview with four live mock-derived metrics: active bookings, completed moves, customer volume, and Cary’s £7 booking-fee revenue.
-- Add the two-column reference composition: a selectable Trips/Volume chart sourced from mock bookings, plus a high-visibility attention list linking into the appropriate ticket, booking, mover review, or payment workflow.
-- Replace the current lower dashboard content with a concise Live Trip Board table that exposes customer, mover, status, route, fee, and direct assign/refresh/view actions.
-- Derive every figure, table row, and activity item from the shared operations store rather than fixed screen copy.
+- Keep the existing Pulse, live operations map, attention queue, activity feed, charts, and Today’s Moves layout.
+- Add the missing derived measures as supplemental operational metrics: active bookings, completed-today count, customer volume, and Cary £7 fee revenue.
+- Add Trips/Volume data switching to the existing chart area, with values calculated from the mock booking store using London-day buckets.
+- Add a compact Live Trip Board table alongside—not instead of—the existing map/timeline experience, with direct links to booking detail, assignment, redispatch, and messages.
+- Derive every new figure, table row, and activity item from the shared operations store rather than fixed screen copy.
 
-## 3. Table-first record management
+## 3. Records: add missing controls and history
 
-- Rebuild the Bookings list around the reference table schema: Ref, Customer, Mover, Status, Route, Cary fee, and Actions; add All / Active & Live / Completed / Cancelled views, text search, mock-backed date/status controls, accessible sorting, and no-results states.
-- Make each row’s actions intentional: open detail, open the dispatcher where assignment is possible, redispatch in mock state where applicable, and open the relevant message thread. Keep destructive and financial changes on their existing dedicated confirmations.
-- Turn Customers into a compact table with masked WhatsApp number, total jobs, total spend, joined date, profile action, and a protected mock “reset this chat” flow. Add a separate typed confirmation for the global mock-history reset rather than falsely implying deletion of external records.
-- Preserve the existing Mover table but tighten it to the same shared row/action pattern, adding actual fleet, verification, jobs, rating, profile, and message context.
+- Extend the existing Bookings table with missing operational views (Active/Live, Completed, Cancelled), date/region/mover filtering, sortable time and money columns, urgency markers, and reference-style per-row quick actions where their mock workflow exists.
+- Keep the current booking detail and dispatch routes. Row actions will open detail, dispatcher, redispatch, or the relevant conversation; financial and destructive actions stay on their existing dedicated confirmation flows.
+- Add the former dashboard’s customer-management features to the existing customers experience: masked WhatsApp reference, total jobs/spend, joined date, per-customer chat reset confirmation, a global mock-history reset with typed confirmation, plus a unified mock event timeline on the profile.
+- Preserve the existing mover table and profile; add any missing fleet, verification, availability, past-job, review, and messaging context without replacing its established layout.
 
-## 4. Inbox command centre
+## 4. Inbox: add the former action palette capabilities
 
 - Keep the corrected behaviour: desktop conversation selection changes the already-visible centre thread; mobile alone opens the full-screen thread route.
-- Extend the conversation list with reference-style role/state filters (all, human-taken-over, customer, mover, internal) and visible unread, active-move, and safe-window signals.
-- Rebuild the desktop right rail as a contextual Scout Action Palette: approved templates, payment/quote shortcuts, move actions, and safe WhatsApp interaction options. Every entry either performs a mock-store update, opens its existing dedicated workflow, or is visibly unavailable with its reason.
+- Extend the conversation list with the missing role/state filters (all, human-taken-over, customer, mover, internal) and visible unread, active-move, and safe-window signals.
+- Add a contextual Scout Action Palette to the existing desktop context rail: approved templates, payment/quote shortcuts, move actions, and safe WhatsApp interaction options. Every entry either performs a mock-store update, opens its existing dedicated workflow, or is visibly unavailable with its reason.
 - Keep templates in the right-side slide-out, retain the approved-template preview and 24-hour sending rule, and add useful quick-reply chips above the composer.
-- Add mock-only thread utilities that are safe to demonstrate: a local conversation summary based on the stored mock messages, attachment list state, and scheduled-reminder hand-off; do not claim AI, WhatsApp delivery, or external tool execution.
+- Add mock-only thread utilities that are safe to demonstrate: local conversation summary based on the stored mock messages, attachment list state, and scheduled-reminder hand-off; do not claim AI, WhatsApp delivery, or external tool execution.
 
-## 5. Operations settings and auditability
+## 5. Operations settings, team, and templates
 
-- Replace the current individual-only account screen with an operational Settings page inspired by the reference: clearly labelled mock WhatsApp account/template status, mock phone/quality state, operator/team section, and system-memory controls.
+- Add a dedicated operational settings view in addition to—not in place of—the existing account page: clearly labelled mock WhatsApp account/template status, mock phone/quality state, operator/team management, template inventory, and system-memory controls.
 - Add a mock team list with role labels and an invite form that records an audit event rather than sending mail.
-- Add configurable mock pricing visibility (the £7 platform fee remains fixed for this build) and links to System health, audit log, and template status.
+- Add pricing visibility (the £7 platform fee remains fixed for this build) and links to System health, audit log, and template status.
 - Expand System audit browsing with search/filter controls and make global chat-history reset, Scout pause, payout, refund, and personal-data controls retain their typed-confirmation safeguards.
 
 ## 6. Quality and verification
