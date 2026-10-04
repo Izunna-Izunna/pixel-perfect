@@ -18,13 +18,14 @@ export const Route = createFileRoute("/bookings/$ref/assign")({
 
 function AssignMoverPage() {
   const { ref } = Route.useParams();
+  const { mover: moverId, payout: payoutFromChat } = Route.useSearch();
   const { bookings, assignMover } = useOperations();
   const booking = bookings.find((item) => item.ref === ref);
   if (!booking) return <Workspace title="Assign mover"><p className="text-sm text-muted-foreground">No booking is available to assign.</p></Workspace>;
   const [query, setQuery] = useState("");
   const [availableOnly, setAvailableOnly] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [payout, setPayout] = useState(booking.total > 7 ? String(booking.total - 7) : "150");
+  const [selectedId, setSelectedId] = useState<string | null>(moverId ?? null);
+  const [payout, setPayout] = useState(payoutFromChat ?? (booking.total > 7 ? String(booking.total - 7) : "150"));
   const [note, setNote] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const selected = moverCandidates.find((candidate) => candidate.id === selectedId);
