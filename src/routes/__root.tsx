@@ -3,6 +3,7 @@ import { Outlet, Link, createRootRouteWithContext, useRouter, HeadContent, Scrip
 import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { OperationsProvider } from "@/features/core/operations-store";
 
 function NotFoundComponent() {
   return <div className="flex min-h-screen items-center justify-center bg-background p-6"><div className="panel max-w-md p-8 text-center"><p className="font-mono text-5xl">404</p><h1 className="mt-3 text-xl font-semibold">This page is not in the control room.</h1><Link to="/" className="mt-6 inline-flex text-sm font-semibold text-primary">Return to overview</Link></div></div>;
@@ -18,4 +19,4 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   shellComponent: RootShell, component: RootComponent, notFoundComponent: NotFoundComponent, errorComponent: ErrorComponent,
 });
 function RootShell({ children }: { children: ReactNode }) { return <html lang="en"><head><HeadContent /></head><body>{children}<Scripts /></body></html>; }
-function RootComponent() { const { queryClient } = Route.useRouteContext(); return <QueryClientProvider client={queryClient}><Outlet /></QueryClientProvider>; }
+function RootComponent() { const { queryClient } = Route.useRouteContext(); return <QueryClientProvider client={queryClient}><OperationsProvider><Outlet /></OperationsProvider></QueryClientProvider>; }

@@ -1,11 +1,11 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { Bell, Bot, ChevronDown, Command, Gauge, Inbox, ListTodo, MapPin, Menu, MoreHorizontal, Moon, PanelLeft, PanelLeftClose, Search, Settings, ShieldCheck, Sun, Users, WalletCards, X } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { bookings, conversations } from "./mock-data";
 import { londonClock } from "@/lib/time";
+import { useOperations } from "./operations-store";
 
 const groups = [
   { title: "Work", items: [{ label: "Overview", to: "/", icon: Gauge }, { label: "Inbox", to: "/inbox", icon: Inbox, count: 3 }, { label: "Needs attention", to: "/attention", icon: ListTodo, count: 4 }] },
@@ -16,13 +16,17 @@ const groups = [
 export function CaryMark({ compact = false }: { compact?: boolean }) { return <div className="flex items-center gap-2"><span className="relative grid size-8 place-items-center rounded-md bg-live text-primary-foreground"><span className="size-2 rounded-sm border-2 border-primary-foreground" /><span className="absolute size-4 border border-primary-foreground/70" /></span>{!compact && <span className="text-base font-semibold tracking-normal">cary</span>}</div>; }
 
 export function Workspace({ title, children }: { title: string; children: ReactNode }) {
-  const location = useLocation(); const navigate = useNavigate(); const [menuOpen, setMenuOpen] = useState(false); const [paletteOpen, setPaletteOpen] = useState(false); const [dark, setDark] = useState(false); const [clock, setClock] = useState(londonClock());
+  const location = useLocation(); const navigate = useNavigate(); const { conversations, notifications } = useOperations(); const [menuOpen, setMenuOpen] = useState(false); const [paletteOpen, setPaletteOpen] = useState(false); const [paletteQuery, setPaletteQuery] = useState(""); const [dark, setDark] = useState(false); const [clock, setClock] = useState(londonClock());
   const [collapsed, setCollapsed] = useState(false);
   useEffect(() => { const timer = window.setInterval(() => setClock(londonClock()), 1000); return () => window.clearInterval(timer); }, []);
-  useEffect(() => { document.documentElement.classList.toggle("dark", dark); }, [dark]);
+  useEffect(() => { const saved = window.sessionStorage.getItem("cary-theme"); setDark(saved === "dark"); }, []);
+  useEffect(() => { document.documentElement.classList.toggle("dark", dark); window.sessionStorage.setItem("cary-theme", dark ? "dark" : "light"); }, [dark]);
   useEffect(() => { const handler = (event: KeyboardEvent) => { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); setPaletteOpen(true); } }; window.addEventListener("keydown", handler); return () => window.removeEventListener("keydown", handler); }, []);
   const openResult = (to: string) => { setPaletteOpen(false); void navigate({ to }); };
-  const mockAction = (name: string) => toast.success(`${name} feature coming soon!`);
+  const query = paletteQuery.trim().toLowerCase();
+  const bookingResults = bookings.filter((booking) => `${booking.ref} ${booking.customer} ${booking.route}`.toLowerCase().includes(query)).slice(0, 4);
+  const conversationResults = conversations.filter((conversation) => `${conversation.name} ${conversation.preview}`.toLowerCase().includes(query)).slice(0, 4);
+  const unreadNotifications = notifications.filter((notification) => !notification.read).length;
 
   return <div className="min-h-screen bg-background">
     <aside className={`fixed inset-y-0 left-0 z-30 hidden border-r border-border bg-card p-4 transition-all duration-300 md:flex md:flex-col ${collapsed ? "w-20" : "w-60"}`}>
@@ -78,15 +82,15 @@ export function Workspace({ title, children }: { title: string; children: ReactN
           </button>
           <span className="hidden px-2 font-mono text-xs text-muted-foreground lg:block">{clock}</span>
           <Button variant="ghost" size="icon" aria-label="Toggle theme" onClick={() => setDark(!dark)}>{dark ? <Sun /> : <Moon />}</Button>
-          <Button asChild variant="ghost" size="icon" aria-label="Notifications"><Link to="/attention"><Bell /></Link></Button>
-          <button onClick={() => mockAction("Profile")} className="ml-1 flex items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-muted">
+          <Button asChild variant="ghost" size="icon" aria-label={`Notifications${unreadNotifications ? `, ${unreadNotifications} unread` : ""}`}><Link to="/notifications"><Bell />{unreadNotifications ? <span className="sr-only">{unreadNotifications} unread</span> : null}</Link></Button>
+          <Link to="/settings/account" className="ml-1 flex items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-muted">
             <span className="grid size-7 place-items-center rounded-full bg-muted text-xs font-bold text-muted-foreground">AO</span>
             <span className="hidden sm:block">
               <span className="block text-xs font-semibold">Amelia Owen</span>
               <span className="block text-[10px] text-muted-foreground">Operator</span>
             </span>
             <ChevronDown size={14} />
-          </button>
+          </Link>
         </div>
       </header>
       <div className="mx-auto max-w-[1600px] p-4 pb-24 md:p-7 md:pb-7">{children}</div>
@@ -113,7 +117,7 @@ export function Workspace({ title, children }: { title: string; children: ReactN
               </div>
             </div>
           ))}
-          <button onClick={() => { setMenuOpen(false); mockAction("Settings"); }} className="flex items-center gap-3 px-3 py-3 text-sm font-medium"><Settings size={18} />Settings</button>
+          <Link to="/settings/account" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 text-sm font-medium"><Settings size={18} />Settings</Link>
         </div>
       </div>
     )}
@@ -122,22 +126,22 @@ export function Workspace({ title, children }: { title: string; children: ReactN
         <div className="w-full max-w-xl overflow-hidden rounded-lg border border-border bg-popover shadow-sm">
           <div className="flex items-center gap-3 border-b border-border px-4">
             <Command size={18} className="text-foreground" />
-            <Input autoFocus placeholder="Search bookings, people and actions…" className="h-14 border-0 px-0 shadow-none focus-visible:ring-0" onKeyDown={(event) => { if (event.key === "Escape") setPaletteOpen(false); }} />
+            <Input autoFocus value={paletteQuery} onChange={(event) => setPaletteQuery(event.target.value)} placeholder="Search bookings, people and actions…" className="h-14 border-0 px-0 shadow-none focus-visible:ring-0" onKeyDown={(event) => { if (event.key === "Escape") setPaletteOpen(false); }} />
           </div>
           <div className="p-2">
             <p className="micro-label px-2 py-2">Jump to</p>
-            {bookings.slice(0, 3).map((booking) => (
+            {bookingResults.map((booking) => (
               <button key={booking.ref} className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left hover:bg-muted" onClick={() => openResult("/bookings")}>
                 <span className="grid size-8 place-items-center rounded-md bg-live-tint text-live-foreground"><MapPin size={16} /></span>
                 <span className="flex-1"><span className="block font-mono text-sm font-semibold">{booking.ref}</span><span className="block text-xs text-muted-foreground">{booking.customer} · {booking.route}</span></span>
               </button>
             ))}
-             {conversations.slice(0, 2).map((conversation) => (
+            {conversationResults.map((conversation) => (
                <button key={conversation.id} className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left hover:bg-muted" onClick={() => openResult(`/inbox/${conversation.id}`)}>
                 <span className="grid size-8 place-items-center rounded-md bg-muted text-muted-foreground"><Bot size={16} /></span>
                 <span><span className="block text-sm font-medium">Message {conversation.name}</span><span className="block text-xs text-muted-foreground">{conversation.role}</span></span>
               </button>
-            ))}
+            ))}{!bookingResults.length && !conversationResults.length && <p className="px-3 py-8 text-center text-sm text-muted-foreground">No matching records.</p>}
           </div>
           <div className="border-t border-border px-4 py-3 text-xs text-muted-foreground"><ShieldCheck className="mr-1 inline size-3" />Search stays inside Cary.</div>
         </div>

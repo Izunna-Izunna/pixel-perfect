@@ -1,12 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { toast } from "sonner";
+import { useState } from "react";
 import { Workspace } from "@/features/core/workspace";
-import { conversations } from "@/features/core/mock-data";
 import { Input } from "@/components/ui/input";
 import { ChatView } from "@/features/inbox/chat-view";
 import { StatusBadge } from "@/features/core/status-badge";
+import { useOperations } from "@/features/core/operations-store";
 
 export const Route = createFileRoute("/inbox")({
   head: () => ({
@@ -19,8 +19,13 @@ export const Route = createFileRoute("/inbox")({
 });
 
 function InboxPage() {
+  const { conversations, markRead } = useOperations();
+  const navigate = useNavigate(); const [filter, setFilter] = useState<"all" | "needs" | "taken">("all"); const [query, setQuery] = useState("");
   const selected = conversations[0];
-  const mockAction = (name: string) => toast.info(`Filter: ${name}`);
+  const filtered = conversations.filter((conversation) => {
+    const matches = `${conversation.name} ${conversation.role} ${conversation.preview}`.toLowerCase().includes(query.toLowerCase());
+    return matches && (filter === "all" || filter === "taken" ? filter !== "taken" || conversation.takeover : conversation.unread || conversation.window === "closed");
+  });
 
   if (!selected) return (
     <Workspace title="Inbox">
@@ -39,21 +44,21 @@ function InboxPage() {
             </div>
             <div className="relative mt-3">
               <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
-              <Input className="h-9 pl-9 text-xs" placeholder="Name, number or booking" />
+              <Input value={query} onChange={(event) => setQuery(event.target.value)} className="h-9 pl-9 text-xs" placeholder="Name, number or booking" />
             </div>
           </div>
           <div className="flex border-b border-border px-2">
-            <button onClick={() => mockAction("All")} className="border-b-2 border-foreground px-3 py-2 text-xs font-semibold">All</button>
-            <button onClick={() => mockAction("Needs action")} className="px-3 py-2 text-xs text-muted-foreground hover:text-foreground">Needs action</button>
-            <button onClick={() => mockAction("Taken over")} className="px-3 py-2 text-xs text-muted-foreground hover:text-foreground">Taken over</button>
+            <button onClick={() => setFilter("all")} className={`${filter === "all" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs`}>All</button>
+            <button onClick={() => setFilter("needs")} className={`${filter === "needs" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs`}>Needs action</button>
+            <button onClick={() => setFilter("taken")} className={`${filter === "taken" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs`}>Taken over</button>
           </div>
           <div className="divide-y divide-border">
-            {conversations.map((conversation) => (
+            {filtered.map((conversation) => (
               <Link 
                 to="/inbox/$sessionId" 
                 params={{ sessionId: conversation.id }} 
                 className={`flex w-full gap-3 p-4 text-left ${selected.id === conversation.id ? "bg-accent" : "hover:bg-muted"}`} 
-                key={conversation.id}
+                key={conversation.id} onClick={() => markRead(conversation.id)}
               >
                 <span className="grid size-9 shrink-0 place-items-center rounded-full bg-muted text-xs font-bold text-muted-foreground">
                   {conversation.name.split(" ").map((name) => name[0]).join("")}
@@ -71,7 +76,7 @@ function InboxPage() {
                 </span>
                 {conversation.unread && <span className="mt-2 size-2 rounded-full bg-danger" />}
               </Link>
-            ))}
+            ))}{!filtered.length && <p className="p-5 text-sm text-muted-foreground">No conversations match this view.</p>}
           </div>
         </aside>
         

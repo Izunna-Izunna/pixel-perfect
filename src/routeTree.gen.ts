@@ -16,6 +16,7 @@ import { Route as CustomersRouteImport } from './routes/customers'
 import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MoversRouteImport } from './routes/movers'
+import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PaymentsRouteImport } from './routes/payments'
 import { Route as StatesRouteImport } from './routes/states'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
@@ -25,6 +26,7 @@ import { Route as CustomersIdRouteImport } from './routes/customers.$id'
 import { Route as InboxSessionIdRouteImport } from './routes/inbox.$sessionId'
 import { Route as MoversIndexRouteImport } from './routes/movers.index'
 import { Route as MoversIdRouteImport } from './routes/movers.$id'
+import { Route as SettingsAccountRouteImport } from './routes/settings.account'
 import { Route as BookingsRefAssignRouteImport } from './routes/bookings.$ref.assign'
 import { Route as PaymentsIdRefundRouteImport } from './routes/payments.$id.refund'
 
@@ -61,6 +63,11 @@ const LoginRoute = LoginRouteImport.update({
 const MoversRoute = MoversRouteImport.update({
   id: '/movers',
   path: '/movers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PaymentsRoute = PaymentsRouteImport.update({
@@ -108,6 +115,11 @@ const MoversIdRoute = MoversIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => MoversRoute,
 } as any)
+const SettingsAccountRoute = SettingsAccountRouteImport.update({
+  id: '/settings/account',
+  path: '/settings/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BookingsRefAssignRoute = BookingsRefAssignRouteImport.update({
   id: '/assign',
   path: '/assign',
@@ -127,12 +139,14 @@ export interface FileRoutesByFullPath {
   '/inbox': typeof InboxRouteWithChildren
   '/login': typeof LoginRoute
   '/movers': typeof MoversRouteWithChildren
+  '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRouteWithChildren
   '/states': typeof StatesRoute
   '/bookings/$ref': typeof BookingsRefRouteWithChildren
   '/customers/$id': typeof CustomersIdRoute
   '/inbox/$sessionId': typeof InboxSessionIdRoute
   '/movers/$id': typeof MoversIdRoute
+  '/settings/account': typeof SettingsAccountRoute
   '/bookings/': typeof BookingsIndexRoute
   '/customers/': typeof CustomersIndexRoute
   '/movers/': typeof MoversIndexRoute
@@ -144,12 +158,14 @@ export interface FileRoutesByTo {
   '/attention': typeof AttentionRoute
   '/inbox': typeof InboxRouteWithChildren
   '/login': typeof LoginRoute
+  '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRouteWithChildren
   '/states': typeof StatesRoute
   '/bookings/$ref': typeof BookingsRefRouteWithChildren
   '/customers/$id': typeof CustomersIdRoute
   '/inbox/$sessionId': typeof InboxSessionIdRoute
   '/movers/$id': typeof MoversIdRoute
+  '/settings/account': typeof SettingsAccountRoute
   '/bookings': typeof BookingsIndexRoute
   '/customers': typeof CustomersIndexRoute
   '/movers': typeof MoversIndexRoute
@@ -165,12 +181,14 @@ export interface FileRoutesById {
   '/inbox': typeof InboxRouteWithChildren
   '/login': typeof LoginRoute
   '/movers': typeof MoversRouteWithChildren
+  '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRouteWithChildren
   '/states': typeof StatesRoute
   '/bookings/$ref': typeof BookingsRefRouteWithChildren
   '/customers/$id': typeof CustomersIdRoute
   '/inbox/$sessionId': typeof InboxSessionIdRoute
   '/movers/$id': typeof MoversIdRoute
+  '/settings/account': typeof SettingsAccountRoute
   '/bookings/': typeof BookingsIndexRoute
   '/customers/': typeof CustomersIndexRoute
   '/movers/': typeof MoversIndexRoute
@@ -187,12 +205,14 @@ export interface FileRouteTypes {
     | '/inbox'
     | '/login'
     | '/movers'
+    | '/notifications'
     | '/payments'
     | '/states'
     | '/bookings/$ref'
     | '/customers/$id'
     | '/inbox/$sessionId'
     | '/movers/$id'
+    | '/settings/account'
     | '/bookings/'
     | '/customers/'
     | '/movers/'
@@ -204,12 +224,14 @@ export interface FileRouteTypes {
     | '/attention'
     | '/inbox'
     | '/login'
+    | '/notifications'
     | '/payments'
     | '/states'
     | '/bookings/$ref'
     | '/customers/$id'
     | '/inbox/$sessionId'
     | '/movers/$id'
+    | '/settings/account'
     | '/bookings'
     | '/customers'
     | '/movers'
@@ -224,12 +246,14 @@ export interface FileRouteTypes {
     | '/inbox'
     | '/login'
     | '/movers'
+    | '/notifications'
     | '/payments'
     | '/states'
     | '/bookings/$ref'
     | '/customers/$id'
     | '/inbox/$sessionId'
     | '/movers/$id'
+    | '/settings/account'
     | '/bookings/'
     | '/customers/'
     | '/movers/'
@@ -245,8 +269,10 @@ export interface RootRouteChildren {
   InboxRoute: typeof InboxRouteWithChildren
   LoginRoute: typeof LoginRoute
   MoversRoute: typeof MoversRouteWithChildren
+  NotificationsRoute: typeof NotificationsRoute
   PaymentsRoute: typeof PaymentsRouteWithChildren
   StatesRoute: typeof StatesRoute
+  SettingsAccountRoute: typeof SettingsAccountRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -298,6 +324,13 @@ declare module '@tanstack/react-router' {
       path: '/movers'
       fullPath: '/movers'
       preLoaderRoute: typeof MoversRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/payments': {
@@ -362,6 +395,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/movers/$id'
       preLoaderRoute: typeof MoversIdRouteImport
       parentRoute: typeof MoversRoute
+    }
+    '/settings/account': {
+      id: '/settings/account'
+      path: '/settings/account'
+      fullPath: '/settings/account'
+      preLoaderRoute: typeof SettingsAccountRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/bookings/$ref/assign': {
       id: '/bookings/$ref/assign'
@@ -463,8 +503,10 @@ const rootRouteChildren: RootRouteChildren = {
   InboxRoute: InboxRouteWithChildren,
   LoginRoute: LoginRoute,
   MoversRoute: MoversRouteWithChildren,
+  NotificationsRoute: NotificationsRoute,
   PaymentsRoute: PaymentsRouteWithChildren,
   StatesRoute: StatesRoute,
+  SettingsAccountRoute: SettingsAccountRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

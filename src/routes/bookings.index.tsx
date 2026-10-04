@@ -6,6 +6,7 @@ import { bookings } from "@/features/core/mock-data";
 import { formatLondon } from "@/lib/time";
 import { formatMoney } from "@/lib/format";
 import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 export const Route = createFileRoute("/bookings/")({
   head: () => ({
@@ -18,6 +19,10 @@ export const Route = createFileRoute("/bookings/")({
 });
 
 function BookingList() {
+  const [query, setQuery] = useState(""); const [tab, setTab] = useState("All");
+  const tabStatus: Record<string, string[]> = { All: [], Intake: ["draft"], Quoting: ["dispatched", "quotes_received", "quote_accepted"], "Awaiting payment": ["payment_pending"], Booked: ["booked"], "In transit": ["in_transit"] };
+  const allowedStatuses = tabStatus[tab] ?? [];
+  const filtered = bookings.filter((booking) => `${booking.ref} ${booking.customer} ${booking.route}`.toLowerCase().includes(query.toLowerCase()) && (!allowedStatuses.length || allowedStatuses.includes(booking.status)));
   return (
     <Workspace title="Bookings">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
@@ -25,19 +30,19 @@ function BookingList() {
           <p className="micro-label">Records</p>
           <h2 className="mt-1 text-2xl font-semibold">Bookings <span className="font-mono text-base text-muted-foreground">{bookings.length}</span></h2>
         </div>
-        <Button disabled title="Creating a booking needs the connected back office"><Plus />Create booking</Button>
+        <Button variant="outline" title="Booking creation is awaiting the connected operations service" disabled><Plus />Create booking</Button>
       </div>
       
       <div className="mt-6 flex flex-wrap gap-2">
-        <Button size="sm">All</Button>
-        {["Intake", "Quoting", "Awaiting payment", "Booked", "In transit"].map((tab) => (
-          <Button key={tab} variant="outline" size="sm">{tab}</Button>
+        <Button size="sm" variant={tab === "All" ? "default" : "outline"} onClick={() => setTab("All")}>All</Button>
+        {["Intake", "Quoting", "Awaiting payment", "Booked", "In transit"].map((item) => (
+          <Button key={item} variant={tab === item ? "default" : "outline"} size="sm" onClick={() => setTab(item)}>{item}</Button>
         ))}
       </div>
       
       <div className="relative mt-4 max-w-md">
         <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
-        <Input className="pl-9" placeholder="Search ref, customer or postcode" />
+        <Input value={query} onChange={(event) => setQuery(event.target.value)} className="pl-9" placeholder="Search ref, customer or postcode" />
       </div>
       
       <div className="panel mt-5 overflow-x-auto">
@@ -54,7 +59,7 @@ function BookingList() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {bookings.map((booking) => (
+            {filtered.map((booking) => (
               <tr key={booking.ref} className="hover:bg-muted">
                 <td className="px-5 py-4">
                   <Link to="/bookings/$ref" params={{ ref: booking.ref }} className="font-mono text-xs font-semibold text-primary hover:underline">
@@ -89,7 +94,7 @@ function BookingList() {
                   </Button>
                 </td>
               </tr>
-            ))}
+            ))}{!filtered.length && <tr><td className="px-5 py-12 text-center text-sm text-muted-foreground" colSpan={7}>No bookings match this view.</td></tr>}
           </tbody>
         </table>
       </div>

@@ -1,0 +1,11 @@
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { Bell, CheckCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useOperations } from "@/features/core/operations-store";
+import { Workspace } from "@/features/core/workspace";
+
+export const Route = createFileRoute("/notifications")({
+  head: () => ({ meta: [{ title: "Notifications — Cary Mission Control" }, { name: "description", content: "Operational notifications for Cary Mission Control." }, { property: "og:title", content: "Notifications — Cary Mission Control" }, { property: "og:description", content: "Operational notifications for Cary Mission Control." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  component: NotificationsPage,
+});
+function NotificationsPage() { const { notifications, markNotificationRead, markAllNotificationsRead } = useOperations(); const unread = notifications.filter((item) => !item.read).length; return <Workspace title="Notifications"><div className="mx-auto max-w-3xl"><div className="flex items-end justify-between gap-4"><div><p className="micro-label">Operations</p><h2 className="mt-1 text-2xl font-semibold">Notifications <span className="font-mono text-base text-muted-foreground">{unread}</span></h2></div><Button variant="outline" size="sm" disabled={!unread} onClick={markAllNotificationsRead}><CheckCheck />Mark all read</Button></div><div className="mt-6 divide-y border-y border-border">{notifications.map((notification) => <Link key={notification.id} to={notification.href} onClick={() => markNotificationRead(notification.id)} className={`flex gap-4 p-4 hover:bg-muted ${notification.read ? "" : "bg-live-tint/50"}`}><span className="mt-1 size-2 shrink-0 rounded-full bg-live">{notification.read ? null : null}</span><div className="min-w-0 flex-1"><p className="text-sm font-semibold">{notification.title}</p><p className="mt-1 text-sm text-muted-foreground">{notification.detail}</p><p className="mt-2 text-xs text-muted-foreground">Today, London time</p></div><Bell className="size-4 text-muted-foreground" /></Link>)}</div>{!notifications.length && <p className="py-12 text-center text-sm text-muted-foreground">You are up to date.</p>}</div></Workspace>; }
