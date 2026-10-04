@@ -1,5 +1,5 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
-import { Bot, CheckCircle2, ChevronDown, FileText, ReceiptText, Search, Sparkles, XCircle, Zap } from "lucide-react";
+import { Bot, ChevronDown, FileText, ReceiptText, Search, Sparkles, Zap } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Workspace } from "@/features/core/workspace";
@@ -10,8 +10,7 @@ import { useOperations } from "@/features/core/operations-store";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { approvedTemplates, renderTemplate, scoutTools } from "@/features/inbox/operations-catalog";
-import { bookings, moverCandidates, movers } from "@/features/core/mock-data";
-import { formatLondon } from "@/lib/time";
+import { bookings, movers } from "@/features/core/mock-data";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/inbox")({

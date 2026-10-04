@@ -12,6 +12,10 @@ import { formatMoney } from "@/lib/format";
 import { formatLondon } from "@/lib/time";
 
 export const Route = createFileRoute("/bookings/$ref/assign")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    mover: typeof search.mover === "string" ? search.mover : undefined,
+    payout: typeof search.payout === "string" ? search.payout : undefined,
+  }),
   head: () => ({ meta: [{ title: "Assign mover — Cary Mission Control" }, { name: "description", content: "Select and assign a verified mover to a Cary booking." }, { property: "og:title", content: "Assign mover — Cary Mission Control" }, { property: "og:description", content: "Select and assign a verified mover to a Cary booking." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: AssignMoverPage,
 });
