@@ -1,6 +1,7 @@
 # Roadmap
 - [ ] Produce the mandatory route and interaction audit in AUDIT.md.
 - [ ] Rebuild records, work, money, operations, and system routes to satisfy the completion brief.
+- [x] Rebuilt customer, mover and booking record pages; linked the record lists and delivered mock refund and payout-release confirmations.
 - [ ] Finish stateful mock workflows, visual regression checks, linting, accessibility, and completion evidence.
 - [ ] Deliver the dedicated assign, refund, template, notification and full-page operational flows from the addendum.
 - [ ] Maintain COMPLETION_GATE.md and COMPONENT_CHECKLIST.md as every required route and control is implemented and verified.
