@@ -1,4 +1,4 @@
-import { Link, Outlet, createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Workspace } from "@/features/core/workspace";
@@ -92,7 +92,7 @@ function BookingList() {
             ))}
           </tbody>
         </table>
-      </div><Outlet />
+      </div>
     </Workspace>
   );
 }
