@@ -18,6 +18,9 @@ export type AttentionItem = {
   waiting: string;
   action: string;
   tone: "danger" | "warning" | "info";
+  bookingRef?: string;
+  moverId?: string;
+  conversationId?: string;
 };
 
 export type Booking = {
@@ -142,10 +145,10 @@ export const moverCandidates: MoverCandidate[] = [
 ];
 
 export const attentionItems: AttentionItem[] = [
-  { id: "a1", type: "overdue", title: "CARY-8279 needs a completion check", detail: "The booked time passed without an update.", waiting: "2h 18m", action: "Check in", tone: "danger" },
-  { id: "a2", type: "conversation", title: "Scout has waited on Sian Morgan", detail: "No mover has answered the request yet.", waiting: "18m", action: "Redispatch", tone: "warning" },
-  { id: "a3", type: "payment", title: "Payment failed for CARY-8269", detail: "The customer has not received a new payment link.", waiting: "42m", action: "Send link", tone: "warning" },
-  { id: "a4", type: "vetting", title: "Megan Price is ready for review", detail: "Insurance document is waiting for verification.", waiting: "1h 06m", action: "Review", tone: "info" },
+  { id: "a1", type: "overdue", title: "CARY-8279 needs a completion check", detail: "The booked time passed without an update.", waiting: "2h 18m", action: "Check in", tone: "danger", bookingRef: "CARY-8279" },
+  { id: "a2", type: "conversation", title: "Scout has waited on Sian Morgan", detail: "No mover has answered the request yet.", waiting: "18m", action: "Redispatch", tone: "warning", bookingRef: "CARY-8284", conversationId: "s3" },
+  { id: "a3", type: "payment", title: "Payment failed for CARY-8269", detail: "The customer has not received a new payment link.", waiting: "42m", action: "Send link", tone: "warning", bookingRef: "CARY-8271" },
+  { id: "a4", type: "vetting", title: "Megan Price is ready for review", detail: "Insurance document is waiting for verification.", waiting: "1h 06m", action: "Review", tone: "info", moverId: "megan-price" },
 ];
 
 export const conversations: Conversation[] = [
