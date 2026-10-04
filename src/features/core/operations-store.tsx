@@ -2,6 +2,8 @@ import { createContext, useCallback, useContext, useMemo, useState, type ReactNo
 import { attentionItems as seedAttention, bookings as seedBookings, conversations as seedConversations, customers as seedCustomers, movers as seedMovers, type AttentionItem, type Booking, type Conversation, type CustomerRecord, type MoverRecord } from "./mock-data";
 
 export type ChatMessage = { id: string; sender: "customer" | "mover" | "scout" | "operator"; body: string; createdAt: string; delivery: "sent" | "delivered" | "read"; mediaName?: string; templateName?: string };
+export type QuoteRecord = { id: string; bookingRef: string; moverId: string | null; moverName: string | null; payout: number; platformFee: number; customerTotal: number; vanSize: string; loadingHelp: string; access: string; pickup: string; dropoff: string; items: string; note: string; status: "draft" | "submitted" | "payment_prepared"; createdAt: string };
+export type ToolExecution = { id: string; conversationId: string; toolId: string; toolName: string; inputSummary: string; outcome: string; createdAt: string };
 type Notification = { id: string; title: string; detail: string; href: string; read: boolean; createdAt: string };
 export type AuditEvent = { id: string; title: string; detail: string; createdAt: string; href?: string };
 export type Reminder = { id: string; bookingRef: string; audience: "customer" | "mover"; scheduledFor: string; status: "scheduled" | "sent" | "cancelled"; label: string };
@@ -19,6 +21,8 @@ type OperationsStore = {
   reminders: Reminder[];
   tickets: Ticket[];
   team: TeamMember[];
+  quotes: QuoteRecord[];
+  toolExecutions: ToolExecution[];
   scoutPaused: boolean;
   sendMessage: (sessionId: string, body: string, mediaName?: string) => void;
   sendTemplate: (sessionId: string, templateName: string, body: string) => void;
@@ -43,6 +47,9 @@ type OperationsStore = {
   resetCustomerChat: (customerId: string) => void;
   resetAllChatHistory: () => void;
   inviteTeamMember: (email: string, role: TeamMember["role"]) => void;
+  recordQuote: (quote: Omit<QuoteRecord, "id" | "createdAt" | "platformFee" | "customerTotal">) => QuoteRecord;
+  preparePayment: (bookingRef: string) => void;
+  executeScoutTool: (execution: Omit<ToolExecution, "id" | "createdAt">) => void;
 };
 
 const OperationsContext = createContext<OperationsStore | null>(null);
@@ -83,6 +90,8 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
   const [reminders, setReminders] = useState(initialReminders);
   const [tickets, setTickets] = useState(initialTickets);
   const [team, setTeam] = useState(initialTeam);
+  const [quotes, setQuotes] = useState<QuoteRecord[]>([]);
+  const [toolExecutions, setToolExecutions] = useState<ToolExecution[]>([]);
   const [scoutPaused, setScoutPaused] = useState(false);
   const recordAudit = useCallback((title: string, detail: string, href?: string) => setAudit((items) => [{ id: `audit-${Date.now()}`, title, detail, ...(href ? { href } : {}), createdAt: now }, ...items]), []);
   const markRead = useCallback((sessionId: string) => setConversations((items) => items.map((item) => item.id === sessionId ? { ...item, unread: false } : item)), []);
@@ -170,7 +179,24 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
     setTeam((items) => [...items, { id, name: safeEmail.split("@")[0] || "New teammate", email: safeEmail, role, status: "invited" }]);
     recordAudit("Team invite created", `${safeEmail} invited as ${role}.`, "/settings/operations");
   }, [recordAudit, team]);
-  const value = useMemo(() => ({ bookings, conversations, attention, customers, movers, messages, notifications, audit, reminders, tickets, team, scoutPaused, sendMessage, sendTemplate, setTakeover, markRead, resolveAttention, assignMover, releasePayout, refundPayment, createBooking, addMover, addCustomerNote, setMoverDocumentStatus, completeBooking, redispatchBooking, sendPaymentLink, sendReminder, toggleScoutPaused, resolveTicket, markNotificationRead, markAllNotificationsRead, resetCustomerChat, resetAllChatHistory, inviteTeamMember }), [bookings, conversations, attention, customers, movers, messages, notifications, audit, reminders, tickets, team, scoutPaused, sendMessage, sendTemplate, setTakeover, markRead, resolveAttention, assignMover, releasePayout, refundPayment, createBooking, addMover, addCustomerNote, setMoverDocumentStatus, completeBooking, redispatchBooking, sendPaymentLink, sendReminder, toggleScoutPaused, resolveTicket, markNotificationRead, markAllNotificationsRead, resetCustomerChat, resetAllChatHistory, inviteTeamMember]);
+  const recordQuote = useCallback((draft: Omit<QuoteRecord, "id" | "createdAt" | "platformFee" | "customerTotal">) => {
+    const quote: QuoteRecord = { ...draft, id: `quote-${Date.now()}`, createdAt: now, platformFee: 7, customerTotal: draft.payout + 7 };
+    setQuotes((items) => [quote, ...items]);
+    setBookings((items) => items.map((booking) => booking.ref === quote.bookingRef ? { ...booking, total: quote.customerTotal, mover: quote.moverName, moverId: quote.moverId, status: quote.status === "draft" ? booking.status : "quotes_received" } : booking));
+    recordAudit("Quote recorded", `${quote.bookingRef}: £${quote.payout.toFixed(2)} mover payout + £7.00 Cary fee.`, `/bookings/${quote.bookingRef}`);
+    return quote;
+  }, [recordAudit]);
+  const preparePayment = useCallback((bookingRef: string) => {
+    setQuotes((items) => items.map((quote) => quote.bookingRef === bookingRef && quote.status === "submitted" ? { ...quote, status: "payment_prepared" } : quote));
+    sendPaymentLink(bookingRef);
+    recordAudit("Payment link prepared", `${bookingRef}: itemised checkout hand-off prepared.`, `/bookings/${bookingRef}`);
+  }, [recordAudit, sendPaymentLink]);
+  const executeScoutTool = useCallback((execution: Omit<ToolExecution, "id" | "createdAt">) => {
+    const record: ToolExecution = { ...execution, id: `tool-${Date.now()}`, createdAt: now };
+    setToolExecutions((items) => [record, ...items]);
+    recordAudit(`Scout tool: ${record.toolName}`, `${record.inputSummary} · ${record.outcome}`, `/inbox/${record.conversationId}`);
+  }, [recordAudit]);
+  const value = useMemo(() => ({ bookings, conversations, attention, customers, movers, messages, notifications, audit, reminders, tickets, team, quotes, toolExecutions, scoutPaused, sendMessage, sendTemplate, setTakeover, markRead, resolveAttention, assignMover, releasePayout, refundPayment, createBooking, addMover, addCustomerNote, setMoverDocumentStatus, completeBooking, redispatchBooking, sendPaymentLink, sendReminder, toggleScoutPaused, resolveTicket, markNotificationRead, markAllNotificationsRead, resetCustomerChat, resetAllChatHistory, inviteTeamMember, recordQuote, preparePayment, executeScoutTool }), [bookings, conversations, attention, customers, movers, messages, notifications, audit, reminders, tickets, team, quotes, toolExecutions, scoutPaused, sendMessage, sendTemplate, setTakeover, markRead, resolveAttention, assignMover, releasePayout, refundPayment, createBooking, addMover, addCustomerNote, setMoverDocumentStatus, completeBooking, redispatchBooking, sendPaymentLink, sendReminder, toggleScoutPaused, resolveTicket, markNotificationRead, markAllNotificationsRead, resetCustomerChat, resetAllChatHistory, inviteTeamMember, recordQuote, preparePayment, executeScoutTool]);
   return <OperationsContext.Provider value={value}>{children}</OperationsContext.Provider>;
 }
 export function useOperations() { const context = useContext(OperationsContext); if (!context) throw new Error("OperationsProvider is required"); return context; }

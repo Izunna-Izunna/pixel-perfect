@@ -1,5 +1,5 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
-import { Bot, CalendarClock, FileText, ReceiptText, Search, Sparkles, Zap } from "lucide-react";
+import { Bot, FileText, ReceiptText, Search, Sparkles, Zap } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Workspace } from "@/features/core/workspace";
@@ -9,6 +9,7 @@ import { StatusBadge } from "@/features/core/status-badge";
 import { useOperations } from "@/features/core/operations-store";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { scoutTools } from "@/features/inbox/operations-catalog";
 
 export const Route = createFileRoute("/inbox")({
   head: () => ({
@@ -23,11 +24,13 @@ export const Route = createFileRoute("/inbox")({
 function InboxLayout() { return <Outlet />; }
 
 export function InboxPage() {
-  const { conversations, markRead } = useOperations();
+  const { conversations, markRead, executeScoutTool, toolExecutions } = useOperations();
   const [filter, setFilter] = useState<"all" | "needs" | "taken" | "customer" | "mover">("all"); const [query, setQuery] = useState(""); const [assignOpen, setAssignOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [contextPanel, setContextPanel] = useState<"details" | "quickReplies" | "scoutTools">("details");
   const [quickReplyRequest, setQuickReplyRequest] = useState<{ id: number; body: string } | null>(null);
+  const [toolId, setToolId] = useState<string | null>(null);
+  const [toolValues, setToolValues] = useState<Record<string, string>>({});
   const selected = conversations.find((conversation) => conversation.id === selectedId) ?? conversations[0];
   const filtered = conversations.filter((conversation) => {
     const matches = `${conversation.name} ${conversation.role} ${conversation.preview}`.toLowerCase().includes(query.toLowerCase());
@@ -36,6 +39,15 @@ export function InboxPage() {
     if (filter === "needs") return conversation.unread || conversation.window === "closed";
     return conversation.role.toLowerCase() === filter;
   });
+  const selectedTool = scoutTools.find((tool) => tool.id === toolId);
+  function openTool(id: string) { setToolId(id); setToolValues({}); }
+  function executeTool() {
+    if (!selectedTool || !selected) return;
+    const complete = selectedTool.fields.every((field) => toolValues[field]?.trim());
+    if (!complete) return;
+    executeScoutTool({ conversationId: selected.id, toolId: selectedTool.id, toolName: selectedTool.name, inputSummary: selectedTool.fields.map((field) => `${field}: ${toolValues[field]}`).join(" · "), outcome: selectedTool.outcome });
+    setToolId(null); setToolValues({});
+  }
 
   if (!selected) return (
     <Workspace title="Inbox">
@@ -84,10 +96,11 @@ export function InboxPage() {
         <aside className="hidden border-l border-border p-5 lg:block">
           {contextPanel === "details" && <><p className="micro-label">Conversation context</p><h2 className="mt-2 text-base font-semibold">{selected.name}</h2><p className="mt-1 text-xs text-muted-foreground">+44 7•• ••• 1234</p><div className="mt-6 border-t border-border pt-5"><p className="micro-label">Active booking</p><Link to="/bookings" className="mt-2 block border border-border p-3 hover:bg-muted"><p className="font-mono text-xs font-semibold">CARY-8291</p><p className="mt-1 text-xs text-muted-foreground">CF10 1AA → CF24 4PB</p><p className="mt-2 text-xs font-medium text-live-foreground">In transit</p></Link></div></>}
           {contextPanel === "quickReplies" && <><div className="flex items-center justify-between gap-2"><div><p className="micro-label">Quick replies</p><h2 className="mt-2 text-base font-semibold">Reply shortcuts</h2></div><Button variant="ghost" size="sm" onClick={() => setContextPanel("details")}>Close</Button></div><p className="mt-2 text-xs text-muted-foreground">Choose a reply to add it to the composer.</p><div className="mt-5 grid gap-2">{["Hi there! I'm jumping in from the Cary operations team to help directly.", "Your mover has confirmed and is currently en route to your pickup location.", "Could you please upload a quick photo of the items and the doorway or stairs?"].map((reply, index) => <Button key={reply} variant="outline" className="h-auto justify-start whitespace-normal px-3 py-3 text-left text-xs" onClick={() => setQuickReplyRequest({ id: Date.now() + index, body: reply })}><Zap size={14} />{reply}</Button>)}</div></>}
-          {contextPanel === "scoutTools" && <><div className="flex items-center justify-between gap-2"><div><p className="micro-label">Scout tools</p><h2 className="mt-2 text-base font-semibold">Operations actions</h2></div><Button variant="ghost" size="sm" onClick={() => setContextPanel("details")}>Close</Button></div><p className="mt-2 text-xs text-muted-foreground">Actions route to their dedicated operational workspace.</p><div className="mt-5 grid gap-2"><Button variant="outline" size="sm" className="justify-start" onClick={() => setAssignOpen(true)}><Sparkles />Assign mover</Button><Button asChild variant="outline" size="sm" className="justify-start"><Link to="/quotes/new"><ReceiptText />Create quote</Link></Button><Button asChild variant="outline" size="sm" className="justify-start"><Link to="/reminders"><CalendarClock />Schedule reminder</Link></Button><Button asChild variant="outline" size="sm" className="justify-start"><Link to="/bookings"><FileText />Open booking board</Link></Button><div className="mt-3 border border-border bg-muted p-3 text-xs text-muted-foreground"><Bot className="mb-2 size-4" />Scout execution requires the connected operations service.</div></div></>}
+          {contextPanel === "scoutTools" && <><div className="flex items-center justify-between gap-2"><div><p className="micro-label">Scout tools</p><h2 className="mt-2 text-base font-semibold">Operations actions</h2></div><Button variant="ghost" size="sm" onClick={() => setContextPanel("details")}>Close</Button></div><p className="mt-2 text-xs text-muted-foreground">Each action records a precise in-app operational event.</p><div className="mt-5 grid gap-2"><Button variant="outline" size="sm" className="justify-start" onClick={() => setAssignOpen(true)}><Sparkles />Assign mover</Button><Button asChild variant="outline" size="sm" className="justify-start"><Link to="/quotes/new" search={{ booking: "CARY-8291" }}><ReceiptText />Create quote</Link></Button>{scoutTools.map((tool) => <Button key={tool.id} variant="ghost" size="sm" className="justify-start text-left" onClick={() => openTool(tool.id)}><Bot size={14} />{tool.name}</Button>)}</div><div className="mt-5 border-t border-border pt-4"><p className="micro-label">Recent tool activity</p>{toolExecutions.filter((item) => item.conversationId === selected.id).slice(0, 3).map((item) => <p className="mt-2 text-xs" key={item.id}>{item.toolName}<span className="block text-muted-foreground">{item.outcome}</span></p>)}{!toolExecutions.some((item) => item.conversationId === selected.id) && <p className="mt-2 text-xs text-muted-foreground">No tools recorded for this conversation.</p>}</div></>}
         </aside>
       </div>
       <Dialog open={assignOpen} onOpenChange={setAssignOpen}><DialogContent><DialogHeader><DialogTitle>Assign a mover</DialogTitle><DialogDescription>Open the dispatch workspace to compare verified candidates, payout and customer update before confirming.</DialogDescription></DialogHeader><DialogFooter><Button variant="outline" onClick={() => setAssignOpen(false)}>Cancel</Button><Button asChild><Link to="/bookings/$ref/assign" params={{ ref: "CARY-8291" }}>Open assignment</Link></Button></DialogFooter></DialogContent></Dialog>
+      <Dialog open={Boolean(selectedTool)} onOpenChange={(open) => { if (!open) setToolId(null); }}><DialogContent className="max-h-[85svh] overflow-y-auto"><DialogHeader><DialogTitle>{selectedTool?.name ?? "Scout tool"}</DialogTitle><DialogDescription>Enter the documented information, then record the operational result against {selected.name}.</DialogDescription></DialogHeader><div className="grid gap-3">{selectedTool?.fields.map((field) => <label className="text-sm font-medium" key={field}>{field}<Input className="mt-1" value={toolValues[field] ?? ""} onChange={(event) => setToolValues((values) => ({ ...values, [field]: event.target.value }))} /></label>)}</div><DialogFooter><Button variant="outline" onClick={() => setToolId(null)}>Cancel</Button><Button disabled={!selectedTool?.fields.every((field) => toolValues[field]?.trim())} onClick={executeTool}>Record {selectedTool?.outcome}</Button></DialogFooter></DialogContent></Dialog>
     </Workspace>
   );
 }
