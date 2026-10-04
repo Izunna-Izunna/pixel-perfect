@@ -16,7 +16,8 @@ export const Route = createFileRoute("/bookings/$ref/assign")({
 
 function AssignMoverPage() {
   const { ref } = Route.useParams();
-  const booking = bookings.find((item) => item.ref === ref) ?? bookings[0];
+  const booking = bookings.find((item) => item.ref === ref) ?? bookings.at(0);
+  if (!booking) return <Workspace title="Assign mover"><p className="text-sm text-muted-foreground">No booking is available to assign.</p></Workspace>;
   const [query, setQuery] = useState("");
   const [availableOnly, setAvailableOnly] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
