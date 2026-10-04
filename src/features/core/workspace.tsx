@@ -9,7 +9,7 @@ import { useOperations } from "./operations-store";
 const groups = [
   { title: "Work", items: [{ label: "Overview", to: "/", icon: Gauge }, { label: "Inbox", to: "/inbox", icon: Inbox, count: 3 }, { label: "Needs attention", to: "/attention", icon: ListTodo, count: 4 }, { label: "Quote tool", to: "/quotes/new", icon: WalletCards }, { label: "Reminders", to: "/reminders", icon: FileClock }, { label: "Tickets", to: "/escalations", icon: Ticket }] },
   { title: "Records", items: [{ label: "Bookings", to: "/bookings", icon: MapPin }, { label: "Movers", to: "/movers", icon: Users }, { label: "Customers", to: "/customers", icon: Users }] },
-  { title: "Money", items: [{ label: "Payments", to: "/payments", icon: WalletCards }, { label: "System", to: "/system", icon: HeartPulse }] },
+  { title: "Money", items: [{ label: "Payments", to: "/payments", icon: WalletCards }, { label: "System", to: "/system", icon: HeartPulse }, { label: "Settings", to: "/settings/operations", icon: Settings }] },
 ];
 
 export function CaryMark({ compact = false }: { compact?: boolean }) { return <div className="flex items-center gap-2"><span className="relative grid size-8 place-items-center rounded-md bg-live text-primary-foreground"><span className="size-2 rounded-sm border-2 border-primary-foreground" /><span className="absolute size-4 border border-primary-foreground/70" /></span>{!compact && <span className="text-base font-semibold tracking-normal">cary</span>}</div>; }
@@ -118,7 +118,6 @@ export function Workspace({ title, children, immersive = false }: { title: strin
               </div>
             </div>
           ))}
-          <Link to="/settings/account" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 text-sm font-medium"><Settings size={18} />Settings</Link>
         </div>
       </div>
     )}
