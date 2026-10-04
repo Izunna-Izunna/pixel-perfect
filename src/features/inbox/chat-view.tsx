@@ -35,7 +35,7 @@ export function ChatView({ conversation, fullScreen = false }: { conversation: C
             {conversation.name.split(" ").map((name) => name[0]).join("")}
           </span>
           <div className="min-w-0">
-            <Link to={conversation.role === "Mover" ? "/movers" : "/customers"} className="block truncate text-sm font-semibold hover:underline">
+            <Link to={conversation.role === "Mover" ? "/movers/$id" : "/customers/$id"} params={{ id: conversation.contactId }} className="block truncate text-sm font-semibold hover:underline">
               {conversation.name}
             </Link>
             <div className="mt-0.5 flex items-center gap-1.5">
