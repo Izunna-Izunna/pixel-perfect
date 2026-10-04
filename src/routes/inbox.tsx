@@ -46,14 +46,14 @@ export function InboxPage() {
     return conversation.role.toLowerCase() === filter;
   });
   const selectedTool = scoutTools.find((tool) => tool.id === toolId);
-  const selectedBooking = bookings.find((item) => item.customerId === selected.contactId || item.moverId === selected.contactId);
-  const selectedMover = selected.role === "Mover" ? movers.find((item) => item.id === selected.contactId) : undefined;
-  const matchingTemplates = approvedTemplates.filter((template) => template.target === selected.role || template.target === "Admin Ops").filter((template) => template.name.toLowerCase().includes(templateQuery.toLowerCase()));
+  const selectedBooking = bookings.find((item) => item.customerId === selected?.contactId || item.moverId === selected?.contactId);
+  const selectedMover = selected?.role === "Mover" ? movers.find((item) => item.id === selected.contactId) : undefined;
+  const matchingTemplates = approvedTemplates.filter((template) => template.target === selected?.role || template.target === "Admin Ops").filter((template) => template.name.toLowerCase().includes(templateQuery.toLowerCase()));
   const selectedTemplate = approvedTemplates.find((template) => template.id === selectedTemplateId) ?? matchingTemplates[0];
-  const templateValues = { ...templateDefaults(selected, selectedBooking, selectedMover), ...templateParameters };
+  const templateValues = { ...templateDefaults(selected ?? conversations[0], selectedBooking, selectedMover), ...templateParameters };
   const renderedTemplate = selectedTemplate ? renderTemplate(selectedTemplate, templateValues) : "";
   const templateReady = Boolean(selectedTemplate?.parameters.every((parameter) => templateValues[parameter.key]?.trim()));
-  const toolGroups = scoutTools.reduce<Record<string, typeof scoutTools>>((groups, tool) => { const group = tool.category ?? "Operations"; (groups[group] ??= []).push(tool); return groups; }, {});
+  const toolGroups = scoutTools.reduce<Record<string, Array<(typeof scoutTools)[number]>>>((groups, tool) => { const group = tool.group; (groups[group] ??= []).push(tool); return groups; }, {});
   function openTool(id: string) { setToolId(id); setToolValues({}); }
   function selectTemplate(id: string) { setSelectedTemplateId(id); setTemplateParameters({}); }
   function executeTool() {

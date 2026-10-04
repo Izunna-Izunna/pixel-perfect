@@ -20,7 +20,6 @@ export function ChatView({ conversation, fullScreen = false, onAssignMover, onCo
   const takeover = conversation.takeover;
 
   useEffect(() => { markRead(conversation.id); endRef.current?.scrollIntoView({ block: "end" }); inputRef.current?.focus(); }, [conversation.id, markRead, thread.length]);
-  useEffect(() => { setParameters({}); setSelectedTemplateId(conversation.role === "Mover" ? "job_assigned_mover" : "quote_ready_alert"); }, [conversation.id, conversation.role]);
   useEffect(() => { if (quickReplyRequest) { setMessage(quickReplyRequest.body); inputRef.current?.focus(); } }, [quickReplyRequest]);
   function send(event?: FormEvent<HTMLFormElement>) { event?.preventDefault(); if (closed) { onContextPanelChange?.("templates"); return; } sendMessage(conversation.id, message, attachment || undefined); setMessage(""); setAttachment(""); inputRef.current?.focus(); }
   function handleComposerKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); send(); } }
