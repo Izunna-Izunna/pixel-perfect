@@ -7,7 +7,7 @@ import { Workspace } from "@/features/core/workspace";
 import { useOperations } from "@/features/core/operations-store";
 import { formatMoney } from "@/lib/format";
 
-export const Route = createFileRoute("/payments/")({ component: PaymentsPage });
+export const Route = createFileRoute("/payments")({ component: PaymentsPage });
 
 function PaymentsPage() {
   const [releaseFor, setReleaseFor] = useState<string | null>(null);
