@@ -23,3 +23,8 @@
 - Inbox templates now use the supplied approved-template identities, exact numbered parameter format, target audience and message copy; an operator must complete every required parameter before recording an outbound template event.
 - Manual quotes use an immutable £7 platform fee and itemise the mover payout separately from the customer price.
 - Scout tools remain local operational records until the external execution contract, delivery states and permissions are available; the UI does not claim WhatsApp, Stripe or automated execution occurred.
+
+## Inbox repair pass
+- The mover assignment control now follows a two-step safety path: operators choose a verified mover, see their recorded availability, then continue to dispatch rather than assigning directly from chat.
+- Desktop keeps the selected conversation in the existing three-pane workspace; phone layouts open the dedicated full-screen conversation route, with its composer and context controls visible.
+- The inbox message surface now uses the installed chat primitives, while retaining Cary’s existing visual language and mock-backed operation state.
