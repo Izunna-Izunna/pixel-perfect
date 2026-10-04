@@ -13,6 +13,8 @@ Turn the existing inbox into a reliable, WhatsApp-native human-takeover workspac
    - Use clear WhatsApp-like incoming, Scout, operator, system, attachment, and delivery-state messages.
    - Add live-looking Scout typing and DST-safe London timestamps/relative hints.
    - Keep the 24-hour messaging countdown visible and enforce the approved-template path after closure.
+   - Build an in-chat approved-template picker with a searchable template library, parameter fields, WhatsApp-style preview, and explicit send state.
+   - Cover operational templates for job invitations, mover assignment, quote-ready alerts, booking confirmations, mover onboarding, and internal escalation alerts.
    - Retain the upgraded multi-line composer, keyboard send behaviour, quick replies, attachments, and clear unavailable states for backend-only actions.
 
 3. **Human takeover**
@@ -25,7 +27,12 @@ Turn the existing inbox into a reliable, WhatsApp-native human-takeover workspac
    - Route every supported action to its existing full page; label unavailable connected-service actions clearly rather than faking completion.
    - Make the same context and actions available on phones without obscuring the thread or composer.
 
-5. **Safety and responsive quality**
+5. **WhatsApp connection readiness**
+   - Keep template content, approval status, language, and parameter requirements visible in mock mode.
+   - Mark live template delivery, message delivery receipts, inbound messages, media retrieval, and template administration as connected-service work until a WhatsApp Business connection and durable receiver are enabled.
+   - When live messaging is requested, connect WhatsApp Business and add the required secure message receiver, delivery reconciliation, and stored message history before enabling any real send controls.
+
+6. **Safety and responsive quality**
    - Keep phone numbers masked until an audited reveal interaction.
    - Preserve mobile full-screen thread navigation, sticky composer, and touch-reachable controls.
    - Verify the chat at phone and desktop widths, including sending, template sending, takeover, record links, and unavailable-action feedback.
