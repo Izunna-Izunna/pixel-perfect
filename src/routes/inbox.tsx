@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
@@ -15,12 +15,14 @@ export const Route = createFileRoute("/inbox")({
       { name: "description", content: "Live WhatsApp operations console for Cary operators." },
     ],
   }),
-  component: InboxPage
+  component: InboxLayout
 });
 
-function InboxPage() {
+function InboxLayout() { return <Outlet />; }
+
+export function InboxPage() {
   const { conversations, markRead } = useOperations();
-  const navigate = useNavigate(); const [filter, setFilter] = useState<"all" | "needs" | "taken">("all"); const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<"all" | "needs" | "taken">("all"); const [query, setQuery] = useState("");
   const selected = conversations[0];
   const filtered = conversations.filter((conversation) => {
     const matches = `${conversation.name} ${conversation.role} ${conversation.preview}`.toLowerCase().includes(query.toLowerCase());
