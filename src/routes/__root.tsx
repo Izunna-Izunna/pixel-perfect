@@ -5,7 +5,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
-  return <div className="flex min-h-screen items-center justify-center bg-background p-6"><div className="panel max-w-md p-8 text-center"><p className="font-display text-5xl">404</p><h1 className="mt-3 text-xl font-semibold">This page is not in the control room.</h1><Link to="/" className="mt-6 inline-flex text-sm font-semibold text-primary">Return to overview</Link></div></div>;
+  return <div className="flex min-h-screen items-center justify-center bg-background p-6"><div className="panel max-w-md p-8 text-center"><p className="font-mono text-5xl">404</p><h1 className="mt-3 text-xl font-semibold">This page is not in the control room.</h1><Link to="/" className="mt-6 inline-flex text-sm font-semibold text-primary">Return to overview</Link></div></div>;
 }
 function ErrorComponent({ error, reset }: ErrorComponentProps) {
   const router = useRouter();
@@ -14,7 +14,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({ meta: [{ charSet: "utf-8" }, { name: "viewport", content: "width=device-width, initial-scale=1" }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }], links: [{ rel: "stylesheet", href: appCss }, { rel: "preconnect", href: "https://fonts.googleapis.com" }, { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" }, { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" }] }),
+  head: () => ({ meta: [{ charSet: "utf-8" }, { name: "viewport", content: "width=device-width, initial-scale=1" }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }], links: [{ rel: "stylesheet", href: appCss }, { rel: "preconnect", href: "https://fonts.googleapis.com" }, { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" }, { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Geist:wght@400;500;600;700&display=swap" }] }),
   shellComponent: RootShell, component: RootComponent, notFoundComponent: NotFoundComponent, errorComponent: ErrorComponent,
 });
 function RootShell({ children }: { children: ReactNode }) { return <html lang="en"><head><HeadContent /></head><body>{children}<Scripts /></body></html>; }
