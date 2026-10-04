@@ -42,7 +42,7 @@ export function ChatView({ conversation, fullScreen = false, onAssignMover, onCo
   </section>;
 }
 
-function templateDefaults(conversation: Conversation, booking: typeof bookings[number] | undefined, mover: typeof movers[number] | undefined) {
+function templateDefaults(conversation: Conversation, booking: typeof bookings[number] | undefined, mover: typeof movers[number] | undefined): Record<string, string> {
   const parts = booking?.route.split(" → ") ?? []; const pickup = parts[0] ?? ""; const dropoff = parts[1] ?? ""; const moveTime = booking ? formatLondon(booking.moveAt) : ""; const customer = booking?.customer ?? (conversation.role === "Customer" ? conversation.name : ""); const customerPhone = "Customer phone available to operators";
   return { "1": conversation.role === "Mover" ? (mover?.businessName ?? conversation.name) : customer.split(" ")[0] ?? "", "2": booking?.ref ?? "", "3": pickup, "4": dropoff, "5": moveTime, "6": booking?.items ?? "", "7": "Driver + 1 helper", "8": "Access details confirmed in booking", "9": "", };
 }

@@ -9,7 +9,7 @@ import { formatMoney } from "@/lib/format";
 import { formatLondon } from "@/lib/time";
 
 export const Route = createFileRoute("/quotes/new")({
-  validateSearch: (search: Record<string, unknown>) => ({ booking: typeof search.booking === "string" ? search.booking : undefined }),
+  validateSearch: (search: Record<string, unknown>) => ({ booking: typeof search["booking"] === "string" ? search["booking"] : undefined }),
   head: () => ({ meta: [{ title: "Create quote — Cary Mission Control" }, { name: "description", content: "Create an itemised Cary removal quote with a fixed £7 platform fee." }, { property: "og:title", content: "Create quote — Cary Mission Control" }, { property: "og:description", content: "Create an itemised Cary removal quote with a fixed £7 platform fee." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: QuoteTool,
 });
