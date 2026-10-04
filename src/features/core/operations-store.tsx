@@ -73,7 +73,7 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
   const [reminders, setReminders] = useState(initialReminders);
   const [tickets, setTickets] = useState(initialTickets);
   const [scoutPaused, setScoutPaused] = useState(false);
-  const recordAudit = useCallback((title: string, detail: string, href?: string) => setAudit((items) => [{ id: `audit-${Date.now()}`, title, detail, href, createdAt: now }, ...items]), []);
+  const recordAudit = useCallback((title: string, detail: string, href?: string) => setAudit((items) => [{ id: `audit-${Date.now()}`, title, detail, ...(href ? { href } : {}), createdAt: now }, ...items]), []);
   const markRead = useCallback((sessionId: string) => setConversations((items) => items.map((item) => item.id === sessionId ? { ...item, unread: false } : item)), []);
   const sendMessage = useCallback((sessionId: string, body: string, mediaName?: string) => {
     const trimmed = body.trim();
