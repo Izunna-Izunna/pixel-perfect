@@ -10,6 +10,6 @@
 - [x] Implemented derived overview intelligence, booking controls, customer history controls, inbox action palette, and operational settings.
 - [x] Incorporated the Cary Operations & Scout Engine blueprint into the template, quote, dispatch and Scout-tool workflows.
 - [x] Consolidate inbox templates, quick replies, and Scout tools into expandable right-panel sections.
-- [ ] Rework the inbox layout and responsive behavior; audit and repair every visible inbox control.
-- [ ] Add an in-chat mover picker with availability confirmation before assignment.
-- [ ] Continue the inbox workflow verification and repair pass.
+- [x] Reworked the inbox layout and responsive behavior; repaired and verified the visible inbox controls.
+- [x] Added an in-chat mover picker with availability confirmation before assignment.
+- [x] Completed the current inbox workflow verification and repair pass.
