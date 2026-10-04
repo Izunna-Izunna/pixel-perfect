@@ -32,14 +32,13 @@ export function ChatView({ conversation, fullScreen = false }: { conversation: C
   const booking = bookings.find((item) => item.customerId === conversation.contactId || item.moverId === conversation.contactId);
   const mover = conversation.role === "Mover" ? movers.find((item) => item.id === conversation.contactId) : undefined;
   const takeover = conversation.takeover;
-  const selectedTemplate = templates.find((template) => template.id === selectedTemplateId) ?? templates[0];
+  const selectedTemplate = templates.find((template) => template.id === selectedTemplateId) ?? templates[0] ?? { id: "unavailable", name: "Unavailable", role: "Internal", fields: [], body: "No template is available." };
   const matchingTemplates = templates.filter((template) => template.name.toLowerCase().includes(templateQuery.toLowerCase()) && (template.role === conversation.role || template.role === "Internal"));
   const templateBody = selectedTemplate.body.replace("{{name}}", conversation.name.split(" ")[0]).replace("{{booking}}", booking?.ref ?? "CARY-XXXX").replace("{{pickup}}", booking?.route.split(" → ")[0] ?? "pickup").replace("{{dropoff}}", booking?.route.split(" → ")[1] ?? "drop-off").replace("{{moveTime}}", booking ? formatLondon(booking.moveAt) : "the agreed time").replace("{{payout}}", booking?.total ? `£${(booking.total - 7).toFixed(2)}` : "the agreed amount").replace("{{quote}}", booking?.total ? `£${booking.total.toFixed(2)}` : "the quoted price").replace("{{mover}}", booking?.mover ?? "your chosen mover").replace("{{urgency}}", "operator").replace("{{description}}", "Please review the conversation.");
 
   useEffect(() => { markRead(conversation.id); endRef.current?.scrollIntoView({ block: "end" }); inputRef.current?.focus(); }, [conversation.id, markRead, thread.length]);
   function send(event?: FormEvent<HTMLFormElement>) { event?.preventDefault(); if (closed) { setTemplatePicker(true); return; } sendMessage(conversation.id, message, attachment || undefined); setMessage(""); setAttachment(""); inputRef.current?.focus(); }
   function handleComposerKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); send(); } }
-  function copyPhone() { void navigator.clipboard?.writeText(mover?.phone ?? ""); setCopied(true); window.setTimeout(() => setCopied(false), 1500); }
 
   return <section className={`flex min-h-0 flex-1 flex-col bg-card ${fullScreen ? "h-[100svh] min-h-0" : ""}`}>
     <header className="border-b border-border bg-card">
