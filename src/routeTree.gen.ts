@@ -18,6 +18,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as MoversRouteImport } from './routes/movers'
 import { Route as PaymentsRouteImport } from './routes/payments'
 import { Route as StatesRouteImport } from './routes/states'
+import { Route as InboxSessionIdRouteImport } from './routes/inbox.$sessionId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -64,28 +65,35 @@ const StatesRoute = StatesRouteImport.update({
   path: '/states',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InboxSessionIdRoute = InboxSessionIdRouteImport.update({
+  id: '/$sessionId',
+  path: '/$sessionId',
+  getParentRoute: () => InboxRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/attention': typeof AttentionRoute
   '/bookings': typeof BookingsRoute
   '/customers': typeof CustomersRoute
-  '/inbox': typeof InboxRoute
+  '/inbox': typeof InboxRouteWithChildren
   '/login': typeof LoginRoute
   '/movers': typeof MoversRoute
   '/payments': typeof PaymentsRoute
   '/states': typeof StatesRoute
+  '/inbox/$sessionId': typeof InboxSessionIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/attention': typeof AttentionRoute
   '/bookings': typeof BookingsRoute
   '/customers': typeof CustomersRoute
-  '/inbox': typeof InboxRoute
+  '/inbox': typeof InboxRouteWithChildren
   '/login': typeof LoginRoute
   '/movers': typeof MoversRoute
   '/payments': typeof PaymentsRoute
   '/states': typeof StatesRoute
+  '/inbox/$sessionId': typeof InboxSessionIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -93,11 +101,12 @@ export interface FileRoutesById {
   '/attention': typeof AttentionRoute
   '/bookings': typeof BookingsRoute
   '/customers': typeof CustomersRoute
-  '/inbox': typeof InboxRoute
+  '/inbox': typeof InboxRouteWithChildren
   '/login': typeof LoginRoute
   '/movers': typeof MoversRoute
   '/payments': typeof PaymentsRoute
   '/states': typeof StatesRoute
+  '/inbox/$sessionId': typeof InboxSessionIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
     | '/movers'
     | '/payments'
     | '/states'
+    | '/inbox/$sessionId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/movers'
     | '/payments'
     | '/states'
+    | '/inbox/$sessionId'
   id:
     | '__root__'
     | '/'
@@ -133,6 +144,7 @@ export interface FileRouteTypes {
     | '/movers'
     | '/payments'
     | '/states'
+    | '/inbox/$sessionId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -140,7 +152,7 @@ export interface RootRouteChildren {
   AttentionRoute: typeof AttentionRoute
   BookingsRoute: typeof BookingsRoute
   CustomersRoute: typeof CustomersRoute
-  InboxRoute: typeof InboxRoute
+  InboxRoute: typeof InboxRouteWithChildren
   LoginRoute: typeof LoginRoute
   MoversRoute: typeof MoversRoute
   PaymentsRoute: typeof PaymentsRoute
@@ -212,15 +224,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StatesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/inbox/$sessionId': {
+      id: '/inbox/$sessionId'
+      path: '/$sessionId'
+      fullPath: '/inbox/$sessionId'
+      preLoaderRoute: typeof InboxSessionIdRouteImport
+      parentRoute: typeof InboxRoute
+    }
   }
 }
+
+interface InboxRouteChildren {
+  InboxSessionIdRoute: typeof InboxSessionIdRoute
+}
+
+const InboxRouteChildren: InboxRouteChildren = {
+  InboxSessionIdRoute: InboxSessionIdRoute,
+}
+
+const InboxRouteWithChildren = InboxRoute._addFileChildren(InboxRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AttentionRoute: AttentionRoute,
   BookingsRoute: BookingsRoute,
   CustomersRoute: CustomersRoute,
-  InboxRoute: InboxRoute,
+  InboxRoute: InboxRouteWithChildren,
   LoginRoute: LoginRoute,
   MoversRoute: MoversRoute,
   PaymentsRoute: PaymentsRoute,
