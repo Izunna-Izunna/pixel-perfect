@@ -8,7 +8,7 @@ import { Workspace } from "@/features/core/workspace";
 import { formatMoney, maskPhone } from "@/lib/format";
 import { useOperations } from "@/features/core/operations-store";
 
-export const Route = createFileRoute("/customers/")({
+export const Route = createFileRoute("/_authenticated/customers/")({
   head: () => ({ meta: [{ title: "Customers — Cary Mission Control" }, { name: "description", content: "Customer records and move history for Cary." }, { property: "og:title", content: "Customers — Cary Mission Control" }, { property: "og:description", content: "Customer records and move history for Cary." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: CustomersPage,
 });

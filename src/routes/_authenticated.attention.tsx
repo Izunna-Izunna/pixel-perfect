@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useOperations } from "@/features/core/operations-store";
 import { formatLondon } from "@/lib/time";
 
-export const Route = createFileRoute("/attention")({
+export const Route = createFileRoute("/_authenticated/attention")({
   validateSearch: (search: Record<string, unknown>) => ({
     view: search["view"] === "urgent" || search["view"] === "today" || search["view"] === "reminders" ? search["view"] : "all",
   } as { view: "all" | "urgent" | "today" | "reminders" }),

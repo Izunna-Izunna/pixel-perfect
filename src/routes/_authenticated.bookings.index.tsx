@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useOperations } from "@/features/core/operations-store";
 
-export const Route = createFileRoute("/bookings/")({
+export const Route = createFileRoute("/_authenticated/bookings/")({
   head: () => ({
     meta: [
       { title: "Bookings — Cary Mission Control" },

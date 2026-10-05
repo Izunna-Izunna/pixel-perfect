@@ -11,7 +11,7 @@ import { Workspace } from "@/features/core/workspace";
 import { formatMoney } from "@/lib/format";
 import { formatLondon } from "@/lib/time";
 
-export const Route = createFileRoute("/bookings/$ref/assign")({
+export const Route = createFileRoute("/_authenticated/bookings/$ref/assign")({
   validateSearch: (search: Record<string, unknown>) => ({
     mover: typeof search["mover"] === "string" ? search["mover"] : undefined,
     payout: typeof search["payout"] === "string" ? search["payout"] : undefined,

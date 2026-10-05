@@ -10,7 +10,7 @@ import { formatMoney } from "@/lib/format";
 import { ChartCard, Sparkline, BarList } from "@/features/core/chart-kit";
 import { OperationsChart } from "@/features/overview/operations-chart";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "Overview — Cary Mission Control" },

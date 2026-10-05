@@ -15,10 +15,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Known authorized admin emails as fallback / whitelist
+// Authorized admin email whitelist
 const AUTHORIZED_ADMIN_EMAILS = [
-  'pascalogu28@gmail.com',
-  'paschalugwuanyi98@gmail.com',
+  'caryadmin@gmail.com',
 ];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {

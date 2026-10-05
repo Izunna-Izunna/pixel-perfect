@@ -7,7 +7,7 @@ import { useOperations } from "@/features/core/operations-store";
 import { Workspace } from "@/features/core/workspace";
 import * as api from "@/lib/api";
 
-export const Route = createFileRoute("/system")({
+export const Route = createFileRoute("/_authenticated/system")({
   head: () => ({
     meta: [
       { title: "System — Cary Mission Control" },

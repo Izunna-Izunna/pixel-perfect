@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Workspace } from "@/features/core/workspace";
 import { useAuth } from "@/features/auth/auth-context";
 
-export const Route = createFileRoute("/settings/account")({
+export const Route = createFileRoute("/_authenticated/settings/account")({
   head: () => ({
     meta: [
       { title: "My account — Cary Mission Control" },

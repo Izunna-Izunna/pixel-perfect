@@ -9,62 +9,37 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AttentionRouteImport } from './routes/attention'
-import { Route as BookingsRouteImport } from './routes/bookings'
-import { Route as CustomersRouteImport } from './routes/customers'
-import { Route as EscalationsRouteImport } from './routes/escalations'
-import { Route as InboxRouteImport } from './routes/inbox'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as MoversRouteImport } from './routes/movers'
-import { Route as NotificationsRouteImport } from './routes/notifications'
-import { Route as PaymentsRouteImport } from './routes/payments'
-import { Route as RemindersRouteImport } from './routes/reminders'
 import { Route as StatesRouteImport } from './routes/states'
-import { Route as SystemRouteImport } from './routes/system'
-import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
-import { Route as BookingsRefRouteImport } from './routes/bookings.$ref'
-import { Route as CustomersIndexRouteImport } from './routes/customers.index'
-import { Route as CustomersIdRouteImport } from './routes/customers.$id'
-import { Route as InboxIndexRouteImport } from './routes/inbox.index'
-import { Route as InboxSessionIdRouteImport } from './routes/inbox.$sessionId'
-import { Route as MoversIndexRouteImport } from './routes/movers.index'
-import { Route as MoversIdRouteImport } from './routes/movers.$id'
-import { Route as PaymentsIndexRouteImport } from './routes/payments.index'
-import { Route as QuotesNewRouteImport } from './routes/quotes.new'
-import { Route as SettingsAccountRouteImport } from './routes/settings.account'
-import { Route as SettingsOperationsRouteImport } from './routes/settings.operations'
-import { Route as BookingsRefAssignRouteImport } from './routes/bookings.$ref.assign'
-import { Route as PaymentsIdRefundRouteImport } from './routes/payments.$id.refund'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.index'
+import { Route as AuthenticatedAttentionRouteImport } from './routes/_authenticated.attention'
+import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated.bookings'
+import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated.customers'
+import { Route as AuthenticatedEscalationsRouteImport } from './routes/_authenticated.escalations'
+import { Route as AuthenticatedInboxRouteImport } from './routes/_authenticated.inbox'
+import { Route as AuthenticatedMoversRouteImport } from './routes/_authenticated.movers'
+import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated.notifications'
+import { Route as AuthenticatedPaymentsRouteImport } from './routes/_authenticated.payments'
+import { Route as AuthenticatedRemindersRouteImport } from './routes/_authenticated.reminders'
+import { Route as AuthenticatedSystemRouteImport } from './routes/_authenticated.system'
+import { Route as AuthenticatedBookingsIndexRouteImport } from './routes/_authenticated.bookings.index'
+import { Route as AuthenticatedBookingsRefRouteImport } from './routes/_authenticated.bookings.$ref'
+import { Route as AuthenticatedCustomersIndexRouteImport } from './routes/_authenticated.customers.index'
+import { Route as AuthenticatedCustomersIdRouteImport } from './routes/_authenticated.customers.$id'
+import { Route as AuthenticatedInboxIndexRouteImport } from './routes/_authenticated.inbox.index'
+import { Route as AuthenticatedInboxSessionIdRouteImport } from './routes/_authenticated.inbox.$sessionId'
+import { Route as AuthenticatedMoversIndexRouteImport } from './routes/_authenticated.movers.index'
+import { Route as AuthenticatedMoversIdRouteImport } from './routes/_authenticated.movers.$id'
+import { Route as AuthenticatedPaymentsIndexRouteImport } from './routes/_authenticated.payments.index'
+import { Route as AuthenticatedQuotesNewRouteImport } from './routes/_authenticated.quotes.new'
+import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated.settings.account'
+import { Route as AuthenticatedSettingsOperationsRouteImport } from './routes/_authenticated.settings.operations'
+import { Route as AuthenticatedBookingsRefAssignRouteImport } from './routes/_authenticated.bookings.$ref.assign'
+import { Route as AuthenticatedPaymentsIdRefundRouteImport } from './routes/_authenticated.payments.$id.refund'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AttentionRoute = AttentionRouteImport.update({
-  id: '/attention',
-  path: '/attention',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BookingsRoute = BookingsRouteImport.update({
-  id: '/bookings',
-  path: '/bookings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CustomersRoute = CustomersRouteImport.update({
-  id: '/customers',
-  path: '/customers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EscalationsRoute = EscalationsRouteImport.update({
-  id: '/escalations',
-  path: '/escalations',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InboxRoute = InboxRouteImport.update({
-  id: '/inbox',
-  path: '/inbox',
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -72,205 +47,249 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MoversRoute = MoversRouteImport.update({
-  id: '/movers',
-  path: '/movers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NotificationsRoute = NotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PaymentsRoute = PaymentsRouteImport.update({
-  id: '/payments',
-  path: '/payments',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RemindersRoute = RemindersRouteImport.update({
-  id: '/reminders',
-  path: '/reminders',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const StatesRoute = StatesRouteImport.update({
   id: '/states',
   path: '/states',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SystemRoute = SystemRouteImport.update({
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAttentionRoute = AuthenticatedAttentionRouteImport.update({
+  id: '/attention',
+  path: '/attention',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedBookingsRoute = AuthenticatedBookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedCustomersRoute = AuthenticatedCustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedEscalationsRoute =
+  AuthenticatedEscalationsRouteImport.update({
+    id: '/escalations',
+    path: '/escalations',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedInboxRoute = AuthenticatedInboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedMoversRoute = AuthenticatedMoversRouteImport.update({
+  id: '/movers',
+  path: '/movers',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedNotificationsRoute =
+  AuthenticatedNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedPaymentsRoute = AuthenticatedPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedRemindersRoute = AuthenticatedRemindersRouteImport.update({
+  id: '/reminders',
+  path: '/reminders',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSystemRoute = AuthenticatedSystemRouteImport.update({
   id: '/system',
   path: '/system',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const BookingsIndexRoute = BookingsIndexRouteImport.update({
+const AuthenticatedBookingsIndexRoute =
+  AuthenticatedBookingsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedBookingsRoute,
+  } as any)
+const AuthenticatedBookingsRefRoute =
+  AuthenticatedBookingsRefRouteImport.update({
+    id: '/$ref',
+    path: '/$ref',
+    getParentRoute: () => AuthenticatedBookingsRoute,
+  } as any)
+const AuthenticatedCustomersIndexRoute =
+  AuthenticatedCustomersIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedCustomersRoute,
+  } as any)
+const AuthenticatedCustomersIdRoute =
+  AuthenticatedCustomersIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedCustomersRoute,
+  } as any)
+const AuthenticatedInboxIndexRoute = AuthenticatedInboxIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => BookingsRoute,
+  getParentRoute: () => AuthenticatedInboxRoute,
 } as any)
-const BookingsRefRoute = BookingsRefRouteImport.update({
-  id: '/$ref',
-  path: '/$ref',
-  getParentRoute: () => BookingsRoute,
-} as any)
-const CustomersIndexRoute = CustomersIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => CustomersRoute,
-} as any)
-const CustomersIdRoute = CustomersIdRouteImport.update({
+const AuthenticatedInboxSessionIdRoute =
+  AuthenticatedInboxSessionIdRouteImport.update({
+    id: '/$sessionId',
+    path: '/$sessionId',
+    getParentRoute: () => AuthenticatedInboxRoute,
+  } as any)
+const AuthenticatedMoversIndexRoute =
+  AuthenticatedMoversIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedMoversRoute,
+  } as any)
+const AuthenticatedMoversIdRoute = AuthenticatedMoversIdRouteImport.update({
   id: '/$id',
   path: '/$id',
-  getParentRoute: () => CustomersRoute,
+  getParentRoute: () => AuthenticatedMoversRoute,
 } as any)
-const InboxIndexRoute = InboxIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => InboxRoute,
-} as any)
-const InboxSessionIdRoute = InboxSessionIdRouteImport.update({
-  id: '/$sessionId',
-  path: '/$sessionId',
-  getParentRoute: () => InboxRoute,
-} as any)
-const MoversIndexRoute = MoversIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => MoversRoute,
-} as any)
-const MoversIdRoute = MoversIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => MoversRoute,
-} as any)
-const PaymentsIndexRoute = PaymentsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PaymentsRoute,
-} as any)
-const QuotesNewRoute = QuotesNewRouteImport.update({
+const AuthenticatedPaymentsIndexRoute =
+  AuthenticatedPaymentsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPaymentsRoute,
+  } as any)
+const AuthenticatedQuotesNewRoute = AuthenticatedQuotesNewRouteImport.update({
   id: '/quotes/new',
   path: '/quotes/new',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const SettingsAccountRoute = SettingsAccountRouteImport.update({
-  id: '/settings/account',
-  path: '/settings/account',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsOperationsRoute = SettingsOperationsRouteImport.update({
-  id: '/settings/operations',
-  path: '/settings/operations',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BookingsRefAssignRoute = BookingsRefAssignRouteImport.update({
-  id: '/assign',
-  path: '/assign',
-  getParentRoute: () => BookingsRefRoute,
-} as any)
-const PaymentsIdRefundRoute = PaymentsIdRefundRouteImport.update({
-  id: '/$id/refund',
-  path: '/$id/refund',
-  getParentRoute: () => PaymentsRoute,
-} as any)
+const AuthenticatedSettingsAccountRoute =
+  AuthenticatedSettingsAccountRouteImport.update({
+    id: '/settings/account',
+    path: '/settings/account',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedSettingsOperationsRoute =
+  AuthenticatedSettingsOperationsRouteImport.update({
+    id: '/settings/operations',
+    path: '/settings/operations',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedBookingsRefAssignRoute =
+  AuthenticatedBookingsRefAssignRouteImport.update({
+    id: '/assign',
+    path: '/assign',
+    getParentRoute: () => AuthenticatedBookingsRefRoute,
+  } as any)
+const AuthenticatedPaymentsIdRefundRoute =
+  AuthenticatedPaymentsIdRefundRouteImport.update({
+    id: '/$id/refund',
+    path: '/$id/refund',
+    getParentRoute: () => AuthenticatedPaymentsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/attention': typeof AttentionRoute
-  '/bookings': typeof BookingsRouteWithChildren
-  '/customers': typeof CustomersRouteWithChildren
-  '/escalations': typeof EscalationsRoute
-  '/inbox': typeof InboxRouteWithChildren
+  '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
-  '/movers': typeof MoversRouteWithChildren
-  '/notifications': typeof NotificationsRoute
-  '/payments': typeof PaymentsRouteWithChildren
-  '/reminders': typeof RemindersRoute
   '/states': typeof StatesRoute
-  '/system': typeof SystemRoute
-  '/bookings/$ref': typeof BookingsRefRouteWithChildren
-  '/customers/$id': typeof CustomersIdRoute
-  '/inbox/$sessionId': typeof InboxSessionIdRoute
-  '/movers/$id': typeof MoversIdRoute
-  '/quotes/new': typeof QuotesNewRoute
-  '/settings/account': typeof SettingsAccountRoute
-  '/settings/operations': typeof SettingsOperationsRoute
-  '/bookings/': typeof BookingsIndexRoute
-  '/customers/': typeof CustomersIndexRoute
-  '/inbox/': typeof InboxIndexRoute
-  '/movers/': typeof MoversIndexRoute
-  '/payments/': typeof PaymentsIndexRoute
-  '/bookings/$ref/assign': typeof BookingsRefAssignRoute
-  '/payments/$id/refund': typeof PaymentsIdRefundRoute
+  '/attention': typeof AuthenticatedAttentionRoute
+  '/bookings': typeof AuthenticatedBookingsRouteWithChildren
+  '/customers': typeof AuthenticatedCustomersRouteWithChildren
+  '/escalations': typeof AuthenticatedEscalationsRoute
+  '/inbox': typeof AuthenticatedInboxRouteWithChildren
+  '/movers': typeof AuthenticatedMoversRouteWithChildren
+  '/notifications': typeof AuthenticatedNotificationsRoute
+  '/payments': typeof AuthenticatedPaymentsRouteWithChildren
+  '/reminders': typeof AuthenticatedRemindersRoute
+  '/system': typeof AuthenticatedSystemRoute
+  '/bookings/$ref': typeof AuthenticatedBookingsRefRouteWithChildren
+  '/customers/$id': typeof AuthenticatedCustomersIdRoute
+  '/inbox/$sessionId': typeof AuthenticatedInboxSessionIdRoute
+  '/movers/$id': typeof AuthenticatedMoversIdRoute
+  '/quotes/new': typeof AuthenticatedQuotesNewRoute
+  '/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/settings/operations': typeof AuthenticatedSettingsOperationsRoute
+  '/bookings/': typeof AuthenticatedBookingsIndexRoute
+  '/customers/': typeof AuthenticatedCustomersIndexRoute
+  '/inbox/': typeof AuthenticatedInboxIndexRoute
+  '/movers/': typeof AuthenticatedMoversIndexRoute
+  '/payments/': typeof AuthenticatedPaymentsIndexRoute
+  '/bookings/$ref/assign': typeof AuthenticatedBookingsRefAssignRoute
+  '/payments/$id/refund': typeof AuthenticatedPaymentsIdRefundRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/attention': typeof AttentionRoute
-  '/escalations': typeof EscalationsRoute
   '/login': typeof LoginRoute
-  '/notifications': typeof NotificationsRoute
-  '/reminders': typeof RemindersRoute
   '/states': typeof StatesRoute
-  '/system': typeof SystemRoute
-  '/bookings/$ref': typeof BookingsRefRouteWithChildren
-  '/customers/$id': typeof CustomersIdRoute
-  '/inbox/$sessionId': typeof InboxSessionIdRoute
-  '/movers/$id': typeof MoversIdRoute
-  '/quotes/new': typeof QuotesNewRoute
-  '/settings/account': typeof SettingsAccountRoute
-  '/settings/operations': typeof SettingsOperationsRoute
-  '/bookings': typeof BookingsIndexRoute
-  '/customers': typeof CustomersIndexRoute
-  '/inbox': typeof InboxIndexRoute
-  '/movers': typeof MoversIndexRoute
-  '/payments': typeof PaymentsIndexRoute
-  '/bookings/$ref/assign': typeof BookingsRefAssignRoute
-  '/payments/$id/refund': typeof PaymentsIdRefundRoute
+  '/attention': typeof AuthenticatedAttentionRoute
+  '/escalations': typeof AuthenticatedEscalationsRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
+  '/reminders': typeof AuthenticatedRemindersRoute
+  '/system': typeof AuthenticatedSystemRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/bookings/$ref': typeof AuthenticatedBookingsRefRouteWithChildren
+  '/customers/$id': typeof AuthenticatedCustomersIdRoute
+  '/inbox/$sessionId': typeof AuthenticatedInboxSessionIdRoute
+  '/movers/$id': typeof AuthenticatedMoversIdRoute
+  '/quotes/new': typeof AuthenticatedQuotesNewRoute
+  '/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/settings/operations': typeof AuthenticatedSettingsOperationsRoute
+  '/bookings': typeof AuthenticatedBookingsIndexRoute
+  '/customers': typeof AuthenticatedCustomersIndexRoute
+  '/inbox': typeof AuthenticatedInboxIndexRoute
+  '/movers': typeof AuthenticatedMoversIndexRoute
+  '/payments': typeof AuthenticatedPaymentsIndexRoute
+  '/bookings/$ref/assign': typeof AuthenticatedBookingsRefAssignRoute
+  '/payments/$id/refund': typeof AuthenticatedPaymentsIdRefundRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/attention': typeof AttentionRoute
-  '/bookings': typeof BookingsRouteWithChildren
-  '/customers': typeof CustomersRouteWithChildren
-  '/escalations': typeof EscalationsRoute
-  '/inbox': typeof InboxRouteWithChildren
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
-  '/movers': typeof MoversRouteWithChildren
-  '/notifications': typeof NotificationsRoute
-  '/payments': typeof PaymentsRouteWithChildren
-  '/reminders': typeof RemindersRoute
   '/states': typeof StatesRoute
-  '/system': typeof SystemRoute
-  '/bookings/$ref': typeof BookingsRefRouteWithChildren
-  '/customers/$id': typeof CustomersIdRoute
-  '/inbox/$sessionId': typeof InboxSessionIdRoute
-  '/movers/$id': typeof MoversIdRoute
-  '/quotes/new': typeof QuotesNewRoute
-  '/settings/account': typeof SettingsAccountRoute
-  '/settings/operations': typeof SettingsOperationsRoute
-  '/bookings/': typeof BookingsIndexRoute
-  '/customers/': typeof CustomersIndexRoute
-  '/inbox/': typeof InboxIndexRoute
-  '/movers/': typeof MoversIndexRoute
-  '/payments/': typeof PaymentsIndexRoute
-  '/bookings/$ref/assign': typeof BookingsRefAssignRoute
-  '/payments/$id/refund': typeof PaymentsIdRefundRoute
+  '/_authenticated/attention': typeof AuthenticatedAttentionRoute
+  '/_authenticated/bookings': typeof AuthenticatedBookingsRouteWithChildren
+  '/_authenticated/customers': typeof AuthenticatedCustomersRouteWithChildren
+  '/_authenticated/escalations': typeof AuthenticatedEscalationsRoute
+  '/_authenticated/inbox': typeof AuthenticatedInboxRouteWithChildren
+  '/_authenticated/movers': typeof AuthenticatedMoversRouteWithChildren
+  '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
+  '/_authenticated/payments': typeof AuthenticatedPaymentsRouteWithChildren
+  '/_authenticated/reminders': typeof AuthenticatedRemindersRoute
+  '/_authenticated/system': typeof AuthenticatedSystemRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/bookings/$ref': typeof AuthenticatedBookingsRefRouteWithChildren
+  '/_authenticated/customers/$id': typeof AuthenticatedCustomersIdRoute
+  '/_authenticated/inbox/$sessionId': typeof AuthenticatedInboxSessionIdRoute
+  '/_authenticated/movers/$id': typeof AuthenticatedMoversIdRoute
+  '/_authenticated/quotes/new': typeof AuthenticatedQuotesNewRoute
+  '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/_authenticated/settings/operations': typeof AuthenticatedSettingsOperationsRoute
+  '/_authenticated/bookings/': typeof AuthenticatedBookingsIndexRoute
+  '/_authenticated/customers/': typeof AuthenticatedCustomersIndexRoute
+  '/_authenticated/inbox/': typeof AuthenticatedInboxIndexRoute
+  '/_authenticated/movers/': typeof AuthenticatedMoversIndexRoute
+  '/_authenticated/payments/': typeof AuthenticatedPaymentsIndexRoute
+  '/_authenticated/bookings/$ref/assign': typeof AuthenticatedBookingsRefAssignRoute
+  '/_authenticated/payments/$id/refund': typeof AuthenticatedPaymentsIdRefundRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/login'
+    | '/states'
     | '/attention'
     | '/bookings'
     | '/customers'
     | '/escalations'
     | '/inbox'
-    | '/login'
     | '/movers'
     | '/notifications'
     | '/payments'
     | '/reminders'
-    | '/states'
     | '/system'
     | '/bookings/$ref'
     | '/customers/$id'
@@ -288,14 +307,14 @@ export interface FileRouteTypes {
     | '/payments/$id/refund'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
+    | '/login'
+    | '/states'
     | '/attention'
     | '/escalations'
-    | '/login'
     | '/notifications'
     | '/reminders'
-    | '/states'
     | '/system'
+    | '/'
     | '/bookings/$ref'
     | '/customers/$id'
     | '/inbox/$sessionId'
@@ -312,96 +331,49 @@ export interface FileRouteTypes {
     | '/payments/$id/refund'
   id:
     | '__root__'
-    | '/'
-    | '/attention'
-    | '/bookings'
-    | '/customers'
-    | '/escalations'
-    | '/inbox'
+    | '/_authenticated'
     | '/login'
-    | '/movers'
-    | '/notifications'
-    | '/payments'
-    | '/reminders'
     | '/states'
-    | '/system'
-    | '/bookings/$ref'
-    | '/customers/$id'
-    | '/inbox/$sessionId'
-    | '/movers/$id'
-    | '/quotes/new'
-    | '/settings/account'
-    | '/settings/operations'
-    | '/bookings/'
-    | '/customers/'
-    | '/inbox/'
-    | '/movers/'
-    | '/payments/'
-    | '/bookings/$ref/assign'
-    | '/payments/$id/refund'
+    | '/_authenticated/attention'
+    | '/_authenticated/bookings'
+    | '/_authenticated/customers'
+    | '/_authenticated/escalations'
+    | '/_authenticated/inbox'
+    | '/_authenticated/movers'
+    | '/_authenticated/notifications'
+    | '/_authenticated/payments'
+    | '/_authenticated/reminders'
+    | '/_authenticated/system'
+    | '/_authenticated/'
+    | '/_authenticated/bookings/$ref'
+    | '/_authenticated/customers/$id'
+    | '/_authenticated/inbox/$sessionId'
+    | '/_authenticated/movers/$id'
+    | '/_authenticated/quotes/new'
+    | '/_authenticated/settings/account'
+    | '/_authenticated/settings/operations'
+    | '/_authenticated/bookings/'
+    | '/_authenticated/customers/'
+    | '/_authenticated/inbox/'
+    | '/_authenticated/movers/'
+    | '/_authenticated/payments/'
+    | '/_authenticated/bookings/$ref/assign'
+    | '/_authenticated/payments/$id/refund'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AttentionRoute: typeof AttentionRoute
-  BookingsRoute: typeof BookingsRouteWithChildren
-  CustomersRoute: typeof CustomersRouteWithChildren
-  EscalationsRoute: typeof EscalationsRoute
-  InboxRoute: typeof InboxRouteWithChildren
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
-  MoversRoute: typeof MoversRouteWithChildren
-  NotificationsRoute: typeof NotificationsRoute
-  PaymentsRoute: typeof PaymentsRouteWithChildren
-  RemindersRoute: typeof RemindersRoute
   StatesRoute: typeof StatesRoute
-  SystemRoute: typeof SystemRoute
-  QuotesNewRoute: typeof QuotesNewRoute
-  SettingsAccountRoute: typeof SettingsAccountRoute
-  SettingsOperationsRoute: typeof SettingsOperationsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/attention': {
-      id: '/attention'
-      path: '/attention'
-      fullPath: '/attention'
-      preLoaderRoute: typeof AttentionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/bookings': {
-      id: '/bookings'
-      path: '/bookings'
-      fullPath: '/bookings'
-      preLoaderRoute: typeof BookingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/customers': {
-      id: '/customers'
-      path: '/customers'
-      fullPath: '/customers'
-      preLoaderRoute: typeof CustomersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/escalations': {
-      id: '/escalations'
-      path: '/escalations'
-      fullPath: '/escalations'
-      preLoaderRoute: typeof EscalationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/inbox': {
-      id: '/inbox'
-      path: '/inbox'
-      fullPath: '/inbox'
-      preLoaderRoute: typeof InboxRouteImport
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -411,34 +383,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/movers': {
-      id: '/movers'
-      path: '/movers'
-      fullPath: '/movers'
-      preLoaderRoute: typeof MoversRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notifications': {
-      id: '/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof NotificationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/payments': {
-      id: '/payments'
-      path: '/payments'
-      fullPath: '/payments'
-      preLoaderRoute: typeof PaymentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reminders': {
-      id: '/reminders'
-      path: '/reminders'
-      fullPath: '/reminders'
-      preLoaderRoute: typeof RemindersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/states': {
       id: '/states'
       path: '/states'
@@ -446,210 +390,312 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StatesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/system': {
-      id: '/system'
+    '/_authenticated/': {
+      id: '/_authenticated/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/attention': {
+      id: '/_authenticated/attention'
+      path: '/attention'
+      fullPath: '/attention'
+      preLoaderRoute: typeof AuthenticatedAttentionRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/bookings': {
+      id: '/_authenticated/bookings'
+      path: '/bookings'
+      fullPath: '/bookings'
+      preLoaderRoute: typeof AuthenticatedBookingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/customers': {
+      id: '/_authenticated/customers'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof AuthenticatedCustomersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/escalations': {
+      id: '/_authenticated/escalations'
+      path: '/escalations'
+      fullPath: '/escalations'
+      preLoaderRoute: typeof AuthenticatedEscalationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/inbox': {
+      id: '/_authenticated/inbox'
+      path: '/inbox'
+      fullPath: '/inbox'
+      preLoaderRoute: typeof AuthenticatedInboxRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/movers': {
+      id: '/_authenticated/movers'
+      path: '/movers'
+      fullPath: '/movers'
+      preLoaderRoute: typeof AuthenticatedMoversRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/notifications': {
+      id: '/_authenticated/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/payments': {
+      id: '/_authenticated/payments'
+      path: '/payments'
+      fullPath: '/payments'
+      preLoaderRoute: typeof AuthenticatedPaymentsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/reminders': {
+      id: '/_authenticated/reminders'
+      path: '/reminders'
+      fullPath: '/reminders'
+      preLoaderRoute: typeof AuthenticatedRemindersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/system': {
+      id: '/_authenticated/system'
       path: '/system'
       fullPath: '/system'
-      preLoaderRoute: typeof SystemRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedSystemRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/bookings/': {
-      id: '/bookings/'
+    '/_authenticated/bookings/': {
+      id: '/_authenticated/bookings/'
       path: '/'
       fullPath: '/bookings/'
-      preLoaderRoute: typeof BookingsIndexRouteImport
-      parentRoute: typeof BookingsRoute
+      preLoaderRoute: typeof AuthenticatedBookingsIndexRouteImport
+      parentRoute: typeof AuthenticatedBookingsRoute
     }
-    '/bookings/$ref': {
-      id: '/bookings/$ref'
+    '/_authenticated/bookings/$ref': {
+      id: '/_authenticated/bookings/$ref'
       path: '/$ref'
       fullPath: '/bookings/$ref'
-      preLoaderRoute: typeof BookingsRefRouteImport
-      parentRoute: typeof BookingsRoute
+      preLoaderRoute: typeof AuthenticatedBookingsRefRouteImport
+      parentRoute: typeof AuthenticatedBookingsRoute
     }
-    '/customers/': {
-      id: '/customers/'
+    '/_authenticated/customers/': {
+      id: '/_authenticated/customers/'
       path: '/'
       fullPath: '/customers/'
-      preLoaderRoute: typeof CustomersIndexRouteImport
-      parentRoute: typeof CustomersRoute
+      preLoaderRoute: typeof AuthenticatedCustomersIndexRouteImport
+      parentRoute: typeof AuthenticatedCustomersRoute
     }
-    '/customers/$id': {
-      id: '/customers/$id'
+    '/_authenticated/customers/$id': {
+      id: '/_authenticated/customers/$id'
       path: '/$id'
       fullPath: '/customers/$id'
-      preLoaderRoute: typeof CustomersIdRouteImport
-      parentRoute: typeof CustomersRoute
+      preLoaderRoute: typeof AuthenticatedCustomersIdRouteImport
+      parentRoute: typeof AuthenticatedCustomersRoute
     }
-    '/inbox/': {
-      id: '/inbox/'
+    '/_authenticated/inbox/': {
+      id: '/_authenticated/inbox/'
       path: '/'
       fullPath: '/inbox/'
-      preLoaderRoute: typeof InboxIndexRouteImport
-      parentRoute: typeof InboxRoute
+      preLoaderRoute: typeof AuthenticatedInboxIndexRouteImport
+      parentRoute: typeof AuthenticatedInboxRoute
     }
-    '/inbox/$sessionId': {
-      id: '/inbox/$sessionId'
+    '/_authenticated/inbox/$sessionId': {
+      id: '/_authenticated/inbox/$sessionId'
       path: '/$sessionId'
       fullPath: '/inbox/$sessionId'
-      preLoaderRoute: typeof InboxSessionIdRouteImport
-      parentRoute: typeof InboxRoute
+      preLoaderRoute: typeof AuthenticatedInboxSessionIdRouteImport
+      parentRoute: typeof AuthenticatedInboxRoute
     }
-    '/movers/': {
-      id: '/movers/'
+    '/_authenticated/movers/': {
+      id: '/_authenticated/movers/'
       path: '/'
       fullPath: '/movers/'
-      preLoaderRoute: typeof MoversIndexRouteImport
-      parentRoute: typeof MoversRoute
+      preLoaderRoute: typeof AuthenticatedMoversIndexRouteImport
+      parentRoute: typeof AuthenticatedMoversRoute
     }
-    '/movers/$id': {
-      id: '/movers/$id'
+    '/_authenticated/movers/$id': {
+      id: '/_authenticated/movers/$id'
       path: '/$id'
       fullPath: '/movers/$id'
-      preLoaderRoute: typeof MoversIdRouteImport
-      parentRoute: typeof MoversRoute
+      preLoaderRoute: typeof AuthenticatedMoversIdRouteImport
+      parentRoute: typeof AuthenticatedMoversRoute
     }
-    '/payments/': {
-      id: '/payments/'
+    '/_authenticated/payments/': {
+      id: '/_authenticated/payments/'
       path: '/'
       fullPath: '/payments/'
-      preLoaderRoute: typeof PaymentsIndexRouteImport
-      parentRoute: typeof PaymentsRoute
+      preLoaderRoute: typeof AuthenticatedPaymentsIndexRouteImport
+      parentRoute: typeof AuthenticatedPaymentsRoute
     }
-    '/quotes/new': {
-      id: '/quotes/new'
+    '/_authenticated/quotes/new': {
+      id: '/_authenticated/quotes/new'
       path: '/quotes/new'
       fullPath: '/quotes/new'
-      preLoaderRoute: typeof QuotesNewRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedQuotesNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/settings/account': {
-      id: '/settings/account'
+    '/_authenticated/settings/account': {
+      id: '/_authenticated/settings/account'
       path: '/settings/account'
       fullPath: '/settings/account'
-      preLoaderRoute: typeof SettingsAccountRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedSettingsAccountRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/settings/operations': {
-      id: '/settings/operations'
+    '/_authenticated/settings/operations': {
+      id: '/_authenticated/settings/operations'
       path: '/settings/operations'
       fullPath: '/settings/operations'
-      preLoaderRoute: typeof SettingsOperationsRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedSettingsOperationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/bookings/$ref/assign': {
-      id: '/bookings/$ref/assign'
+    '/_authenticated/bookings/$ref/assign': {
+      id: '/_authenticated/bookings/$ref/assign'
       path: '/assign'
       fullPath: '/bookings/$ref/assign'
-      preLoaderRoute: typeof BookingsRefAssignRouteImport
-      parentRoute: typeof BookingsRefRoute
+      preLoaderRoute: typeof AuthenticatedBookingsRefAssignRouteImport
+      parentRoute: typeof AuthenticatedBookingsRefRoute
     }
-    '/payments/$id/refund': {
-      id: '/payments/$id/refund'
+    '/_authenticated/payments/$id/refund': {
+      id: '/_authenticated/payments/$id/refund'
       path: '/$id/refund'
       fullPath: '/payments/$id/refund'
-      preLoaderRoute: typeof PaymentsIdRefundRouteImport
-      parentRoute: typeof PaymentsRoute
+      preLoaderRoute: typeof AuthenticatedPaymentsIdRefundRouteImport
+      parentRoute: typeof AuthenticatedPaymentsRoute
     }
   }
 }
 
-interface BookingsRefRouteChildren {
-  BookingsRefAssignRoute: typeof BookingsRefAssignRoute
+interface AuthenticatedBookingsRefRouteChildren {
+  AuthenticatedBookingsRefAssignRoute: typeof AuthenticatedBookingsRefAssignRoute
 }
 
-const BookingsRefRouteChildren: BookingsRefRouteChildren = {
-  BookingsRefAssignRoute: BookingsRefAssignRoute,
+const AuthenticatedBookingsRefRouteChildren: AuthenticatedBookingsRefRouteChildren =
+  {
+    AuthenticatedBookingsRefAssignRoute: AuthenticatedBookingsRefAssignRoute,
+  }
+
+const AuthenticatedBookingsRefRouteWithChildren =
+  AuthenticatedBookingsRefRoute._addFileChildren(
+    AuthenticatedBookingsRefRouteChildren,
+  )
+
+interface AuthenticatedBookingsRouteChildren {
+  AuthenticatedBookingsRefRoute: typeof AuthenticatedBookingsRefRouteWithChildren
+  AuthenticatedBookingsIndexRoute: typeof AuthenticatedBookingsIndexRoute
 }
 
-const BookingsRefRouteWithChildren = BookingsRefRoute._addFileChildren(
-  BookingsRefRouteChildren,
-)
-
-interface BookingsRouteChildren {
-  BookingsRefRoute: typeof BookingsRefRouteWithChildren
-  BookingsIndexRoute: typeof BookingsIndexRoute
+const AuthenticatedBookingsRouteChildren: AuthenticatedBookingsRouteChildren = {
+  AuthenticatedBookingsRefRoute: AuthenticatedBookingsRefRouteWithChildren,
+  AuthenticatedBookingsIndexRoute: AuthenticatedBookingsIndexRoute,
 }
 
-const BookingsRouteChildren: BookingsRouteChildren = {
-  BookingsRefRoute: BookingsRefRouteWithChildren,
-  BookingsIndexRoute: BookingsIndexRoute,
+const AuthenticatedBookingsRouteWithChildren =
+  AuthenticatedBookingsRoute._addFileChildren(
+    AuthenticatedBookingsRouteChildren,
+  )
+
+interface AuthenticatedCustomersRouteChildren {
+  AuthenticatedCustomersIdRoute: typeof AuthenticatedCustomersIdRoute
+  AuthenticatedCustomersIndexRoute: typeof AuthenticatedCustomersIndexRoute
 }
 
-const BookingsRouteWithChildren = BookingsRoute._addFileChildren(
-  BookingsRouteChildren,
-)
+const AuthenticatedCustomersRouteChildren: AuthenticatedCustomersRouteChildren =
+  {
+    AuthenticatedCustomersIdRoute: AuthenticatedCustomersIdRoute,
+    AuthenticatedCustomersIndexRoute: AuthenticatedCustomersIndexRoute,
+  }
 
-interface CustomersRouteChildren {
-  CustomersIdRoute: typeof CustomersIdRoute
-  CustomersIndexRoute: typeof CustomersIndexRoute
+const AuthenticatedCustomersRouteWithChildren =
+  AuthenticatedCustomersRoute._addFileChildren(
+    AuthenticatedCustomersRouteChildren,
+  )
+
+interface AuthenticatedInboxRouteChildren {
+  AuthenticatedInboxSessionIdRoute: typeof AuthenticatedInboxSessionIdRoute
+  AuthenticatedInboxIndexRoute: typeof AuthenticatedInboxIndexRoute
 }
 
-const CustomersRouteChildren: CustomersRouteChildren = {
-  CustomersIdRoute: CustomersIdRoute,
-  CustomersIndexRoute: CustomersIndexRoute,
+const AuthenticatedInboxRouteChildren: AuthenticatedInboxRouteChildren = {
+  AuthenticatedInboxSessionIdRoute: AuthenticatedInboxSessionIdRoute,
+  AuthenticatedInboxIndexRoute: AuthenticatedInboxIndexRoute,
 }
 
-const CustomersRouteWithChildren = CustomersRoute._addFileChildren(
-  CustomersRouteChildren,
-)
+const AuthenticatedInboxRouteWithChildren =
+  AuthenticatedInboxRoute._addFileChildren(AuthenticatedInboxRouteChildren)
 
-interface InboxRouteChildren {
-  InboxSessionIdRoute: typeof InboxSessionIdRoute
-  InboxIndexRoute: typeof InboxIndexRoute
+interface AuthenticatedMoversRouteChildren {
+  AuthenticatedMoversIdRoute: typeof AuthenticatedMoversIdRoute
+  AuthenticatedMoversIndexRoute: typeof AuthenticatedMoversIndexRoute
 }
 
-const InboxRouteChildren: InboxRouteChildren = {
-  InboxSessionIdRoute: InboxSessionIdRoute,
-  InboxIndexRoute: InboxIndexRoute,
+const AuthenticatedMoversRouteChildren: AuthenticatedMoversRouteChildren = {
+  AuthenticatedMoversIdRoute: AuthenticatedMoversIdRoute,
+  AuthenticatedMoversIndexRoute: AuthenticatedMoversIndexRoute,
 }
 
-const InboxRouteWithChildren = InboxRoute._addFileChildren(InboxRouteChildren)
+const AuthenticatedMoversRouteWithChildren =
+  AuthenticatedMoversRoute._addFileChildren(AuthenticatedMoversRouteChildren)
 
-interface MoversRouteChildren {
-  MoversIdRoute: typeof MoversIdRoute
-  MoversIndexRoute: typeof MoversIndexRoute
+interface AuthenticatedPaymentsRouteChildren {
+  AuthenticatedPaymentsIndexRoute: typeof AuthenticatedPaymentsIndexRoute
+  AuthenticatedPaymentsIdRefundRoute: typeof AuthenticatedPaymentsIdRefundRoute
 }
 
-const MoversRouteChildren: MoversRouteChildren = {
-  MoversIdRoute: MoversIdRoute,
-  MoversIndexRoute: MoversIndexRoute,
+const AuthenticatedPaymentsRouteChildren: AuthenticatedPaymentsRouteChildren = {
+  AuthenticatedPaymentsIndexRoute: AuthenticatedPaymentsIndexRoute,
+  AuthenticatedPaymentsIdRefundRoute: AuthenticatedPaymentsIdRefundRoute,
 }
 
-const MoversRouteWithChildren =
-  MoversRoute._addFileChildren(MoversRouteChildren)
+const AuthenticatedPaymentsRouteWithChildren =
+  AuthenticatedPaymentsRoute._addFileChildren(
+    AuthenticatedPaymentsRouteChildren,
+  )
 
-interface PaymentsRouteChildren {
-  PaymentsIndexRoute: typeof PaymentsIndexRoute
-  PaymentsIdRefundRoute: typeof PaymentsIdRefundRoute
+interface AuthenticatedRouteChildren {
+  AuthenticatedAttentionRoute: typeof AuthenticatedAttentionRoute
+  AuthenticatedBookingsRoute: typeof AuthenticatedBookingsRouteWithChildren
+  AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRouteWithChildren
+  AuthenticatedEscalationsRoute: typeof AuthenticatedEscalationsRoute
+  AuthenticatedInboxRoute: typeof AuthenticatedInboxRouteWithChildren
+  AuthenticatedMoversRoute: typeof AuthenticatedMoversRouteWithChildren
+  AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
+  AuthenticatedPaymentsRoute: typeof AuthenticatedPaymentsRouteWithChildren
+  AuthenticatedRemindersRoute: typeof AuthenticatedRemindersRoute
+  AuthenticatedSystemRoute: typeof AuthenticatedSystemRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedQuotesNewRoute: typeof AuthenticatedQuotesNewRoute
+  AuthenticatedSettingsAccountRoute: typeof AuthenticatedSettingsAccountRoute
+  AuthenticatedSettingsOperationsRoute: typeof AuthenticatedSettingsOperationsRoute
 }
 
-const PaymentsRouteChildren: PaymentsRouteChildren = {
-  PaymentsIndexRoute: PaymentsIndexRoute,
-  PaymentsIdRefundRoute: PaymentsIdRefundRoute,
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAttentionRoute: AuthenticatedAttentionRoute,
+  AuthenticatedBookingsRoute: AuthenticatedBookingsRouteWithChildren,
+  AuthenticatedCustomersRoute: AuthenticatedCustomersRouteWithChildren,
+  AuthenticatedEscalationsRoute: AuthenticatedEscalationsRoute,
+  AuthenticatedInboxRoute: AuthenticatedInboxRouteWithChildren,
+  AuthenticatedMoversRoute: AuthenticatedMoversRouteWithChildren,
+  AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
+  AuthenticatedPaymentsRoute: AuthenticatedPaymentsRouteWithChildren,
+  AuthenticatedRemindersRoute: AuthenticatedRemindersRoute,
+  AuthenticatedSystemRoute: AuthenticatedSystemRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedQuotesNewRoute: AuthenticatedQuotesNewRoute,
+  AuthenticatedSettingsAccountRoute: AuthenticatedSettingsAccountRoute,
+  AuthenticatedSettingsOperationsRoute: AuthenticatedSettingsOperationsRoute,
 }
 
-const PaymentsRouteWithChildren = PaymentsRoute._addFileChildren(
-  PaymentsRouteChildren,
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AttentionRoute: AttentionRoute,
-  BookingsRoute: BookingsRouteWithChildren,
-  CustomersRoute: CustomersRouteWithChildren,
-  EscalationsRoute: EscalationsRoute,
-  InboxRoute: InboxRouteWithChildren,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
-  MoversRoute: MoversRouteWithChildren,
-  NotificationsRoute: NotificationsRoute,
-  PaymentsRoute: PaymentsRouteWithChildren,
-  RemindersRoute: RemindersRoute,
   StatesRoute: StatesRoute,
-  SystemRoute: SystemRoute,
-  QuotesNewRoute: QuotesNewRoute,
-  SettingsAccountRoute: SettingsAccountRoute,
-  SettingsOperationsRoute: SettingsOperationsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useOperations, type TeamMember } from "@/features/core/operations-store";
 import { Workspace } from "@/features/core/workspace";
 
-export const Route = createFileRoute("/settings/operations")({
+export const Route = createFileRoute("/_authenticated/settings/operations")({
   head: () => ({ meta: [{ title: "Operations settings — Cary Mission Control" }, { name: "description", content: "Operational messaging, templates, team and pricing controls for Cary." }, { property: "og:title", content: "Operations settings — Cary Mission Control" }, { property: "og:description", content: "Operational messaging, templates, team and pricing controls for Cary." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: OperationsSettings,
 });

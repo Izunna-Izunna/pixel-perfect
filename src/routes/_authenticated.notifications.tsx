@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useOperations } from "@/features/core/operations-store";
 import { Workspace } from "@/features/core/workspace";
 
-export const Route = createFileRoute("/notifications")({
+export const Route = createFileRoute("/_authenticated/notifications")({
   head: () => ({ meta: [{ title: "Notifications — Cary Mission Control" }, { name: "description", content: "Operational notifications for Cary Mission Control." }, { property: "og:title", content: "Notifications — Cary Mission Control" }, { property: "og:description", content: "Operational notifications for Cary Mission Control." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: NotificationsPage,
 });

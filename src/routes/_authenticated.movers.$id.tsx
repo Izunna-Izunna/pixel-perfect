@@ -12,7 +12,7 @@ import { formatMoney } from "@/lib/format";
 import { formatLondon } from "@/lib/time";
 import { useOperations } from "@/features/core/operations-store";
 
-export const Route = createFileRoute("/movers/$id")({
+export const Route = createFileRoute("/_authenticated/movers/$id")({
   head: () => ({ meta: [{ title: "Mover record — Cary Mission Control" }, { name: "description", content: "Mover identity, documents, jobs, payouts and reviews for Cary operators." }, { property: "og:title", content: "Mover record — Cary Mission Control" }, { property: "og:description", content: "Mover identity, documents, jobs, payouts and reviews for Cary operators." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: MoverProfile,
 });

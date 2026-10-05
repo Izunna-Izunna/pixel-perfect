@@ -10,7 +10,7 @@ import { formatMoney } from "@/lib/format";
 import { formatLondon } from "@/lib/time";
 import { useOperations } from "@/features/core/operations-store";
 
-export const Route = createFileRoute("/customers/$id")({
+export const Route = createFileRoute("/_authenticated/customers/$id")({
   head: () => ({ meta: [{ title: "Customer record — Cary Mission Control" }, { name: "description", content: "Customer details, moves, payments and conversations for Cary operators." }, { property: "og:title", content: "Customer record — Cary Mission Control" }, { property: "og:description", content: "Customer details, moves, payments and conversations for Cary operators." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: CustomerProfile,
 });

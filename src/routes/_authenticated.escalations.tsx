@@ -8,7 +8,7 @@ import { useOperations, type Ticket } from "@/features/core/operations-store";
 import { Workspace } from "@/features/core/workspace";
 import { formatLondon, relativeLondon } from "@/lib/time";
 
-export const Route = createFileRoute("/escalations")({
+export const Route = createFileRoute("/_authenticated/escalations")({
   head: () => ({ meta: [{ title: "Tickets — Cary Mission Control" }, { name: "description", content: "Operational tickets, owners, notes and booking handoffs for Cary operators." }, { property: "og:title", content: "Tickets — Cary Mission Control" }, { property: "og:description", content: "Operational tickets, owners, notes and booking handoffs for Cary operators." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: Escalations,
 });

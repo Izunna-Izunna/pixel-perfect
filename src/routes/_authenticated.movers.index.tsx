@@ -5,7 +5,7 @@ import { StatusBadge } from "@/features/core/status-badge";
 import { Workspace } from "@/features/core/workspace";
 import { useOperations } from "@/features/core/operations-store";
 
-export const Route = createFileRoute("/movers/")({
+export const Route = createFileRoute("/_authenticated/movers/")({
   head: () => ({ meta: [{ title: "Movers — Cary Mission Control" }, { name: "description", content: "Verified mover records for Cary operations." }, { property: "og:title", content: "Movers — Cary Mission Control" }, { property: "og:description", content: "Verified mover records for Cary operations." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: MoversPage,
 });

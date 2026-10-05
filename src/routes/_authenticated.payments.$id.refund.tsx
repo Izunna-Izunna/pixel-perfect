@@ -7,7 +7,7 @@ import { useOperations } from "@/features/core/operations-store";
 import { Workspace } from "@/features/core/workspace";
 import { formatMoney } from "@/lib/format";
 
-export const Route = createFileRoute("/payments/$id/refund")({
+export const Route = createFileRoute("/_authenticated/payments/$id/refund")({
   head: () => ({ meta: [{ title: "Refund payment — Cary Mission Control" }, { name: "description", content: "Review, preview and confirm a Cary customer refund." }, { property: "og:title", content: "Refund payment — Cary Mission Control" }, { property: "og:description", content: "Review, preview and confirm a Cary customer refund." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: RefundPage,
 });
