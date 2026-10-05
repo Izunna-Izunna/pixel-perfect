@@ -419,9 +419,12 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
 
   const assignMover = useCallback(
     (bookingRef: string, mover: { id: string; name: string }, payout: number, note: string) => {
+      const target = bookings.find((b) => b.ref === bookingRef || b.id === bookingRef);
+      const idToUse = target?.id || bookingRef;
+
       setBookings((items) =>
         items.map((booking) =>
-          booking.ref === bookingRef
+          booking.ref === bookingRef || booking.id === bookingRef
             ? { ...booking, mover: mover.name, moverId: mover.id, total: payout + 7, status: "booked" }
             : booking
         )
@@ -442,11 +445,11 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
       recordAudit("Mover assigned", `${mover.name} assigned to ${bookingRef} for £${payout.toFixed(2)}. ${note}`.trim(), `/bookings/${bookingRef}`);
 
       // Call Railway assign-mover endpoint
-      api.assignMoverToBooking(bookingRef, mover.id, payout).catch((err) => {
+      api.assignMoverToBooking(idToUse, mover.id, payout).catch((err) => {
         console.warn("Failed to assign mover on Railway:", err);
       });
     },
-    [recordAudit]
+    [bookings, recordAudit]
   );
 
   const releasePayout = useCallback(

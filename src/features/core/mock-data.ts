@@ -24,6 +24,7 @@ export type AttentionItem = {
 };
 
 export type Booking = {
+  id?: string;
   ref: string;
   customer: string;
   customerId: string;
@@ -53,6 +54,7 @@ export type MoverRecord = {
   id: string;
   name: string;
   businessName: string;
+  fullName?: string;
   phone: string;
   status: "pending_verification" | "verified" | "rejected" | "suspended";
   vehicles: string[];
@@ -70,6 +72,20 @@ export type MoverRecord = {
   responseTime: string;
   lifetimeEarnings: number;
   openIssue: string | null;
+  // Onboarding & Document fields
+  licenceDocUrl?: string | null;
+  insuranceDocUrl?: string | null;
+  verificationDocUrls?: string[];
+  serviceAreas?: string[];
+  services?: string[];
+  teamSize?: string;
+  availability?: string[];
+  pricingModel?: string;
+  insuranceType?: string;
+  drivingLicenceType?: string;
+  jobPreferences?: string;
+  jobExclusions?: string;
+  onboardingData?: Record<string, any>;
 };
 
 export type MoverReview = {

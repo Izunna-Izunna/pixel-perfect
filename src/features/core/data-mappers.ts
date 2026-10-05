@@ -30,6 +30,7 @@ export function mapApiBookingToBooking(b: ApiBooking): Booking {
   const total = Number(paymentAmount) || (Number(quotePrice) ? Number(quotePrice) + 7 : 0);
 
   return {
+    id: b.id,
     ref,
     customer: customerName,
     customerId: b.customer_id,
@@ -60,16 +61,36 @@ export function mapApiCustomerToCustomerRecord(c: ApiCustomer): CustomerRecord {
 
 export function mapApiMoverToMoverRecord(m: ApiMover): MoverRecord {
   const isVerified = m.status === 'verified';
+  const ob = (m.onboarding_data || {}) as Record<string, any>;
+  const fullName = m.full_name || ob['full_name'] || m.name;
+  const businessName = m.business_name || ob['business_name'] || m.name;
+  const licenceUrl = m.licence_doc_url || ob['licence_doc_url'] || null;
+  const insuranceUrl = m.insurance_doc_url || ob['insurance_doc_url'] || null;
+  const verificationUrls = m.verification_doc_urls || ob['verification_doc_urls'] || [];
+  const serviceAreas = m.service_areas || ob['service_areas'] || [];
+  const services = m.services || ob['services'] || [];
+  const teamSize = m.team_size || ob['team_size'] || undefined;
+  const availability = m.availability || ob['availability'] || [];
+  const pricingModel = m.pricing_model || ob['pricing_model'] || undefined;
+  const insuranceType = m.insurance_type || ob['insurance_type'] || undefined;
+  const drivingLicenceType = m.driving_licence_type || ob['driving_licence_type'] || undefined;
+  const jobPreferences = m.job_preferences || ob['job_preferences'] || undefined;
+  const jobExclusions = m.job_exclusions || ob['job_exclusions'] || undefined;
+
+  const vehicleDisplay = m.van_size || ob['vehicle'] || 'Luton van';
+  const cleanVehicles = [vehicleDisplay.replace(/_/g, ' ')];
+
   return {
     id: m.id,
     name: m.name,
-    businessName: m.name,
+    businessName,
+    fullName,
     phone: m.whatsapp_number,
     status: isVerified ? 'verified' : m.status === 'rejected' ? 'rejected' : 'pending_verification',
-    vehicles: m.van_size ? [m.van_size] : ['Luton van'],
-    insurance: 'Public liability and goods in transit',
+    vehicles: cleanVehicles,
+    insurance: insuranceType ? `${insuranceType.replace(/_/g, ' ')} insurance` : 'Public liability and goods in transit',
     insuranceExpiresAt: new Date(Date.now() + 180 * 86400000).toISOString(),
-    licenceStatus: isVerified ? 'approved' : 'submitted',
+    licenceStatus: isVerified ? 'approved' : m.status === 'rejected' ? 'rejected' : 'submitted',
     licenceUploadedAt: m.created_at,
     rating: m.rating ?? 5.0,
     reviewCount: m.total_jobs ?? 0,
@@ -77,10 +98,23 @@ export function mapApiMoverToMoverRecord(m: ApiMover): MoverRecord {
     verifiedAt: isVerified ? m.created_at : null,
     lastActiveAt: m.created_at,
     jobsCompleted: m.total_jobs ?? 0,
-    acceptanceRate: '92%',
+    acceptanceRate: '95%',
     responseTime: '5 min',
     lifetimeEarnings: (m.total_jobs ?? 0) * 120,
     openIssue: isVerified ? null : 'Documents require review',
+    licenceDocUrl: licenceUrl,
+    insuranceDocUrl: insuranceUrl,
+    verificationDocUrls: verificationUrls,
+    serviceAreas,
+    services,
+    teamSize,
+    availability,
+    pricingModel,
+    insuranceType,
+    drivingLicenceType,
+    jobPreferences,
+    jobExclusions,
+    onboardingData: ob,
   };
 }
 

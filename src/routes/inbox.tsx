@@ -75,24 +75,29 @@ export function InboxPage() {
 
   return (
     <Workspace title="Inbox">
-      <div className="grid min-h-[calc(100vh-10rem)] overflow-hidden border border-border bg-card lg:grid-cols-[320px_minmax(0,1fr)_260px]">
-        <aside className="border-b border-border lg:border-b-0 lg:border-r">
-          <div className="border-b border-border p-4">
+      <div className="grid h-[calc(100vh-8.5rem)] min-h-[550px] overflow-hidden border border-border bg-card lg:grid-cols-[320px_minmax(0,1fr)_280px]">
+        {/* ── LEFT: CONVERSATION LIST ── */}
+        <aside className="flex flex-col h-full min-h-0 border-b border-border lg:border-b-0 lg:border-r overflow-hidden">
+          <div className="shrink-0 border-b border-border p-4">
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold">Conversations</p>
-              <span className="rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold text-destructive-foreground">3</span>
+              <span className="rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold text-destructive-foreground">
+                {conversations.filter(c => c.unread).length || 3}
+              </span>
             </div>
             <div className="relative mt-3">
               <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
               <Input value={query} onChange={(event) => setQuery(event.target.value)} className="h-9 pl-9 text-xs" placeholder="Name, number or booking" />
             </div>
           </div>
-          <div className="flex border-b border-border px-2">
-            <button onClick={() => setFilter("all")} className={`${filter === "all" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs`}>All</button>
-            <button onClick={() => setFilter("needs")} className={`${filter === "needs" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs`}>Needs action</button>
-            <button onClick={() => setFilter("taken")} className={`${filter === "taken" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs`}>Taken over</button><button onClick={() => setFilter("customer")} className={`${filter === "customer" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs`}>Customers</button><button onClick={() => setFilter("mover")} className={`${filter === "mover" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs`}>Movers</button>
+          <div className="shrink-0 flex border-b border-border px-2 overflow-x-auto">
+            <button onClick={() => setFilter("all")} className={`${filter === "all" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs shrink-0`}>All</button>
+            <button onClick={() => setFilter("needs")} className={`${filter === "needs" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs shrink-0`}>Needs action</button>
+            <button onClick={() => setFilter("taken")} className={`${filter === "taken" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs shrink-0`}>Taken over</button>
+            <button onClick={() => setFilter("customer")} className={`${filter === "customer" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs shrink-0`}>Customers</button>
+            <button onClick={() => setFilter("mover")} className={`${filter === "mover" ? "border-b-2 border-foreground font-semibold" : "text-muted-foreground"} px-3 py-2 text-xs shrink-0`}>Movers</button>
           </div>
-          <div className="divide-y divide-border">
+          <div className="flex-1 overflow-y-auto min-h-0 divide-y divide-border">
             {filtered.map((conversation) => (
               <ConversationRow
                 conversation={conversation}
@@ -107,12 +112,14 @@ export function InboxPage() {
           </div>
         </aside>
         
-        <div className="hidden lg:flex">
+        {/* ── MIDDLE: ACTIVE CHAT THREAD ── */}
+        <div className="hidden lg:flex flex-col h-full min-h-0 overflow-hidden">
           <ChatView conversation={selected} onAssignMover={() => setAssignOpen(true)} onContextPanelChange={setContextPanel} quickReplyRequest={quickReplyRequest} />
         </div>
         
-        <aside className="hidden border-l border-border p-5 lg:block">
-          {contextPanel === "details" && <><p className="micro-label">Conversation context</p><h2 className="mt-2 text-base font-semibold">{selected.name}</h2><p className="mt-1 text-xs text-muted-foreground">+44 7•• ••• 1234</p><div className="mt-6 border-t border-border pt-5"><p className="micro-label">Active booking</p><Link to="/bookings" className="mt-2 block border border-border p-3 hover:bg-muted"><p className="font-mono text-xs font-semibold">CARY-8291</p><p className="mt-1 text-xs text-muted-foreground">CF10 1AA → CF24 4PB</p><p className="mt-2 text-xs font-medium text-live-foreground">In transit</p></Link></div></>}
+        {/* ── RIGHT: CONTEXT & TOOLS PANEL ── */}
+        <aside className="hidden border-l border-border p-5 lg:flex flex-col h-full min-h-0 overflow-y-auto bg-card">
+          {contextPanel === "details" && <><p className="micro-label">Conversation context</p><h2 className="mt-2 text-base font-semibold">{selected.name}</h2><p className="mt-1 text-xs text-muted-foreground">{selected.contactId}</p><div className="mt-6 border-t border-border pt-5"><p className="micro-label">Active booking</p><Link to="/bookings" className="mt-2 block border border-border p-3 hover:bg-muted"><p className="font-mono text-xs font-semibold">{selectedBooking?.ref || "No active booking"}</p><p className="mt-1 text-xs text-muted-foreground">{selectedBooking?.route || "Route pending"}</p><p className="mt-2 text-xs font-medium text-live-foreground capitalize">{selectedBooking?.status.replace("_", " ") || "In conversation"}</p></Link></div></>}
           {contextPanel === "quickReplies" && <SidePanelHeading label="Quick replies" title="Reply shortcuts" onClose={() => setContextPanel("details")}><p className="mt-2 text-xs text-muted-foreground">Choose a reply to add it to the composer.</p><div className="mt-5 grid gap-2">{["Hi there! I'm jumping in from the Cary operations team to help directly.", "Your mover has confirmed and is currently en route to your pickup location.", "Could you please upload a quick photo of the items and the doorway or stairs?"].map((reply, index) => <Button key={reply} variant="outline" className="h-auto justify-start whitespace-normal px-3 py-3 text-left text-xs" onClick={() => setQuickReplyRequest({ id: Date.now() + index, body: reply })}><Zap size={14} />{reply}</Button>)}</div></SidePanelHeading>}
           {contextPanel === "templates" && <SidePanelHeading label="Approved templates" title="WhatsApp message library" onClose={() => setContextPanel("details")}><p className="mt-2 text-xs text-muted-foreground">Use a template when the 24-hour window is closed.</p><Input className="mt-4 h-9" value={templateQuery} onChange={(event) => setTemplateQuery(event.target.value)} placeholder="Search templates" /><div className="mt-3 grid gap-1">{matchingTemplates.map((template) => <Button key={template.id} variant={template.id === selectedTemplate?.id ? "secondary" : "ghost"} className="justify-start" onClick={() => selectTemplate(template.id)}>{template.name}</Button>)}</div>{selectedTemplate && <div className="mt-5 border border-border bg-muted/40 p-3"><p className="text-sm font-semibold">{selectedTemplate.name}</p><p className="mt-1 text-xs text-muted-foreground">{selectedTemplate.category} · {selectedTemplate.target}</p><div className="mt-3 grid gap-2">{selectedTemplate.parameters.map((parameter) => <label className="text-xs font-medium" key={parameter.key}>{`{{${parameter.key}}}`} · {parameter.label}<Input className="mt-1 h-8" value={templateValues[parameter.key] ?? ""} onChange={(event) => setTemplateParameters((current) => ({ ...current, [parameter.key]: event.target.value }))} /></label>)}</div><div className="mt-3 border border-border bg-card p-3"><p className="micro-label">Preview</p><p className="mt-2 whitespace-pre-wrap text-xs leading-5">{renderedTemplate}</p></div><Button className="mt-3 w-full" disabled={!templateReady} onClick={() => { sendTemplate(selected.id, selectedTemplate.name, renderedTemplate); setContextPanel("details"); }}>Send approved template</Button></div>}</SidePanelHeading>}
           {contextPanel === "scoutTools" && <SidePanelHeading label="Scout tools" title="Operations actions" onClose={() => setContextPanel("details")}><p className="mt-2 text-xs text-muted-foreground">Open only the group you need, then record the operational result.</p><div className="mt-5 grid gap-2"><Button variant="outline" size="sm" className="justify-start" onClick={() => setAssignOpen(true)}><Sparkles />Assign mover</Button><Button asChild variant="outline" size="sm" className="justify-start"><Link to="/quotes/new" search={{ booking: selectedBooking?.ref ?? "" }}><ReceiptText />Create quote</Link></Button>{Object.entries(toolGroups).map(([group, tools]) => <div className="border border-border" key={group}><Button variant="ghost" className="w-full justify-between" onClick={() => setExpandedGroups((groups) => ({ ...groups, [group]: !groups[group] }))}>{group}<ChevronDown className={`size-4 transition-transform ${expandedGroups[group] ? "rotate-180" : ""}`} /></Button>{expandedGroups[group] && <div className="border-t border-border p-1">{tools.map((tool) => <Button key={tool.id} variant="ghost" size="sm" className="w-full justify-start text-left" onClick={() => openTool(tool.id)}><Bot size={14} />{tool.name}</Button>)}</div>}</div>)}</div><div className="mt-5 border-t border-border pt-4"><p className="micro-label">Recent tool activity</p>{toolExecutions.filter((item) => item.conversationId === selected.id).slice(0, 3).map((item) => <p className="mt-2 text-xs" key={item.id}>{item.toolName}<span className="block text-muted-foreground">{item.outcome}</span></p>)}{!toolExecutions.some((item) => item.conversationId === selected.id) && <p className="mt-2 text-xs text-muted-foreground">No tools recorded for this conversation.</p>}</div></SidePanelHeading>}

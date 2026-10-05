@@ -74,6 +74,20 @@ export type ApiMover = {
   rating: number | null;
   total_jobs: number;
   created_at: string;
+  full_name?: string | null;
+  business_name?: string | null;
+  licence_doc_url?: string | null;
+  insurance_doc_url?: string | null;
+  verification_doc_urls?: string[];
+  services?: string[];
+  team_size?: string;
+  availability?: string[];
+  pricing_model?: string;
+  insurance_type?: string;
+  driving_licence_type?: string;
+  job_preferences?: string;
+  job_exclusions?: string;
+  onboarding_data?: Record<string, any>;
 };
 
 export const fetchMovers = () => api<ApiMover[]>('/api/admin/movers');

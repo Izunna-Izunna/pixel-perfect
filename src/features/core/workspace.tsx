@@ -1,10 +1,12 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { Bell, Bot, ChevronDown, Command, Gauge, HeartPulse, Inbox, ListTodo, MapPin, Menu, MoreHorizontal, Moon, PanelLeft, PanelLeftClose, Search, Settings, ShieldCheck, Sun, Ticket, Users, WalletCards, X } from "lucide-react";
+import { Bell, Bot, ChevronDown, Command, Gauge, HeartPulse, Inbox, ListTodo, LogOut, MapPin, Menu, MoreHorizontal, Moon, PanelLeft, PanelLeftClose, Search, Settings, ShieldCheck, Sun, Ticket, User, Users, WalletCards, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { londonClock } from "@/lib/time";
 import { useOperations } from "./operations-store";
+import { useAuth } from "@/features/auth/auth-context";
 
 const groups = [
   { title: "Work", items: [{ label: "Overview", to: "/", icon: Gauge }, { label: "Inbox", to: "/inbox", icon: Inbox, count: 3 }, { label: "Needs attention", to: "/attention", icon: ListTodo, count: 4 }, { label: "Tickets", to: "/escalations", icon: Ticket }] },
@@ -15,8 +17,17 @@ const groups = [
 export function CaryMark({ compact = false }: { compact?: boolean }) { return <div className="flex items-center gap-2"><span className="relative grid size-8 place-items-center rounded-md bg-live text-primary-foreground"><span className="size-2 rounded-sm border-2 border-primary-foreground" /><span className="absolute size-4 border border-primary-foreground/70" /></span>{!compact && <span className="text-base font-semibold tracking-normal">cary</span>}</div>; }
 
 export function Workspace({ title, children, immersive = false }: { title: string; children: ReactNode; immersive?: boolean }) {
-  const location = useLocation(); const navigate = useNavigate(); const { bookings, conversations, customers, movers, notifications, attention } = useOperations(); const [menuOpen, setMenuOpen] = useState(false); const [paletteOpen, setPaletteOpen] = useState(false); const [paletteQuery, setPaletteQuery] = useState(""); const [dark, setDark] = useState(false); const [clock, setClock] = useState(londonClock());
+  const location = useLocation(); const navigate = useNavigate(); const { bookings, conversations, customers, movers, notifications, attention } = useOperations();
+  const { user, isAdmin, adminName, adminInitials, isLoading: authLoading, signOut } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false); const [paletteOpen, setPaletteOpen] = useState(false); const [paletteQuery, setPaletteQuery] = useState(""); const [dark, setDark] = useState(false); const [clock, setClock] = useState(londonClock());
   const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && !user && location.pathname !== "/login") {
+      void navigate({ to: "/login" });
+    }
+  }, [authLoading, user, location.pathname, navigate]);
+
   useEffect(() => { const timer = window.setInterval(() => setClock(londonClock()), 1000); return () => window.clearInterval(timer); }, []);
   useEffect(() => { const saved = window.sessionStorage.getItem("cary-theme"); setDark(saved === "dark"); }, []);
   useEffect(() => { document.documentElement.classList.toggle("dark", dark); window.sessionStorage.setItem("cary-theme", dark ? "dark" : "light"); }, [dark]);
@@ -84,14 +95,48 @@ export function Workspace({ title, children, immersive = false }: { title: strin
           <span className="hidden px-2 font-mono text-xs text-muted-foreground lg:block">{clock}</span>
           <Button variant="ghost" size="icon" aria-label="Toggle theme" onClick={() => setDark(!dark)}>{dark ? <Sun /> : <Moon />}</Button>
           <Button asChild variant="ghost" size="icon" aria-label={`Notifications${unreadNotifications ? `, ${unreadNotifications} unread` : ""}`}><Link to="/notifications"><Bell />{unreadNotifications ? <span className="sr-only">{unreadNotifications} unread</span> : null}</Link></Button>
-          <Link to="/settings/account" className="ml-1 flex items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-muted">
-            <span className="grid size-7 place-items-center rounded-full bg-muted text-xs font-bold text-muted-foreground">AO</span>
-            <span className="hidden sm:block">
-              <span className="block text-xs font-semibold">Amelia Owen</span>
-              <span className="block text-[10px] text-muted-foreground">Operator</span>
-            </span>
-            <ChevronDown size={14} />
-          </Link>
+          
+          {/* Admin Profile Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="ml-1 flex items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-muted outline-none transition-colors cursor-pointer">
+                <span className="grid size-7 place-items-center rounded-full bg-primary/15 text-primary text-xs font-bold border border-primary/25">
+                  {adminInitials}
+                </span>
+                <span className="hidden sm:block">
+                  <span className="block text-xs font-semibold leading-tight">{adminName}</span>
+                  <span className="block text-[10px] text-muted-foreground leading-tight">Admin</span>
+                </span>
+                <ChevronDown size={14} className="text-muted-foreground" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 p-1.5 shadow-lg border border-border bg-popover">
+              <div className="px-2 py-1.5 border-b border-border mb-1">
+                <p className="text-xs font-semibold">{adminName}</p>
+                <p className="text-[11px] text-muted-foreground truncate">{user?.email || "admin@cary.com"}</p>
+                <span className="mt-1 inline-block rounded bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary">
+                  Administrator
+                </span>
+              </div>
+              <DropdownMenuItem asChild>
+                <Link to="/settings/account" className="flex items-center gap-2 text-xs cursor-pointer">
+                  <User size={14} /> My account
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/settings/operations" className="flex items-center gap-2 text-xs cursor-pointer">
+                  <Settings size={14} /> System settings
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => void signOut()}
+                className="flex items-center gap-2 text-xs text-danger focus:text-danger cursor-pointer"
+              >
+                <LogOut size={14} /> Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>}
       <div className={immersive ? "h-[100svh] md:h-screen" : "mx-auto max-w-[1600px] p-4 pb-24 md:p-7 md:pb-7"}>{children}</div>
