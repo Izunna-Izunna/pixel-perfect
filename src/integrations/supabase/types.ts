@@ -14,21 +14,32 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
-    }
+      [key: string]: {
+        Row: Record<string, any>;
+        Insert: Record<string, any>;
+        Update: Record<string, any>;
+        Relationships: any[];
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [key: string]: {
+        Row: Record<string, any>;
+        Relationships: any[];
+      };
+    };
     Functions: {
-      [_ in never]: never
-    }
+      [key: string]: {
+        Args: Record<string, any>;
+        Returns: any;
+      };
+    };
     Enums: {
-      [_ in never]: never
-    }
+      [key: string]: any;
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
+      [key: string]: any;
+    };
+  };
 }
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">

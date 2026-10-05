@@ -1,7 +1,7 @@
 import { ArrowLeft, Bot, Check, CheckCheck, ChevronDown, FileText, Paperclip, PauseCircle, Send, UserRound, X, Zap } from "lucide-react";
 import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { type Conversation as ConversationRecord, bookings, movers } from "@/features/core/mock-data";
+import { type Conversation as ConversationRecord } from "@/features/core/mock-data";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/features/core/status-badge";
@@ -14,7 +14,7 @@ import { PromptInput, PromptInputFooter, PromptInputSubmit, PromptInputTextarea 
 
 export function ChatView({ conversation, fullScreen = false, onAssignMover, onContextPanelChange, quickReplyRequest }: { conversation: ConversationRecord; fullScreen?: boolean; onAssignMover?: () => void; onContextPanelChange?: (panel: "details" | "quickReplies" | "scoutTools" | "templates") => void; quickReplyRequest?: { id: number; body: string } | null }) {
   const navigate = useNavigate();
-  const { messages, sendMessage, sendTemplate, setTakeover, markRead } = useOperations();
+  const { messages, sendMessage, sendTemplate, setTakeover, markRead, bookings, movers, loadMessages } = useOperations();
   const [message, setMessage] = useState(""); const [handover, setHandover] = useState(false); const [note, setNote] = useState(""); const [attachment, setAttachment] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null); const endRef = useRef<HTMLDivElement>(null); const closed = conversation.window === "closed";
   const thread = messages[conversation.id] ?? [];
@@ -22,7 +22,12 @@ export function ChatView({ conversation, fullScreen = false, onAssignMover, onCo
   const mover = conversation.role === "Mover" ? movers.find((item) => item.id === conversation.contactId) : undefined;
   const takeover = conversation.takeover;
 
-  useEffect(() => { markRead(conversation.id); endRef.current?.scrollIntoView({ block: "end" }); inputRef.current?.focus(); }, [conversation.id, markRead, thread.length]);
+  useEffect(() => {
+    markRead(conversation.id);
+    loadMessages(conversation.id);
+    endRef.current?.scrollIntoView({ block: "end" });
+    inputRef.current?.focus();
+  }, [conversation.id, markRead, loadMessages, thread.length]);
   useEffect(() => { if (quickReplyRequest) { setMessage(quickReplyRequest.body); inputRef.current?.focus(); } }, [quickReplyRequest]);
   function send(event?: FormEvent<HTMLFormElement>) { event?.preventDefault(); if (closed) { onContextPanelChange?.("templates"); return; } sendMessage(conversation.id, message, attachment || undefined); setMessage(""); setAttachment(""); inputRef.current?.focus(); }
   function handleComposerKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); send(); } }

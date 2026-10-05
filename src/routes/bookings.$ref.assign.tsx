@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/features/core/status-badge";
-import { moverCandidates } from "@/features/core/mock-data";
+import { mapMoverRecordToCandidate } from "@/features/core/data-mappers";
 import { approvedTemplates, renderTemplate } from "@/features/inbox/operations-catalog";
 import { useOperations } from "@/features/core/operations-store";
 import { Workspace } from "@/features/core/workspace";
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/bookings/$ref/assign")({
 function AssignMoverPage() {
   const { ref } = Route.useParams();
   const { mover: moverId, payout: payoutFromChat } = Route.useSearch();
-  const { bookings, assignMover } = useOperations();
+  const { bookings, movers, assignMover } = useOperations();
   const booking = bookings.find((item) => item.ref === ref);
   if (!booking) return <Workspace title="Assign mover"><p className="text-sm text-muted-foreground">No booking is available to assign.</p></Workspace>;
   const [query, setQuery] = useState("");
@@ -32,12 +32,15 @@ function AssignMoverPage() {
   const [payout, setPayout] = useState(payoutFromChat ?? (booking.total > 7 ? String(booking.total - 7) : "150"));
   const [note, setNote] = useState("");
   const [confirmed, setConfirmed] = useState(false);
-  const selected = moverCandidates.find((candidate) => candidate.id === selectedId);
+  const allCandidates = useMemo(() => {
+    return movers.map(mapMoverRecordToCandidate);
+  }, [movers]);
+  const selected = allCandidates.find((candidate) => candidate.id === selectedId);
   const amount = Number(payout) || 0;
-  const candidates = useMemo(() => moverCandidates.filter((candidate) => {
+  const candidates = useMemo(() => allCandidates.filter((candidate) => {
     const matches = `${candidate.name} ${candidate.phone}`.toLowerCase().includes(query.toLowerCase());
     return matches && (!availableOnly || candidate.available);
-  }), [availableOnly, query]);
+  }), [allCandidates, availableOnly, query]);
   if (confirmed && selected) return <Workspace title="Mover assigned"><Result booking={booking} mover={selected.name} payout={amount} /></Workspace>;
   const moverTemplate = approvedTemplates.find((template) => template.id === "job_assigned_mover");
   const moverMessage = selected && moverTemplate ? renderTemplate(moverTemplate, { "1": selected.name, "2": `${booking.ref} (${booking.route.replace(" → ", " to ")})`, "3": amount.toFixed(2), "4": booking.route.split(" → ")[0] ?? "", "5": booking.route.split(" → ")[1] ?? "", "6": formatLondon(booking.moveAt) }) : "Choose a mover to preview the approved assignment notice.";

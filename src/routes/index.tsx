@@ -21,10 +21,12 @@ export const Route = createFileRoute("/")({
 function Overview() {
   const [range, setRange] = useState<"today" | "week" | "month">("today"); const [chartMode, setChartMode] = useState<"trips" | "volume">("trips");
   const { attention, bookings, conversations, audit, resolveAttention } = useOperations();
-  const visibleBookings = useMemo(() => range === "today" ? bookings.filter((booking) => booking.moveAt.startsWith("2026-10-04")) : range === "week" ? bookings.slice(0, 4) : bookings, [bookings, range]);
+  const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const todayPlus3 = useMemo(() => { const d = new Date(); d.setDate(d.getDate() + 3); return d.toISOString().slice(0, 10); }, []);
+  const visibleBookings = useMemo(() => range === "today" ? bookings.filter((booking) => booking.moveAt.startsWith(todayStr)) : range === "week" ? bookings.filter((b) => { const d = b.moveAt.slice(0, 10); return d >= todayStr && d <= todayPlus3; }) : bookings, [bookings, range, todayStr, todayPlus3]);
   const rangeLabel = range === "today" ? "Today" : range === "week" ? "7 days" : "30 days";
   const activeBookings = bookings.filter((booking) => ["booked", "in_transit", "dispatched", "quotes_received"].includes(booking.status));
-  const completedToday = bookings.filter((booking) => booking.status === "completed" && booking.moveAt.startsWith("2026-10-04")).length;
+  const completedToday = bookings.filter((booking) => booking.status === "completed" && booking.moveAt.startsWith(todayStr)).length;
   const grossVolume = bookings.reduce((sum, booking) => sum + booking.total, 0);
   const feeRevenue = bookings.filter((booking) => booking.total > 0).length * 7;
   const kpis = [
@@ -33,20 +35,25 @@ function Overview() {
     { label: "Customer volume", value: formatMoney(grossVolume), change: `${bookings.length} total moves`, detail: "Customer totals, Cary fee included", tone: "neutral" },
     { label: "Cary fee revenue", value: formatMoney(feeRevenue), change: "£7 per paid move", detail: "Current booking ledger", tone: "good" },
   ];
-  const tripRows = useMemo(() => [{ label: "Today", value: bookings.filter((booking) => booking.moveAt.startsWith("2026-10-04")).length, display: String(bookings.filter((booking) => booking.moveAt.startsWith("2026-10-04")).length) }, { label: "Next 3 days", value: bookings.filter((booking) => booking.moveAt >= "2026-10-05" && booking.moveAt < "2026-10-08").length, display: String(bookings.filter((booking) => booking.moveAt >= "2026-10-05" && booking.moveAt < "2026-10-08").length) }, { label: "Completed", value: bookings.filter((booking) => booking.status === "completed").length, display: String(bookings.filter((booking) => booking.status === "completed").length) }], [bookings]);
+  const tripRows = useMemo(() => [{ label: "Today", value: bookings.filter((booking) => booking.moveAt.startsWith(todayStr)).length, display: String(bookings.filter((booking) => booking.moveAt.startsWith(todayStr)).length) }, { label: "Next 3 days", value: bookings.filter((booking) => { const d = booking.moveAt.slice(0, 10); return d > todayStr && d <= todayPlus3; }).length, display: String(bookings.filter((booking) => { const d = booking.moveAt.slice(0, 10); return d > todayStr && d <= todayPlus3; }).length) }, { label: "Completed", value: bookings.filter((booking) => booking.status === "completed").length, display: String(bookings.filter((booking) => booking.status === "completed").length) }], [bookings, todayStr, todayPlus3]);
   const attentionAction = (item: (typeof attention)[number]) => {
     if (item.action === "Redispatch" && item.bookingRef) return <Button asChild size="sm" variant="link" className="h-auto p-0"><Link to="/bookings/$ref/assign" params={{ ref: item.bookingRef }} search={{}}>Assign mover</Link></Button>;
     if (item.action === "Review" && item.moverId) return <Button asChild size="sm" variant="link" className="h-auto p-0"><Link to="/movers/$id" params={{ id: item.moverId }}>Review documents</Link></Button>;
     if (item.action === "Send link" && item.bookingRef) return <Button asChild size="sm" variant="link" className="h-auto p-0"><Link to="/bookings/$ref" params={{ ref: item.bookingRef }} search={{}}>Open payment</Link></Button>;
     return <Button size="sm" variant="link" className="h-auto p-0" onClick={() => resolveAttention(item.id)}>{item.action}</Button>;
   };
+  const now = new Date();
+  const dayName = now.toLocaleDateString("en-GB", { weekday: "long" });
+  const dateLabel = now.toLocaleDateString("en-GB", { day: "numeric", month: "long" });
+  const hour = now.getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   return (
     <Workspace title="Overview">
       <section className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="micro-label">Sunday, 4 October · {rangeLabel}</p>
-          <h2 className="mt-1 text-4xl font-semibold leading-none sm:text-5xl">Good afternoon, Amelia.</h2>
+          <p className="micro-label">{dayName}, {dateLabel} · {rangeLabel}</p>
+          <h2 className="mt-1 text-4xl font-semibold leading-none sm:text-5xl">{greeting}, Amelia.</h2>
           <p className="mt-3 text-sm text-muted-foreground">{visibleBookings.length} moves in view. <span className="font-medium text-foreground">{attention.length} need your attention.</span></p>
         </div>
         <div className="flex items-center gap-2">{(["today", "week", "month"] as const).map((period) => <Button key={period} size="sm" variant={range === period ? "default" : "outline"} onClick={() => setRange(period)}>{period === "today" ? "Today" : period === "week" ? "7 days" : "30 days"}</Button>)}</div>

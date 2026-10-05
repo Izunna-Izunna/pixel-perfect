@@ -10,7 +10,6 @@ import { useOperations } from "@/features/core/operations-store";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { approvedTemplates, renderTemplate, scoutTools } from "@/features/inbox/operations-catalog";
-import { bookings, movers } from "@/features/core/mock-data";
 import { formatLondon } from "@/lib/time";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -27,7 +26,7 @@ export const Route = createFileRoute("/inbox")({
 function InboxLayout() { return <Outlet />; }
 
 export function InboxPage() {
-  const { conversations, markRead, executeScoutTool, toolExecutions, sendTemplate } = useOperations();
+  const { conversations, bookings, movers, markRead, executeScoutTool, toolExecutions, sendTemplate } = useOperations();
   const [filter, setFilter] = useState<"all" | "needs" | "taken" | "customer" | "mover">("all"); const [query, setQuery] = useState(""); const [assignOpen, setAssignOpen] = useState(false);
    const [selectedMoverId, setSelectedMoverId] = useState<string | null>(null);
   const [payout, setPayout] = useState("");
@@ -127,7 +126,7 @@ export function InboxPage() {
 
 function SidePanelHeading({ label, title, onClose, children }: { label: string; title: string; onClose: () => void; children: React.ReactNode }) { return <div className="animate-in slide-in-from-right-2 duration-200"><div className="flex items-center justify-between gap-2"><div><p className="micro-label">{label}</p><h2 className="mt-2 text-base font-semibold">{title}</h2></div><Button variant="ghost" size="sm" onClick={onClose}>Close</Button></div>{children}</div>; }
 
-function templateDefaults(conversation: ReturnType<typeof useOperations>["conversations"][number], booking: typeof bookings[number] | undefined, mover: typeof movers[number] | undefined): Record<string, string> { const [pickup = "", dropoff = ""] = booking?.route.split(" → ") ?? []; const customer = booking?.customer ?? (conversation.role === "Customer" ? conversation.name : ""); return { "1": customer.split(" ")[0] ?? "", "2": pickup, "3": dropoff, "4": mover?.businessName ?? "Verified Cary mover", "5": "", "6": booking ? formatLondon(booking.moveAt) : "", "7": booking?.items ?? "", "8": "Driver + 1 helper", "9": "Customer phone available to operators", "10": booking?.ref ?? "", "11": conversation.role === "Mover" ? (mover?.businessName ?? conversation.name) : "" }; }
+function templateDefaults(conversation: ReturnType<typeof useOperations>["conversations"][number], booking: ReturnType<typeof useOperations>["bookings"][number] | undefined, mover: ReturnType<typeof useOperations>["movers"][number] | undefined): Record<string, string> { const [pickup = "", dropoff = ""] = booking?.route.split(" → ") ?? []; const customer = booking?.customer ?? (conversation.role === "Customer" ? conversation.name : ""); return { "1": customer.split(" ")[0] ?? "", "2": pickup, "3": dropoff, "4": mover?.businessName ?? "Verified Cary mover", "5": "", "6": booking ? formatLondon(booking.moveAt) : "", "7": booking?.items ?? "", "8": "Driver + 1 helper", "9": "Customer phone available to operators", "10": booking?.ref ?? "", "11": conversation.role === "Mover" ? (mover?.businessName ?? conversation.name) : "" }; }
 
 function ConversationRow({
   conversation,
