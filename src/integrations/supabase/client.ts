@@ -35,13 +35,13 @@ function createSupabaseClient() {
     (typeof import.meta !== 'undefined' && import.meta.env?.['VITE_SUPABASE_URL']) ||
     (typeof process !== 'undefined' && process.env?.['SUPABASE_URL']) ||
     (typeof process !== 'undefined' && process.env?.['VITE_SUPABASE_URL']) ||
-    'https://zkasmcsfepgebpegelvx.supabase.co';
+    '';
 
   const SUPABASE_PUBLISHABLE_KEY =
     (typeof import.meta !== 'undefined' && import.meta.env?.['VITE_SUPABASE_PUBLISHABLE_KEY']) ||
     (typeof process !== 'undefined' && process.env?.['SUPABASE_PUBLISHABLE_KEY']) ||
     (typeof process !== 'undefined' && process.env?.['VITE_SUPABASE_PUBLISHABLE_KEY']) ||
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InprYXNtY3NmZXBnZWJwZWdlbHZ4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MzA4MTEzNSwiZXhwIjoyMDk4NjU3MTM1fQ.YH52kh9eQxjNFcbHu8dbE1BtlyXFpk4WXm6yG6aoA5Y';
+    '';
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     global: {
