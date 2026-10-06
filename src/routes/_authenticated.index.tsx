@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/")({
 function Overview() {
   const [range, setRange] = useState<"today" | "week" | "month">("today");
   const [chartMode, setChartMode] = useState<"trips" | "volume">("trips");
-  const { attention, bookings, conversations, audit, resolveAttention } = useOperations();
+  const { attention, bookings, conversations, audit, scoutPaused, resolveAttention } = useOperations();
   const { adminName } = useAuth();
 
   const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
@@ -241,7 +241,11 @@ function Overview() {
               </span>
             </div>
             <p className="mt-1 text-sm text-live-foreground">
-              Scout AI is orchestrating live mover quotes across Cardiff and Newport.
+              {scoutPaused
+                ? "Scout AI is paused across all communication channels."
+                : conversations.length > 0
+                ? `Scout AI is actively managing ${conversations.length} live customer ${conversations.length === 1 ? "conversation" : "conversations"}.`
+                : "Scout AI is active and standing by for incoming WhatsApp customer requests."}
             </p>
           </div>
           <Link to="/inbox" className="text-left text-sm font-semibold text-live-foreground hover:underline">
@@ -445,25 +449,24 @@ function Overview() {
                 View updates
               </Link>
             </div>
-            <ol className="mt-5 space-y-4">
-              {[
-                ...audit.map((item) => item.title),
-                "Payment received for CARY-8291",
-                "Dai Evans marked as on the way",
-                "Scout collected access details from James Patel",
-                "Megan Price uploaded an insurance certificate",
-              ]
-                .slice(0, 4)
-                .map((item, index) => (
-                  <li key={item} className="flex gap-3">
+            {audit.length > 0 ? (
+              <ol className="mt-5 space-y-4">
+                {audit.slice(0, 5).map((item, index) => (
+                  <li key={item.id} className="flex gap-3">
                     <span className={index === 0 ? "mt-1 size-2 rounded-full bg-live" : "mt-1 size-2 rounded-full bg-border"} />
                     <p className="text-xs leading-5 text-muted-foreground">
-                      {item}
-                      <span className="ml-1.5 text-foreground">· {index * 9 + 6}m</span>
+                      {item.title}
+                      <span className="ml-1.5 text-foreground">· {item.createdAt ? relativeLondon(item.createdAt) : "just now"}</span>
                     </p>
                   </li>
                 ))}
-            </ol>
+              </ol>
+            ) : (
+              <div className="mt-5 rounded-md border border-dashed border-border py-6 text-center">
+                <p className="text-xs text-muted-foreground">No recent operational activity logged today.</p>
+                <p className="mt-1 text-[11px] text-muted-foreground/75">Live system events will stream here automatically.</p>
+              </div>
+            )}
           </div>
 
           <div className="border border-border p-5">
@@ -499,68 +502,83 @@ function Overview() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {bookings
-              .filter((booking) => ["booked", "in_transit", "payment_pending", "quotes_received"].includes(booking.status))
-              .slice(0, 5)
-              .map((booking) => (
-                <tr key={booking.ref} className="hover:bg-muted">
-                  <td className="px-5 py-4">
-                    <Link
-                      className="font-mono text-xs font-semibold text-primary hover:underline"
-                      to="/bookings/$ref"
-                      params={{ ref: booking.ref }}
-                      search={{}}
-                    >
-                      {booking.ref}
-                    </Link>
-                  </td>
-                  <td className="px-5 py-4 text-xs">{booking.customer}</td>
-                  <td className="px-5 py-4 text-xs">{booking.mover ?? "Searching movers"}</td>
-                  <td className="px-5 py-4 text-xs capitalize">{booking.status.replace("_", " ")}</td>
-                  <td className="px-5 py-4 text-xs">{booking.route}</td>
-                  <td className="px-5 py-4 font-mono text-xs">{booking.total ? formatMoney(7) : "—"}</td>
-                  <td className="px-5 py-4">
-                    <div className="flex gap-1">
-                      <Button asChild size="sm" variant="outline">
-                        <Link to="/bookings/$ref/assign" params={{ ref: booking.ref }} search={{}}>
-                          <UserPlus />
-                          Assign
-                        </Link>
-                      </Button>
-                      <Button
-                        asChild
-                        size="icon"
-                        variant="ghost"
-                        aria-label={`Message ${booking.customer}`}
-                      >
+            {bookings.filter((b) => ["booked", "in_transit", "payment_pending", "quotes_received"].includes(b.status)).length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-5 py-8 text-center text-xs text-muted-foreground">
+                  No active moves currently in transit or dispatching.
+                </td>
+              </tr>
+            ) : (
+              bookings
+                .filter((booking) => ["booked", "in_transit", "payment_pending", "quotes_received"].includes(booking.status))
+                .slice(0, 5)
+                .map((booking) => {
+                  const conv = conversations.find((c) => c.contactId === booking.customerId);
+                  return (
+                    <tr key={booking.ref} className="hover:bg-muted">
+                      <td className="px-5 py-4">
                         <Link
-                          to="/inbox/$sessionId"
-                          params={{
-                            sessionId:
-                              booking.customerId === "elin-roberts"
-                                ? "s1"
-                                : booking.customerId === "sian-morgan"
-                                ? "s3"
-                                : "s1",
-                          }}
+                          className="font-mono text-xs font-semibold text-primary hover:underline"
+                          to="/bookings/$ref"
+                          params={{ ref: booking.ref }}
+                          search={{}}
                         >
-                          <MessageCircle />
+                          {booking.ref}
                         </Link>
-                      </Button>
-                      <Button
-                        asChild
-                        size="icon"
-                        variant="ghost"
-                        aria-label={`Redispatch ${booking.ref}`}
-                      >
-                        <Link to="/bookings/$ref/assign" params={{ ref: booking.ref }} search={{}}>
-                          <RefreshCw />
-                        </Link>
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                      </td>
+                      <td className="px-5 py-4 text-xs">{booking.customer}</td>
+                      <td className="px-5 py-4 text-xs">{booking.mover ?? "Searching movers"}</td>
+                      <td className="px-5 py-4 text-xs capitalize">{booking.status.replace("_", " ")}</td>
+                      <td className="px-5 py-4 text-xs">{booking.route}</td>
+                      <td className="px-5 py-4 font-mono text-xs">{booking.total ? formatMoney(7) : "—"}</td>
+                      <td className="px-5 py-4">
+                        <div className="flex gap-1">
+                          <Button asChild size="sm" variant="outline">
+                            <Link to="/bookings/$ref/assign" params={{ ref: booking.ref }} search={{}}>
+                              <UserPlus />
+                              Assign
+                            </Link>
+                          </Button>
+                          {conv ? (
+                            <Button
+                              asChild
+                              size="icon"
+                              variant="ghost"
+                              aria-label={`Message ${booking.customer}`}
+                            >
+                              <Link
+                                to="/inbox/$sessionId"
+                                params={{ sessionId: conv.id }}
+                              >
+                                <MessageCircle />
+                              </Link>
+                            </Button>
+                          ) : (
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              disabled
+                              aria-label={`No conversation for ${booking.customer}`}
+                            >
+                              <MessageCircle />
+                            </Button>
+                          )}
+                          <Button
+                            asChild
+                            size="icon"
+                            variant="ghost"
+                            aria-label={`Redispatch ${booking.ref}`}
+                          >
+                            <Link to="/bookings/$ref/assign" params={{ ref: booking.ref }} search={{}}>
+                              <RefreshCw />
+                            </Link>
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+            )}
           </tbody>
         </table>
       </section>

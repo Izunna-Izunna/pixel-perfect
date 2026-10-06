@@ -88,6 +88,8 @@ export function OperationsChart() {
   const totalRevenue = useMemo(() => chartData.reduce((acc, curr) => acc + curr.revenue, 0), [chartData]);
   const peakDay = useMemo(() => {
     if (!chartData.length) return null;
+    const maxVal = metric === "trips" ? Math.max(...chartData.map((c) => c.trips)) : Math.max(...chartData.map((c) => c.volume));
+    if (maxVal <= 0) return null;
     return [...chartData].sort((a, b) => (metric === "trips" ? b.trips - a.trips : b.volume - a.volume))[0];
   }, [chartData, metric]);
 
@@ -241,7 +243,7 @@ export function OperationsChart() {
             {peakDay ? peakDay.shortDate : "—"}
           </p>
           <p className="mt-0.5 text-[10px] text-muted-foreground">
-            {peakDay ? `${peakDay.trips} trips (${formatMoney(peakDay.volume)})` : "No data"}
+            {peakDay ? `${peakDay.trips} trips (${formatMoney(peakDay.volume)})` : "No trips recorded"}
           </p>
         </div>
 

@@ -14,7 +14,7 @@ const groups = [
   { title: "Money", items: [{ label: "Payments", to: "/payments", icon: WalletCards }, { label: "System", to: "/system", icon: HeartPulse }, { label: "Settings", to: "/settings/operations", icon: Settings }] },
 ];
 
-export function CaryMark({ compact = false }: { compact?: boolean }) { return <div className="flex items-center gap-2"><span className="relative grid size-8 place-items-center rounded-md bg-live text-primary-foreground"><span className="size-2 rounded-sm border-2 border-primary-foreground" /><span className="absolute size-4 border border-primary-foreground/70" /></span>{!compact && <span className="text-base font-semibold tracking-normal">cary</span>}</div>; }
+export function CaryMark({ compact = false }: { compact?: boolean }) { return <div className="flex items-center gap-2"><img src="/apple-touch-icon.png" alt="Cary" className="size-8 rounded-md object-cover bg-black shadow-sm" />{!compact && <span className="text-base font-semibold tracking-normal">cary</span>}</div>; }
 
 export function Workspace({ title, children, immersive = false }: { title: string; children: ReactNode; immersive?: boolean }) {
   const location = useLocation(); const navigate = useNavigate(); const { bookings, conversations, customers, movers, notifications, attention, tickets } = useOperations();
