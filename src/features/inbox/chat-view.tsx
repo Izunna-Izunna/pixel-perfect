@@ -288,7 +288,15 @@ export function ChatView({
 
                   <p className="mt-1.5 text-right text-[10px] text-muted-foreground">
                     {formatMessageTime(item.createdAt)}{" "}
-                    {own && (item.delivery === "sent" ? <Check className="inline size-3" /> : <CheckCheck className="inline size-3 text-live-foreground" />)}
+                    {own && (
+                      item.delivery === "failed" ? (
+                        <span className="text-destructive font-semibold text-[10px]">Failed</span>
+                      ) : item.delivery === "sent" ? (
+                        <Check className="inline size-3" />
+                      ) : (
+                        <CheckCheck className="inline size-3 text-live-foreground" />
+                      )
+                    )}
                   </p>
                 </MessageContent>
               </Message>
@@ -500,7 +508,18 @@ export function ChatView({
                           <p className="mt-2 whitespace-pre-wrap text-xs leading-5">{renderedTemplate}</p>
                         </div>
                       )}
-                      <Button className="mt-3 w-full" size="sm" disabled={!templateReady} onClick={() => { sendTemplate(conversation.id, selectedTemplate.name, renderedTemplate); setMobilePanel("none"); }}>
+                      <Button
+                        className="mt-3 w-full"
+                        size="sm"
+                        disabled={!templateReady}
+                        onClick={() => {
+                          const params = selectedTemplate.parameters.map(
+                            (p) => templateValues[p.key]?.trim() || ""
+                          );
+                          sendTemplate(conversation.id, selectedTemplate.id, params, renderedTemplate);
+                          setMobilePanel("none");
+                        }}
+                      >
                         Send approved template
                       </Button>
                     </div>

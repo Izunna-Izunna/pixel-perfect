@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { toast } from "sonner";
 import type {
   AttentionItem,
   Booking,
@@ -22,7 +23,7 @@ export type ChatMessage = {
   sender: "customer" | "mover" | "scout" | "operator";
   body: string;
   createdAt: string;
-  delivery: "sent" | "delivered" | "read";
+  delivery: "sent" | "delivered" | "read" | "failed";
   mediaName?: string;
   templateName?: string;
 };
@@ -130,7 +131,12 @@ type OperationsStore = {
   loadMessages: (sessionId: string) => Promise<void>;
   refreshData: () => Promise<void>;
   sendMessage: (sessionId: string, body: string, mediaName?: string) => void;
-  sendTemplate: (sessionId: string, templateName: string, body: string) => void;
+  sendTemplate: (
+    sessionId: string,
+    templateNameOrId: string,
+    paramsOrBody: string[] | string,
+    previewText?: string
+  ) => Promise<{ success: boolean; error?: string }>;
   setTakeover: (sessionId: string, isPaused: boolean, note: string) => void;
   markRead: (sessionId: string) => void;
   resolveAttention: (id: string) => void;
@@ -297,6 +303,7 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
           let delivery: ChatMessage["delivery"] = "sent";
           if (m.delivery_status === "read") delivery = "read";
           else if (m.delivery_status === "delivered") delivery = "delivered";
+          else if (m.delivery_status === "failed") delivery = "failed";
 
           return {
             id: String(m.id),
@@ -354,30 +361,70 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const sendTemplate = useCallback((sessionId: string, templateName: string, body: string) => {
-    const trimmed = body.trim();
-    if (!trimmed) return;
-    const msgId = `${sessionId}-template-${Date.now()}`;
-    setMessages((current) => ({
-      ...current,
-      [sessionId]: [
-        ...(current[sessionId] ?? []),
-        { id: msgId, sender: "operator", body: trimmed, createdAt: new Date().toISOString(), delivery: "sent", templateName },
-      ],
-    }));
+  const sendTemplate = useCallback(
+    async (
+      sessionId: string,
+      templateNameOrId: string,
+      paramsOrBody: string[] | string,
+      previewText?: string
+    ) => {
+      const params = Array.isArray(paramsOrBody)
+        ? paramsOrBody
+        : [paramsOrBody.trim()];
+      const displayText = (previewText || (Array.isArray(paramsOrBody) ? params.join(' ') : paramsOrBody)).trim();
+      if (!displayText && params.length === 0) {
+        return { success: false, error: 'Empty template content' };
+      }
 
-    setConversations((items) =>
-      items.map((item) =>
-        item.id === sessionId
-          ? { ...item, preview: `Template: ${templateName}`, at: "Now", unread: false }
-          : item
-      )
-    );
+      const msgId = `${sessionId}-template-${Date.now()}`;
+      setMessages((current) => ({
+        ...current,
+        [sessionId]: [
+          ...(current[sessionId] ?? []),
+          {
+            id: msgId,
+            sender: "operator",
+            body: displayText,
+            createdAt: new Date().toISOString(),
+            delivery: "sent",
+            templateName: templateNameOrId,
+          },
+        ],
+      }));
 
-    api.sendTemplateMessage(sessionId, templateName, [trimmed]).catch((err) => {
-      console.warn("Failed to dispatch WhatsApp template message:", err);
-    });
-  }, []);
+      setConversations((items) =>
+        items.map((item) =>
+          item.id === sessionId
+            ? { ...item, preview: `Template: ${templateNameOrId}`, at: "Now", unread: false }
+            : item
+        )
+      );
+
+      try {
+        const res = await api.sendTemplateMessage(sessionId, templateNameOrId, params);
+        if (res && (res as any).error) {
+          throw new Error((res as any).error);
+        }
+        toast.success(`Template ${templateNameOrId} sent successfully via WhatsApp`);
+        return { success: true };
+      } catch (err: any) {
+        console.error("Failed to dispatch WhatsApp template message:", err);
+        const errMsg = err?.message || "Failed to send template message";
+        toast.error(`WhatsApp template failed: ${errMsg}`);
+
+        // Update optimistic message status to failed
+        setMessages((current) => ({
+          ...current,
+          [sessionId]: (current[sessionId] ?? []).map((m) =>
+            m.id === msgId ? { ...m, delivery: "failed" } : m
+          ),
+        }));
+
+        return { success: false, error: errMsg };
+      }
+    },
+    []
+  );
 
   const setTakeover = useCallback(
     (sessionId: string, isPaused: boolean, note: string) => {

@@ -47,7 +47,7 @@ export const approvedTemplates: ApprovedTemplate[] = [
     body: "🎉 *Booking Confirmed!*\nHi {{1}}, your booking for move *{{2}}* is officially confirmed and paid.\n📍 *Pickup:* {{3}}\n🏁 *Drop-off:* {{4}}\n📅 *Date & Time:* {{5}}\n🚚 *Assigned Mover:* {{6}}\nYour mover has received your move details. Reply to this message anytime if you have questions!",
   },
   {
-    id: "mover_welcome_v2",
+    id: "mover_welcome",
     name: "Mover welcome",
     category: "UTILITY",
     target: "Mover",
