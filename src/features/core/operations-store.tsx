@@ -167,23 +167,40 @@ type OperationsStore = {
   executeScoutTool: (execution: Omit<ToolExecution, "id" | "createdAt">) => void;
 };
 
+const CACHE_KEY = "cary_operations_cache_v1";
+
+function getCachedData<T>(key: string, fallback: T): T {
+  if (typeof window === "undefined") return fallback;
+  try {
+    const raw = sessionStorage.getItem(CACHE_KEY);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return parsed[key] !== undefined ? parsed[key] : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 const OperationsContext = createContext<OperationsStore | null>(null);
 export function OperationsProvider({ children }: { children: ReactNode }) {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [attention, setAttention] = useState<AttentionItem[]>([]);
-  const [customers, setCustomers] = useState<CustomerRecord[]>([]);
-  const [movers, setMovers] = useState<MoverRecord[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>(() => getCachedData("bookings", []));
+  const [conversations, setConversations] = useState<Conversation[]>(() => getCachedData("conversations", []));
+  const [attention, setAttention] = useState<AttentionItem[]>(() => getCachedData("attention", []));
+  const [customers, setCustomers] = useState<CustomerRecord[]>(() => getCachedData("customers", []));
+  const [movers, setMovers] = useState<MoverRecord[]>(() => getCachedData("movers", []));
   const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({});
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [audit, setAudit] = useState<AuditEvent[]>([]);
   const [reminders, setReminders] = useState<Reminder[]>([]);
-  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [tickets, setTickets] = useState<Ticket[]>(() => getCachedData("tickets", []));
   const [team, setTeam] = useState<TeamMember[]>([]);
   const [quotes, setQuotes] = useState<QuoteRecord[]>([]);
   const [toolExecutions, setToolExecutions] = useState<ToolExecution[]>([]);
   const [scoutPaused, setScoutPaused] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return !sessionStorage.getItem(CACHE_KEY);
+  });
 
   const isMounted = useRef(true);
 
@@ -197,62 +214,72 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
   // ─── Live Data Synchronization ──────────────────────────────────────────────
   const refreshData = useCallback(async () => {
     try {
-      // 1. Fetch bookings from backend or Supabase
-      const apiBookings = await api.fetchBookings().catch(() => null);
+      // 1. Concurrently fetch all 5 primary endpoints in parallel
+      const [apiBookings, apiCusts, apiMovs, apiConvs, apiTkts] = await Promise.all([
+        api.fetchBookings().catch(() => null),
+        api.fetchCustomers().catch(() => null),
+        api.fetchMovers().catch(() => null),
+        api.fetchConversations().catch(() => null),
+        api.fetchTickets().catch(() => null),
+      ]);
+
+      // 2. Identify any endpoints that threw network/server errors (null)
+      // Note: A response of [] is a valid empty database, NOT a failure!
+      const needsBookingFallback = apiBookings === null;
+      const needsCustFallback = apiCusts === null;
+      const needsMoverFallback = apiMovs === null;
+      const needsTicketFallback = apiTkts === null;
+
+      // 3. Run fallbacks in parallel only if an API request actually failed
+      const [dbJobsRes, dbCustsRes, dbMoversRes, dbTicketsRes] = await Promise.all([
+        needsBookingFallback
+          ? supabase
+              .from("jobs")
+              .select("*, customers(name, whatsapp_number), payments(total_amount, platform_fee, status), quotes(price, status, mover_id), movers!jobs_assigned_mover_id_fkey(name, whatsapp_number, rating)")
+              .order("created_at", { ascending: false })
+          : Promise.resolve(null),
+        needsCustFallback
+          ? supabase.from("customers").select("*").order("created_at", { ascending: false })
+          : Promise.resolve(null),
+        needsMoverFallback
+          ? supabase.from("movers").select("*").order("created_at", { ascending: false })
+          : Promise.resolve(null),
+        needsTicketFallback
+          ? supabase.from("support_tickets").select("*, jobs(booking_ref, customer_id, customers(name, whatsapp_number))").order("created_at", { ascending: false })
+          : Promise.resolve(null),
+      ]);
+
       let mappedBookings: Booking[] = [];
-      if (apiBookings && apiBookings.length > 0) {
+      if (apiBookings !== null) {
         mappedBookings = apiBookings.map(mapApiBookingToBooking);
-      } else {
-        const { data: dbJobs } = await supabase
-          .from("jobs")
-          .select("*, customers(name, whatsapp_number), payments(total_amount, platform_fee, status), quotes(price, status, mover_id), movers!jobs_assigned_mover_id_fkey(name, whatsapp_number, rating)")
-          .order("created_at", { ascending: false });
-        if (dbJobs && dbJobs.length > 0) {
-          mappedBookings = (dbJobs as unknown as api.ApiBooking[]).map(mapApiBookingToBooking);
-        }
+      } else if (dbJobsRes?.data) {
+        mappedBookings = (dbJobsRes.data as unknown as api.ApiBooking[]).map(mapApiBookingToBooking);
       }
 
-      // 2. Fetch customers
-      const apiCusts = await api.fetchCustomers().catch(() => null);
       let mappedCustomers: CustomerRecord[] = [];
-      if (apiCusts && apiCusts.length > 0) {
+      if (apiCusts !== null) {
         mappedCustomers = apiCusts.map(mapApiCustomerToCustomerRecord);
-      } else {
-        const { data: dbCusts } = await supabase.from("customers").select("*").order("created_at", { ascending: false });
-        if (dbCusts && dbCusts.length > 0) {
-          mappedCustomers = (dbCusts as unknown as api.ApiCustomer[]).map(mapApiCustomerToCustomerRecord);
-        }
+      } else if (dbCustsRes?.data) {
+        mappedCustomers = (dbCustsRes.data as unknown as api.ApiCustomer[]).map(mapApiCustomerToCustomerRecord);
       }
 
-      // 3. Fetch movers
-      const apiMovs = await api.fetchMovers().catch(() => null);
       let mappedMovers: MoverRecord[] = [];
-      if (apiMovs && apiMovs.length > 0) {
+      if (apiMovs !== null) {
         mappedMovers = apiMovs.map(mapApiMoverToMoverRecord);
-      } else {
-        const { data: dbMovers } = await supabase.from("movers").select("*").order("created_at", { ascending: false });
-        if (dbMovers && dbMovers.length > 0) {
-          mappedMovers = (dbMovers as unknown as api.ApiMover[]).map(mapApiMoverToMoverRecord);
-        }
+      } else if (dbMoversRes?.data) {
+        mappedMovers = (dbMoversRes.data as unknown as api.ApiMover[]).map(mapApiMoverToMoverRecord);
       }
 
-      // 4. Fetch conversations
-      const apiConvs = await api.fetchConversations().catch(() => null);
       let mappedConvs: Conversation[] = [];
-      if (apiConvs && apiConvs.length > 0) {
+      if (apiConvs !== null) {
         mappedConvs = apiConvs.map(mapApiConversationToConversation);
       }
 
-      // 5. Fetch tickets
-      const apiTkts = await api.fetchTickets().catch(() => null);
       let mappedTickets: Ticket[] = [];
-      if (apiTkts && apiTkts.length > 0) {
+      if (apiTkts !== null) {
         mappedTickets = apiTkts.map(mapApiTicketToTicket);
-      } else {
-        const { data: dbTickets } = await supabase.from("support_tickets").select("*, jobs(booking_ref, customer_id, customers(name, whatsapp_number))").order("created_at", { ascending: false });
-        if (dbTickets && dbTickets.length > 0) {
-          mappedTickets = (dbTickets as unknown as api.ApiTicket[]).map(mapApiTicketToTicket);
-        }
+      } else if (dbTicketsRes?.data) {
+        mappedTickets = (dbTicketsRes.data as unknown as api.ApiTicket[]).map(mapApiTicketToTicket);
       }
 
       if (!isMounted.current) return;
@@ -266,6 +293,21 @@ export function OperationsProvider({ children }: { children: ReactNode }) {
       // Compute dynamic attention items from live data
       const liveAttention = computeAttentionItems(mappedBookings, mappedConvs, mappedMovers, mappedTickets);
       setAttention(liveAttention);
+
+      // Save to cache for instant subsequent loads
+      try {
+        sessionStorage.setItem(
+          CACHE_KEY,
+          JSON.stringify({
+            bookings: mappedBookings,
+            customers: mappedCustomers,
+            movers: mappedMovers,
+            conversations: mappedConvs,
+            tickets: mappedTickets,
+            attention: liveAttention,
+          })
+        );
+      } catch {}
     } catch (err) {
       console.warn("Live data refresh error (using existing data):", err);
     } finally {

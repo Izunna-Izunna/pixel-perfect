@@ -9,7 +9,7 @@ import { useOperations } from "./operations-store";
 import { useAuth } from "@/features/auth/auth-context";
 
 const groups = [
-  { title: "Work", items: [{ label: "Overview", to: "/", icon: Gauge }, { label: "Inbox", to: "/inbox", icon: Inbox, count: 3 }, { label: "Needs attention", to: "/attention", icon: ListTodo, count: 4 }, { label: "Tickets", to: "/escalations", icon: Ticket }] },
+  { title: "Work", items: [{ label: "Overview", to: "/", icon: Gauge }, { label: "Inbox", to: "/inbox", icon: Inbox }, { label: "Needs attention", to: "/attention", icon: ListTodo }, { label: "Tickets", to: "/escalations", icon: Ticket }] },
   { title: "Records", items: [{ label: "Bookings", to: "/bookings", icon: MapPin }, { label: "Movers", to: "/movers", icon: Users }, { label: "Customers", to: "/customers", icon: Users }] },
   { title: "Money", items: [{ label: "Payments", to: "/payments", icon: WalletCards }, { label: "System", to: "/system", icon: HeartPulse }, { label: "Settings", to: "/settings/operations", icon: Settings }] },
 ];
@@ -17,10 +17,21 @@ const groups = [
 export function CaryMark({ compact = false }: { compact?: boolean }) { return <div className="flex items-center gap-2"><span className="relative grid size-8 place-items-center rounded-md bg-live text-primary-foreground"><span className="size-2 rounded-sm border-2 border-primary-foreground" /><span className="absolute size-4 border border-primary-foreground/70" /></span>{!compact && <span className="text-base font-semibold tracking-normal">cary</span>}</div>; }
 
 export function Workspace({ title, children, immersive = false }: { title: string; children: ReactNode; immersive?: boolean }) {
-  const location = useLocation(); const navigate = useNavigate(); const { bookings, conversations, customers, movers, notifications, attention } = useOperations();
+  const location = useLocation(); const navigate = useNavigate(); const { bookings, conversations, customers, movers, notifications, attention, tickets } = useOperations();
   const { user, isAdmin, adminName, adminInitials, isLoading: authLoading, signOut } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false); const [paletteOpen, setPaletteOpen] = useState(false); const [paletteQuery, setPaletteQuery] = useState(""); const [dark, setDark] = useState(false); const [clock, setClock] = useState(londonClock());
   const [collapsed, setCollapsed] = useState(false);
+
+  const unreadInboxCount = conversations.filter((c) => c.unread).length;
+  const attentionCount = attention.length;
+  const openTicketsCount = tickets.filter((t) => t.status === "open").length;
+
+  const getBadgeCount = (to: string) => {
+    if (to === "/inbox") return unreadInboxCount;
+    if (to === "/attention") return attentionCount;
+    if (to === "/escalations") return openTicketsCount;
+    return 0;
+  };
 
   useEffect(() => {
     if (!authLoading && !user && location.pathname !== "/login") {
@@ -55,17 +66,26 @@ export function Workspace({ title, children, immersive = false }: { title: strin
               {group.items.map((item) => {
                 const Icon = item.icon;
                 const active = location.pathname === item.to;
+                const badgeCount = getBadgeCount(item.to);
                 return (
                   <Link
                     key={item.to}
                     to={item.to}
-                    className={`flex h-10 items-center gap-3 rounded-md px-3 text-sm transition-colors ${active ? "bg-accent font-semibold text-accent-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"} ${collapsed ? "w-10 justify-center px-0" : "w-full"}`}
+                    className={`relative flex h-10 items-center gap-3 rounded-md px-3 text-sm transition-colors ${active ? "bg-accent font-semibold text-accent-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"} ${collapsed ? "w-10 justify-center px-0" : "w-full"}`}
                     title={collapsed ? item.label : undefined}
                   >
                     <Icon size={17} />
                     {!collapsed && <span className="flex-1">{item.label}</span>}
-                    {!collapsed && (item.to === "/attention" ? attention.length : item.count) ? <span className="grid size-5 place-items-center rounded-full bg-danger text-[10px] font-bold text-destructive-foreground">{item.to === "/attention" ? attention.length : item.count}</span> : null}
-                    {collapsed && item.count ? <span className="absolute ml-6 mt-[-16px] grid size-4 place-items-center rounded-full bg-danger text-[8px] font-bold text-destructive-foreground">{item.count}</span> : null}
+                    {!collapsed && badgeCount > 0 ? (
+                      <span className="grid size-5 place-items-center rounded-full bg-danger text-[10px] font-bold text-destructive-foreground">
+                        {badgeCount}
+                      </span>
+                    ) : null}
+                    {collapsed && badgeCount > 0 ? (
+                      <span className="absolute ml-6 mt-[-16px] grid size-4 place-items-center rounded-full bg-danger text-[8px] font-bold text-destructive-foreground">
+                        {badgeCount}
+                      </span>
+                    ) : null}
                   </Link>
                 );
               })}
@@ -143,8 +163,24 @@ export function Workspace({ title, children, immersive = false }: { title: strin
     </main>
     {!immersive && <nav className="fixed inset-x-0 bottom-0 z-30 flex h-16 items-center justify-around border-t border-border bg-card px-2 md:hidden">
       <Link to="/" className="grid place-items-center gap-1 text-[10px] text-muted-foreground"><Gauge size={18} />Overview</Link>
-      <Link to="/inbox" className="grid place-items-center gap-1 text-[10px] text-muted-foreground"><Inbox size={18} />Inbox</Link>
-      <Link to="/attention" search={{ view: "all" }} className="grid place-items-center gap-1 text-[10px] text-muted-foreground"><ListTodo size={18} />Attention</Link>
+      <Link to="/inbox" className="relative grid place-items-center gap-1 text-[10px] text-muted-foreground">
+        <Inbox size={18} />
+        {unreadInboxCount > 0 ? (
+          <span className="absolute top-1 right-2 grid size-3.5 place-items-center rounded-full bg-danger text-[8px] font-bold text-destructive-foreground">
+            {unreadInboxCount}
+          </span>
+        ) : null}
+        Inbox
+      </Link>
+      <Link to="/attention" search={{ view: "all" }} className="relative grid place-items-center gap-1 text-[10px] text-muted-foreground">
+        <ListTodo size={18} />
+        {attentionCount > 0 ? (
+          <span className="absolute top-1 right-2 grid size-3.5 place-items-center rounded-full bg-danger text-[8px] font-bold text-destructive-foreground">
+            {attentionCount}
+          </span>
+        ) : null}
+        Attention
+      </Link>
       <button onClick={() => setMenuOpen(true)} className="grid place-items-center gap-1 text-[10px] text-muted-foreground"><MoreHorizontal size={18} />More</button>
     </nav>}
     {menuOpen && (
@@ -155,11 +191,19 @@ export function Workspace({ title, children, immersive = false }: { title: strin
             <div key={group.title}>
               <p className="micro-label">{group.title}</p>
               <div className="mt-2 space-y-1">
-                {group.items.map((item) => (
-                  <Link key={item.to} to={item.to} onClick={() => setMenuOpen(false)} className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium">
-                    <item.icon size={18} />{item.label}
-                  </Link>
-                ))}
+                {group.items.map((item) => {
+                  const badgeCount = getBadgeCount(item.to);
+                  return (
+                    <Link key={item.to} to={item.to} onClick={() => setMenuOpen(false)} className="flex items-center justify-between rounded-md px-3 py-3 text-sm font-medium">
+                      <span className="flex items-center gap-3"><item.icon size={18} />{item.label}</span>
+                      {badgeCount > 0 ? (
+                        <span className="grid size-5 place-items-center rounded-full bg-danger text-[10px] font-bold text-destructive-foreground">
+                          {badgeCount}
+                        </span>
+                      ) : null}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           ))}

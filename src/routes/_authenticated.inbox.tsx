@@ -80,11 +80,33 @@ export function InboxPage() {
     setToolId(null); setToolValues({});
   }
 
-  if (!selected) return (
-    <Workspace title="Inbox">
-      <div className="panel p-6 text-sm text-muted-foreground">No conversations are available.</div>
-    </Workspace>
-  );
+  const unreadCount = conversations.filter((c) => c.unread).length;
+
+  if (!selected) {
+    return (
+      <Workspace title="Inbox">
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card/60 p-12 text-center">
+          <div className="mb-4 grid size-14 place-items-center rounded-full bg-live-tint text-live-foreground">
+            <Bot className="size-7" />
+          </div>
+          <h2 className="text-xl font-semibold">No active WhatsApp conversations</h2>
+          <p className="mt-2 max-w-md text-sm text-muted-foreground">
+            When customers or movers message Cary on WhatsApp (<span className="font-mono font-medium text-foreground">+44 7345 942352</span>), their threads will appear here automatically for human oversight and live takeover.
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <Button asChild variant="outline" size="sm">
+              <a href="https://wa.me/447345942352?text=Hi%20Cary%20%F0%9F%91%8B%20I%20need%20help%20moving%20something." target="_blank" rel="noopener noreferrer">
+                Send test WhatsApp message
+              </a>
+            </Button>
+            <Button asChild size="sm">
+              <Link to="/attention" search={{ view: "all" }}>View Attention queue</Link>
+            </Button>
+          </div>
+        </div>
+      </Workspace>
+    );
+  }
 
   return (
     <Workspace title="Inbox">
@@ -94,9 +116,11 @@ export function InboxPage() {
           <div className="shrink-0 border-b border-border p-4">
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold">Conversations</p>
-              <span className="rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold text-destructive-foreground">
-                {conversations.filter(c => c.unread).length || 3}
-              </span>
+              {unreadCount > 0 ? (
+                <span className="rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold text-destructive-foreground">
+                  {unreadCount}
+                </span>
+              ) : null}
             </div>
             <div className="relative mt-3">
               <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />

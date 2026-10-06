@@ -328,6 +328,11 @@ function Overview() {
                   </div>
                 </Link>
               ))}
+              {!visibleBookings.length && (
+                <div className="px-5 py-8 text-center text-sm text-muted-foreground">
+                  No moves scheduled for this period. Confirmed bookings will appear here in real time.
+                </div>
+              )}
             </div>
           </div>
 

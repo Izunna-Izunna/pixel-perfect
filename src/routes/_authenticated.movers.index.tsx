@@ -19,7 +19,11 @@ function MoversPage() {
           <p className="micro-label">Records</p>
           <h2 className="mt-1 text-2xl font-semibold">Movers <span className="font-mono text-base text-muted-foreground">{movers.length}</span></h2>
         </div>
-        <Button onClick={addMover}>Add mock mover</Button>
+        <Button asChild variant="outline">
+          <a href="https://wa.me/447345942352?text=Hi%2C%20I%27d%20like%20to%20join%20Cary%20as%20a%20mover%20in%20Cardiff" target="_blank" rel="noopener noreferrer">
+            Invite mover
+          </a>
+        </Button>
       </div>
 
       <div className="panel mt-6 overflow-hidden">
@@ -79,6 +83,13 @@ function MoversPage() {
                   </tr>
                 );
               })}
+              {!movers.length && (
+                <tr>
+                  <td colSpan={6} className="px-5 py-12 text-center text-sm text-muted-foreground">
+                    No mover partners registered yet. New mover onboarding requests will appear here for verification.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
