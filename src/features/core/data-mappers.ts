@@ -1,4 +1,4 @@
-import type { AttentionItem, Booking, Conversation, CustomerRecord, MoverRecord, JobStatus, MoverCandidate } from './mock-data';
+import type { AttentionItem, Booking, Conversation, CustomerRecord, MoverRecord, JobStatus, MoverCandidate, DocumentStatus } from './mock-data';
 import type { ChatMessage, Ticket, QuoteRecord } from './operations-store';
 import type { ApiBooking, ApiCustomer, ApiMover, ApiConversation, ApiTicket } from '@/lib/api';
 
@@ -77,6 +77,23 @@ export function mapApiMoverToMoverRecord(m: ApiMover): MoverRecord {
   const jobPreferences = m.job_preferences || ob['job_preferences'] || undefined;
   const jobExclusions = m.job_exclusions || ob['job_exclusions'] || undefined;
 
+  const licenceDeferred = Boolean(ob['licence_deferred']);
+  const insuranceDeferred = Boolean(ob['insurance_deferred']);
+
+  let licenceStatus: DocumentStatus = 'not_submitted';
+  if (licenceUrl) {
+    licenceStatus = isVerified ? 'approved' : m.status === 'rejected' ? 'rejected' : 'submitted';
+  } else if (licenceDeferred) {
+    licenceStatus = 'deferred';
+  }
+
+  let insuranceStatus: DocumentStatus = 'not_submitted';
+  if (insuranceUrl) {
+    insuranceStatus = isVerified ? 'approved' : m.status === 'rejected' ? 'rejected' : 'submitted';
+  } else if (insuranceDeferred) {
+    insuranceStatus = 'deferred';
+  }
+
   const vehicleDisplay = m.van_size || ob['vehicle'] || 'Luton van';
   const cleanVehicles = [vehicleDisplay.replace(/_/g, ' ')];
 
@@ -90,7 +107,8 @@ export function mapApiMoverToMoverRecord(m: ApiMover): MoverRecord {
     vehicles: cleanVehicles,
     insurance: insuranceType ? `${insuranceType.replace(/_/g, ' ')} insurance` : 'Public liability and goods in transit',
     insuranceExpiresAt: new Date(Date.now() + 180 * 86400000).toISOString(),
-    licenceStatus: isVerified ? 'approved' : m.status === 'rejected' ? 'rejected' : 'submitted',
+    licenceStatus,
+    insuranceStatus,
     licenceUploadedAt: m.created_at,
     rating: m.rating ?? 5.0,
     reviewCount: m.total_jobs ?? 0,

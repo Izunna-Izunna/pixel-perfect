@@ -50,6 +50,8 @@ export type CustomerRecord = {
   openIssue: string | null;
 };
 
+export type DocumentStatus = "approved" | "submitted" | "rejected" | "deferred" | "not_submitted";
+
 export type MoverRecord = {
   id: string;
   name: string;
@@ -60,7 +62,8 @@ export type MoverRecord = {
   vehicles: string[];
   insurance: string;
   insuranceExpiresAt: string;
-  licenceStatus: "approved" | "submitted" | "rejected";
+  licenceStatus: DocumentStatus;
+  insuranceStatus?: DocumentStatus;
   licenceUploadedAt: string;
   rating: number | null;
   reviewCount: number;

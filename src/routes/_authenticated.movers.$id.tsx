@@ -10,6 +10,7 @@ import { StatusBadge } from "@/features/core/status-badge";
 import { Workspace } from "@/features/core/workspace";
 import { formatMoney } from "@/lib/format";
 import { formatLondon } from "@/lib/time";
+import { DateTime } from "luxon";
 import { useOperations } from "@/features/core/operations-store";
 
 export const Route = createFileRoute("/_authenticated/movers/$id")({
@@ -20,8 +21,23 @@ export const Route = createFileRoute("/_authenticated/movers/$id")({
 function MoverProfile() {
   const { id } = Route.useParams();
   const { bookings, movers, conversations, setMoverDocumentStatus } = useOperations();
-  const mover = movers.find((item) => item.id === id) ?? movers[0];
-  const [licenceStatus, setLicenceStatus] = useState(mover?.licenceStatus ?? "submitted");
+  const initialLicenceStatus =
+    mover?.licenceStatus ??
+    (mover?.licenceDocUrl
+      ? "submitted"
+      : (mover?.onboardingData as any)?.licence_deferred
+      ? "deferred"
+      : "not_submitted");
+  const [licenceStatus, setLicenceStatus] = useState(initialLicenceStatus);
+
+  const initialInsuranceStatus =
+    mover?.insuranceStatus ??
+    (mover?.insuranceDocUrl
+      ? "submitted"
+      : (mover?.onboardingData as any)?.insurance_deferred
+      ? "deferred"
+      : "not_submitted");
+  const [insuranceStatus, setInsuranceStatus] = useState(initialInsuranceStatus);
   const [message, setMessage] = useState<string | null>(null);
   const [previewDoc, setPreviewDoc] = useState<{ title: string; url: string } | null>(null);
 
@@ -199,11 +215,11 @@ function MoverProfile() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-muted-foreground">Driver Licence</span>
-                      <StatusBadge status={licenceStatus} label={`Licence ${licenceStatus}`} />
+                      <StatusBadge status={licenceStatus} />
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-muted-foreground">Insurance</span>
-                      <span className="text-xs font-medium text-live-foreground">Goods in Transit</span>
+                      <StatusBadge status={insuranceStatus} />
                     </div>
                   </div>
 
@@ -247,7 +263,7 @@ function MoverProfile() {
               <DocumentCard
                 title="Driver Licence"
                 status={licenceStatus}
-                uploadedAt={mover.licenceUploadedAt}
+                uploadedAt={mover.licenceDocUrl ? mover.licenceUploadedAt : (licenceStatus === "deferred" ? "Deferred during onboarding" : "Not uploaded")}
                 imageUrl={mover.licenceDocUrl}
                 onViewFull={() => mover.licenceDocUrl && setPreviewDoc({ title: "Driver Licence", url: mover.licenceDocUrl })}
                 onApprove={() => {
@@ -256,6 +272,7 @@ function MoverProfile() {
                   setMessage("Driver licence approved. Mover status updated to verified in live database.");
                 }}
                 onRequest={() => {
+                  setLicenceStatus("submitted");
                   setMoverDocumentStatus(mover.id, "submitted", "Clearer copy of driver licence requested.");
                   setMessage("Requested clearer licence copy.");
                 }}
@@ -263,14 +280,16 @@ function MoverProfile() {
 
               <DocumentCard
                 title="Goods in Transit / Liability Insurance"
-                status={mover.insuranceDocUrl ? "approved" : "submitted"}
-                uploadedAt={mover.insuranceExpiresAt}
+                status={insuranceStatus}
+                uploadedAt={mover.insuranceDocUrl ? mover.insuranceExpiresAt : (insuranceStatus === "deferred" ? "Deferred during onboarding" : "Not uploaded")}
                 imageUrl={mover.insuranceDocUrl}
                 onViewFull={() => mover.insuranceDocUrl && setPreviewDoc({ title: "Insurance Certificate", url: mover.insuranceDocUrl })}
                 onApprove={() => {
+                  setInsuranceStatus("approved");
                   setMessage("Insurance certificate recorded as verified.");
                 }}
                 onRequest={() => {
+                  setInsuranceStatus("submitted");
                   setMessage("Requested updated insurance policy copy.");
                 }}
               />
@@ -455,6 +474,13 @@ function MoverProfile() {
   );
 }
 
+function formatDocDate(val?: string | null): string {
+  if (!val) return "Not uploaded";
+  const dt = DateTime.fromISO(val, { zone: "utc" });
+  if (dt.isValid) return dt.setZone("Europe/London").toFormat("ccc d LLL, HH:mm ZZZZ");
+  return val;
+}
+
 function DocumentCard({
   title,
   status,
@@ -484,7 +510,10 @@ function DocumentCard({
         </div>
 
         <div className="mt-4 grid gap-2 text-sm">
-          <KeyValue label="Last Updated" value={formatLondon(uploadedAt)} />
+          <KeyValue
+            label="Last Updated"
+            value={imageUrl ? formatDocDate(uploadedAt) : (status === "deferred" ? "Deferred during onboarding" : "Not uploaded")}
+          />
         </div>
 
         {/* Document Visual Preview */}
@@ -508,7 +537,11 @@ function DocumentCard({
             <div className="flex h-36 flex-col items-center justify-center rounded-md border border-dashed border-border bg-muted/40 p-4 text-center">
               <ImageIcon className="size-8 text-muted-foreground/60 mb-2" />
               <p className="text-xs text-muted-foreground font-medium">No document uploaded yet</p>
-              <p className="text-[11px] text-muted-foreground/80 mt-0.5">Mover has not submitted this file via onboarding</p>
+              <p className="text-[11px] text-muted-foreground/80 mt-0.5">
+                {status === "deferred"
+                  ? "Mover deferred this document during WhatsApp onboarding"
+                  : "Mover has not submitted this file via onboarding"}
+              </p>
             </div>
           )}
         </div>

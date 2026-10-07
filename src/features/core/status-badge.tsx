@@ -6,8 +6,9 @@ type Tone = "live" | "warning" | "danger" | "ink" | "neutral";
 const statusTones: Record<string, Tone> = {
   completed: "live", verified: "live", paid: "live", released: "live", approved: "live", read: "live",
   pending_verification: "warning", payment_pending: "warning", quotes_received: "warning", dispatched: "warning", needs_clearer_copy: "warning", submitted: "warning", open: "warning", investigating: "warning",
-  failed: "danger", cancelled: "danger", disputed: "danger", rejected: "danger", suspended: "danger", expired: "danger", refunded: "danger", overdue: "danger",
+  failed: "danger", cancelled: "danger", disputed: "danger", rejected: "danger", suspended: "danger", expired: "danger", refunded: "danger", overdue: "danger", missing: "danger",
   in_transit: "ink", operator: "ink",
+  deferred: "neutral", not_submitted: "neutral",
 };
 
 function readable(value: string) { return value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase()); }
