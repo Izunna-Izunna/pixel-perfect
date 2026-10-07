@@ -21,6 +21,7 @@ export const Route = createFileRoute("/_authenticated/movers/$id")({
 function MoverProfile() {
   const { id } = Route.useParams();
   const { bookings, movers, conversations, setMoverDocumentStatus } = useOperations();
+  const mover = movers.find((item) => item.id === id) ?? movers[0];
   const initialLicenceStatus =
     mover?.licenceStatus ??
     (mover?.licenceDocUrl
