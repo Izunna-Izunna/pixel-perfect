@@ -147,13 +147,19 @@ function MoverProfile() {
                 <div className="border border-border bg-card p-5">
                   <p className="micro-label">Vehicles & Service Capabilities</p>
                   <div className="mt-3">
-                    <p className="text-xs text-muted-foreground mb-2">Registered Vehicles:</p>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Registered Vehicles ({mover.vehicles.length}):
+                    </p>
                     <div className="flex flex-wrap gap-2">
-                      {mover.vehicles.map((vehicle) => (
-                        <span key={vehicle} className="rounded-full border border-border bg-muted px-3 py-1.5 text-xs font-semibold capitalize">
-                          🚐 {vehicle}
-                        </span>
-                      ))}
+                      {mover.vehicles.length > 0 ? (
+                        mover.vehicles.map((vehicle) => (
+                          <span key={vehicle} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted px-3 py-1.5 text-xs font-semibold">
+                            <span>🚐</span> {vehicle}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-xs text-muted-foreground italic">No vehicles registered</span>
+                      )}
                     </div>
                   </div>
 

@@ -94,8 +94,58 @@ export function mapApiMoverToMoverRecord(m: ApiMover): MoverRecord {
     insuranceStatus = 'deferred';
   }
 
-  const vehicleDisplay = m.van_size || ob['vehicle'] || 'Luton van';
-  const cleanVehicles = [vehicleDisplay.replace(/_/g, ' ')];
+  // Parse all vehicle definitions from onboarding_data.vehicles, m.vehicles, onboarding_data.vehicle, m.van_size
+  const rawVehiclesList: string[] = [];
+
+  const addVehicleValue = (val: unknown) => {
+    if (!val) return;
+    if (Array.isArray(val)) {
+      val.forEach(addVehicleValue);
+    } else if (typeof val === 'string') {
+      const parts = val.split(/[,;\n/]+/).map((s) => s.trim()).filter(Boolean);
+      for (const p of parts) {
+        if (p) rawVehiclesList.push(p);
+      }
+    }
+  };
+
+  addVehicleValue(ob['vehicles']);
+  addVehicleValue((m as any).vehicles);
+  addVehicleValue(ob['vehicle']);
+  addVehicleValue(m.van_size);
+
+  const vehicleLabelMap: Record<string, string> = {
+    small_van: 'Small van',
+    medium_van: 'Medium van',
+    large_van: 'Large van',
+    luton_van: 'Luton van',
+    luton_with_tail_lift: 'Luton tail lift',
+    luton_tail_lift: 'Luton tail lift',
+    box_truck: 'Box truck',
+    other: 'Other vehicle',
+  };
+
+  const formatVehicle = (name: string): string => {
+    const key = name.toLowerCase().replace(/\s+/g, '_');
+    if (vehicleLabelMap[key]) return vehicleLabelMap[key];
+    const clean = name.replace(/_/g, ' ').trim();
+    return clean.charAt(0).toUpperCase() + clean.slice(1);
+  };
+
+  const seen = new Set<string>();
+  const cleanVehicles: string[] = [];
+  for (const raw of rawVehiclesList) {
+    const formatted = formatVehicle(raw);
+    const lower = formatted.toLowerCase();
+    if (!seen.has(lower)) {
+      seen.add(lower);
+      cleanVehicles.push(formatted);
+    }
+  }
+
+  if (cleanVehicles.length === 0) {
+    cleanVehicles.push('Luton van');
+  }
 
   return {
     id: m.id,
