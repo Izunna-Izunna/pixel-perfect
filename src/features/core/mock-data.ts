@@ -123,6 +123,7 @@ export type Conversation = {
   contactId: string;
   preview: string;
   at: string;
+  lastMessageAt?: string;
   unread: boolean;
   takeover: boolean;
   window: "open" | "closed";

@@ -39,14 +39,22 @@ export function InboxPage() {
   const [templateQuery, setTemplateQuery] = useState("");
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   const [templateParameters, setTemplateParameters] = useState<Record<string, string>>({});
-  const selected = conversations.find((conversation) => conversation.id === selectedId) ?? conversations[0];
-  const filtered = conversations.filter((conversation) => {
-    const matches = `${conversation.name} ${conversation.role} ${conversation.preview}`.toLowerCase().includes(query.toLowerCase());
-    if (!matches || filter === "all") return matches;
-    if (filter === "taken") return conversation.takeover;
-    if (filter === "needs") return conversation.unread || conversation.window === "closed";
-    return conversation.role.toLowerCase() === filter;
-  });
+  const filtered = useMemo(() => {
+    return conversations
+      .filter((conversation) => {
+        const matches = `${conversation.name} ${conversation.role} ${conversation.preview}`.toLowerCase().includes(query.toLowerCase());
+        if (!matches || filter === "all") return matches;
+        if (filter === "taken") return conversation.takeover;
+        if (filter === "needs") return conversation.unread || conversation.window === "closed";
+        return conversation.role.toLowerCase() === filter;
+      })
+      .sort((a, b) => {
+        const timeA = a.lastMessageAt ? new Date(a.lastMessageAt).getTime() : 0;
+        const timeB = b.lastMessageAt ? new Date(b.lastMessageAt).getTime() : 0;
+        return timeB - timeA;
+      });
+  }, [conversations, query, filter]);
+  const selected = conversations.find((conversation) => conversation.id === selectedId) ?? filtered[0] ?? conversations[0];
   const selectedTool = scoutTools.find((tool) => tool.id === toolId);
   const selectedBooking = bookings.find((item) => item.customerId === selected?.contactId || item.moverId === selected?.contactId);
   const selectedMover = selected?.role === "Mover" ? movers.find((item) => item.id === selected.contactId) : undefined;

@@ -206,8 +206,20 @@ export function mapMoverRecordToCandidate(m: MoverRecord): MoverCandidate {
 
 export function mapApiConversationToConversation(c: ApiConversation): Conversation {
   const atDate = c.lastMessageAt ? new Date(c.lastMessageAt) : new Date();
-  const diffMinutes = Math.floor((Date.now() - atDate.getTime()) / 60000);
-  const at = diffMinutes < 1 ? 'Now' : diffMinutes < 60 ? `${diffMinutes}m` : `${Math.floor(diffMinutes / 60)}h`;
+  const diffMinutes = Math.floor(Math.max(0, Date.now() - atDate.getTime()) / 60000);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+  const diffWeeks = Math.floor(diffDays / 7);
+  const diffMonths = Math.floor(diffDays / 30);
+
+  let at = 'Now';
+  if (diffMinutes < 1) at = 'Now';
+  else if (diffMinutes < 60) at = `${diffMinutes}m`;
+  else if (diffHours < 24) at = diffHours === 1 ? '1 hour' : `${diffHours} hours`;
+  else if (diffDays < 7) at = diffDays === 1 ? '1 day' : `${diffDays} days`;
+  else if (diffWeeks < 4) at = diffWeeks === 1 ? '1 week' : `${diffWeeks} weeks`;
+  else if (diffMonths < 12) at = diffMonths === 1 ? '1 month' : `${diffMonths} months`;
+  else at = `${Math.floor(diffDays / 365)}y`;
 
   return {
     id: c.sessionId,
@@ -216,6 +228,7 @@ export function mapApiConversationToConversation(c: ApiConversation): Conversati
     contactId: c.phone || c.sessionId,
     preview: c.lastMessage || 'Conversation started',
     at,
+    lastMessageAt: c.lastMessageAt,
     unread: c.lastMessageRole === 'user',
     takeover: Boolean(c.isPaused),
     window: 'open',
